@@ -20,30 +20,20 @@ public class PlayerRay : MonoBehaviour
             {
                 foreach (var unit in _gridInteractor.Units)
                 {
-                    if (unit.CurrentCell.Position == hit.collider.GetComponent<Cell>().Position)
+                    if (unit.CurrentCell.Position == hit.collider.GetComponent<Cell>().Position) // unit active
                     {
                         if (unit.Status == UnitStatus.Unselected)
-                        {
                             _gridInteractor.ChangeUnitStats(unit, UnitStatus.Unselected);
-
-                            //unit.Status = UnitStatus.Selected;
-                            //unit.CurrentCell.ChangeColor(unit.CurrentCell.CellUnitOnColor);
-                        }
                         else
-                        {
-                            unit.Status = UnitStatus.Unselected;
-                            Debug.Log("Unit Unselected!");
-
-                        }
+                        _gridInteractor.ChangeUnitStats(unit, UnitStatus.Selected);
                     }
-                    //else if (unit.Status == UnitStatus.Selected)
-                    //{
-                    //    unit.Status = UnitStatus.Unselected;
-                    //}
+                    // Проверка - выбор пустой клетки, при Selected = true;
+                    else if (unit.Status == UnitStatus.Selected)
+                        _gridInteractor.ChangeUnitStats(unit, UnitStatus.Selected);
+                    else
+                        _gridInteractor.ChangeUnitStats(unit, UnitStatus.Unselected);
                 }
             }
         }
-
-
     }
 }

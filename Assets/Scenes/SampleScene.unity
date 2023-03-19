@@ -3479,7 +3479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c553ef3daaf47d044ac961a58879070f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1624328206}
+  _gridInteractor: {fileID: 1771362891}
 --- !u!1 &971218189
 GameObject:
   m_ObjectHideFlags: 0
@@ -3573,7 +3573,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GGridInteractor: {fileID: 1771362891}
-  Units: []
+  Units:
+  - {fileID: 1246231758}
+  - {fileID: 1147422292}
   _parent: {fileID: 971218190}
   _cell: {fileID: 5016756518378698790, guid: 3924b4532fcf7fc4c9b4785688018ac4, type: 3}
   _gridSize: {x: 7, y: 7}

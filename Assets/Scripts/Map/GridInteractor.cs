@@ -37,28 +37,12 @@ public class GridInteractor : Grid
     //    //CheckAndGiveCurrentCell(_unit.ReleaseBeam());
 
     //}
-
-    public void SelectCell(Cell cell)
-    {
-
-        cell.EUnitState = State.Standard;
-        cell.EUnitOn = UnitOn.Yes;
-        cell.ChangeColor(cell.CellUnitOnColor);
-    }
-
-    public void UnselectCell(Cell cell) 
-    {
-        cell.EUnitState = State.Standard;
-        cell.EUnitOn = UnitOn.No;
-        cell.ChangeColor(cell.CellStandardColor);
-    }
-
-    internal void ChangeUnitStats(Unit unit, UnitStatus status)
+    public void ChangeUnitStats(Unit unit, UnitStatus status)
     {
         if (status == UnitStatus.Unselected)
         {
-            unit.Status = UnitStatus.Selected;
-            SelectCell(unit.CurrentCell);
+            SelectUnit(unit);
+            SelectCell(unit.CurrentCell, unit.Status);
             Debug.Log("Unit Selected!");
         }
         else
@@ -68,6 +52,61 @@ public class GridInteractor : Grid
             Debug.Log("Unit Unselected!");
         }
     }
+
+    private void SelectUnit(Unit unit)
+    {
+        //unit.Type = UnitType.Player;
+        unit.Status = UnitStatus.Selected;
+    }
+
+    public void UnselectUnit(Unit unit)
+    {
+        unit.Status = UnitStatus.Unselected;
+    }
+
+    private bool CheckOtherUnit(Unit unitToCheck)
+    {
+        foreach (var unit in Units) 
+        {
+            if (!unitToCheck.Equals(unit))
+                break;
+            if (unitToCheck.Status == UnitStatus.Selected && unit.Status == unitToCheck.Status)
+            {
+                return false;
+            }    
+        }
+
+        return true;
+
+    }
+
+    public void SelectCell(Cell cell, UnitStatus status)
+    {
+        if (status == UnitStatus.Selected)
+        {
+            cell.EUnitOn = UnitOn.Yes;
+            cell.EUnitState = State.Movement;
+            cell.ChangeColor(cell.CellUnitOnColor);
+        }
+        else
+        {
+            cell.EUnitOn = UnitOn.No;
+            cell.EUnitState = State.Selected;
+            cell.ChangeColor(cell.CellStandardColor);
+        }
+
+    }
+
+    public void UnselectCell(Cell cell)
+    {
+        cell.EUnitState = State.Standard;
+        cell.EUnitOn = UnitOn.No;
+        cell.ChangeColor(cell.CellStandardColor);
+    }
+
+
+
+    private UnitType CheckUnitType(Unit unit) => unit.Type; // Enemy|Player
 
 }
 
