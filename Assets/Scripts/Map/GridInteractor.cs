@@ -5,38 +5,10 @@ using static UnityEngine.UI.CanvasScaler;
 
 public class GridInteractor : Grid
 {
-    private Cell _cell;
-
     public List<Cell> Cells = new List<Cell>();
-    
 
-    //private void OnMouseEnter()
-    //{
-    //    RaycastHit unitPositionCell;
+    private Unit _unitSelected;
 
-    //    if (Physics.Raycast(_unit.Ray, out unitPositionCell))
-    //    {
-    //        _unit.CurrentCell = unitPositionCell.collider.GetComponent<Cell>();
-    //        _unit.CurrentCell.ChangeColor(_cell.CellUnitOnColor);
-    //    }
-    //    //CheckAndGiveCurrentCell();
-    //    //CheckAndGiveCurrentCell(_unit.ReleaseBeam());
-    //}
-
-    //private void OnMouseExit()
-    //{
-    //    RaycastHit unitPositionCell;
-
-    //    if (!Physics.Raycast(_unit.Ray, out unitPositionCell))
-    //    {
-    //        var cell = unitPositionCell.collider.GetComponent<Cell>();
-    //        cell.ChangeColor(_cell.CellHoveringColor);
-    //    }
-
-    //    //_cell.ChangeColor(_cell.CellStandardColor);
-    //    //CheckAndGiveCurrentCell(_unit.ReleaseBeam());
-
-    //}
     public void ChangeUnitStats(Unit unit, UnitStatus status)
     {
         if (status == UnitStatus.Unselected)
@@ -47,7 +19,7 @@ public class GridInteractor : Grid
         }
         else
         {
-            unit.Status = UnitStatus.Unselected;
+            UnselectUnit(unit);
             UnselectCell(unit.CurrentCell);
             Debug.Log("Unit Unselected!");
         }
@@ -57,23 +29,31 @@ public class GridInteractor : Grid
     {
         //unit.Type = UnitType.Player;
         unit.Status = UnitStatus.Selected;
+
     }
 
     public void UnselectUnit(Unit unit)
     {
         unit.Status = UnitStatus.Unselected;
+
     }
 
     private bool CheckOtherUnit(Unit unitToCheck)
     {
         foreach (var unit in Units) 
         {
-            if (!unitToCheck.Equals(unit))
+            if (unitToCheck.Equals(unit))
                 break;
-            if (unitToCheck.Status == UnitStatus.Selected && unit.Status == unitToCheck.Status)
-            {
+            else if (unitToCheck.Status == UnitStatus.Unselected && unit.Status == UnitStatus.Unselected) // Unselect
+                return true;
+            else if (unitToCheck.Status == UnitStatus.Unselected && unit.Status == UnitStatus.Selected) // Select
                 return false;
-            }    
+            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == UnitStatus.Unselected) // Select
+                return false;
+            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == UnitStatus.Selected) // Select
+                return false;
+            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == unitToCheck.Status) // Select
+                return false;
         }
 
         return true;
