@@ -7,11 +7,10 @@ public class GridInteractor : Grid
 {
     public List<Cell> Cells = new List<Cell>();
 
-    public Unit SelectedUnit { get; internal set; }
     private Unit _selectedUnit;
     public Unit SelectedUnit => _selectedUnit;
-    private Cell _selectedCell;
 
+    private Cell _selectedCell;
     public Cell SelectedCell => _selectedCell;
 
     // Выбираем юнит и сохраняем ссылку на него

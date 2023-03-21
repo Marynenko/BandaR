@@ -30,6 +30,7 @@ public class Cell : MonoBehaviour
     public Color CellHoveringColor;// Цвет при наведении на клетку.
     public Color CellUnitOnColor; // Цвет клетки на которой стоит гл. герой.
     public Color CellEnemyOnColor; // Цвет клетки на которой стоит враг.
+    public Color CellSelectedColor; // Цвет клетки - выбранной
 
     // Юнит который на клетке. ДОПИЛИТЬ
 
@@ -37,56 +38,5 @@ public class Cell : MonoBehaviour
     {
         MeshRenderer.material.color = color;
     }
-
-    internal void ChangeColor(object cellSelectedColor)
-    {
-        throw new NotImplementedException();
-    }
-
-    //private void OnMouseEnter()
-    //{
-    //var grid = GICell;
-
-    //foreach (var unit in grid.Units)
-    //{
-    //    if (unit.Status != UnitStatus.Selected)
-    //        if (unit.CurrentCell.Position == Position)
-    //        {
-    //            if (unit.Type == UnitType.Enemy)
-    //            {
-    //                ChangeColor(CellEnemyOnColor);
-    //            }
-    //        }
-    //}
-
-    //}
-
-    //private void OnMouseExit()
-    //{
-    //    var grid = GICell;
-
-    //    foreach (var unit in grid.Units)
-    //    {
-    //        if (unit.Status != UnitStatus.Selected)
-    //            ChangeColor(CellStandardColor);
-    //    }
-    //}
-
-    //private void OnMouseDown()
-    //{
-    //    var grid = GICell;
-
-    //    foreach (var unit in  grid.Units)
-    //    {
-    //        if (unit.CheckUnitOnCell(this) == true)
-    //        {
-    //            if (unit.Type == UnitType.Player)
-    //            {
-    //                unit.CurrentCell.ChangeColor(CellUnitOnColor);
-    //                //CheckOtherUnitCell(unit, unitIsOnCell);                    
-    //            }
-    //        }
-    //    }
-    //}
 
 }
