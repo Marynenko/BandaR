@@ -5,101 +5,183 @@ using static UnityEngine.UI.CanvasScaler;
 
 public class GridInteractor : Grid
 {
-    public List<Cell> Cells = new List<Cell>();
-
     private Unit _selectedUnit;
-    public Unit SelectedUnit => _selectedUnit;
+    private List<Cell> _reachableCells = new List<Cell>();
+    public List<Cell> Neighbors { get { return _reachableCells; } }
 
-    private Cell _selectedCell;
-    public Cell SelectedCell => _selectedCell;
-
-    // Выбираем юнит и сохраняем ссылку на него
-    public void SelectUnit(Unit unit)
+    public void MarkCellAsReachable(Cell cell)
     {
-        UnselectUnit();
-
-        _selectedUnit = unit;
-        _selectedUnit.CurrentCell.ChangeColor(_selectedUnit.CurrentCell.CellSelectedColor);
-    }
-
-    // Снимаем выделение с юнита и обнуляем ссылку
-    public void UnselectUnit()
-    {
-        if (_selectedUnit != null)
+        if (cell != null && cell.EUnitState != State.Impassable)
         {
-            _selectedUnit.CurrentCell.ChangeColor(_selectedUnit.CurrentCell.CellStandardColor);
-            _selectedUnit.CurrentCell.UnitOn = UnitOnStatus.No;
-            _selectedUnit.Status = UnitStatus.Unselected;
-
-            _selectedUnit = null;
+            cell.ChangeColor(cell.CellHoveringColor);
+            cell.EUnitState = State.Reachable;
+            _reachableCells.Add(cell);
         }
     }
 
-    // Выбираем клетку и сохраняем ссылку на нее
+    public void UnmarkCellAsReachable(Cell cell)
+    {
+        if (cell != null && cell.EUnitState == State.Reachable)
+        {
+            cell.ChangeColor(cell.CellStandardColor);
+            cell.EUnitState = State.Default;
+            _reachableCells.Remove(cell);
+        }
+    }
+
+    public List<Cell> GetReachableCells(Unit selectedUnit)
+    {
+        var reachableCells = new List<Cell>();
+
+        if (selectedUnit != null)
+        {
+            var startCell = selectedUnit.CurrentCell;
+            var movementRange = selectedUnit.PossibleMovements.Count;
+            var queue = new Queue<Cell>();
+            queue.Enqueue(startCell);
+
+            while (queue.Count > 0)
+            {
+                var currentCell = queue.Dequeue();
+
+                if (currentCell.EUnitState != State.Impassable && currentCell != startCell && currentCell != selectedUnit.CurrentCell)
+                {
+                    var distance = Mathf.Abs((currentCell.Position - startCell.Position).x) + Mathf.Abs((currentCell.Position - startCell.Position).y);
+
+                    if (distance <= movementRange)
+                    {
+                        MarkCellAsReachable(currentCell);
+                        reachableCells.Add(currentCell);
+
+                        foreach (var neighbor in currentCell.GICell.Neighbors)
+                        {
+                            if (!reachableCells.Contains(neighbor) && !queue.Contains(neighbor) && neighbor.EUnitState != State.Impassable)
+                            {
+                                queue.Enqueue(neighbor);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return reachableCells;
+    }
+
+    public void UnselectCell(Cell cell)
+    {
+        if (cell != null)
+        {
+            cell.ChangeColor(cell.CellStandardColor);
+            cell.UnitOn = UnitOnStatus.No;
+            cell.EUnitState = State.Default;
+        }
+    }
+
+    public void SelectUnit(Unit unit)
+    {
+        _selectedUnit = unit;
+        _reachableCells = GetReachableCells(unit);
+    }
+
+    public void UnselectUnit(Unit unit)
+    {
+        _selectedUnit = null;
+        foreach (var cell in _reachableCells)
+        {
+            UnmarkCellAsReachable(cell);
+        }
+        _reachableCells.Clear();
+    }
+
     public void SelectCell(Cell cell, UnitType unitType)
     {
-        UnselectCell();
-
-        _selectedCell = cell;
-        _selectedCell.ChangeColor(_selectedCell.CellSelectedColor);
+        if (_selectedUnit == null) return;
 
         if (unitType == UnitType.Player)
         {
-            _selectedCell.MarkCellAsReachable();
+            if (_reachableCells.Contains(cell))
+            {
+                _selectedUnit.CurrentCell.UnitOn = UnitOnStatus.No;
+                _selectedUnit.Status = UnitStatus.Unselected;
+                _selectedUnit.MoveTo(cell);
+                _selectedUnit.Status = UnitStatus.Moved;
+                cell.UnitOn = UnitOnStatus.Yes;
+                UnselectUnit(_selectedUnit);
+            }
         }
-    }
-
-    // Снимаем выделение с клетки и обнуляем ссылку
-    public void UnselectCell()
-    {
-        if (_selectedCell != null)
+        else if (unitType == UnitType.Enemy)
         {
-            _selectedCell.ChangeColor(_selectedCell.CellStandardColor);
-            _selectedCell.UnitOn = UnitOnStatus.No;
-            _selectedCell.UnmarkCellAsReachable();
-
-            _selectedCell = null;
+            UnselectUnit(_selectedUnit);
+            SelectUnit(cell.UnitOnCell);
         }
     }
 
-
-   public bool CanMoveToCell(Unit selectedUnit, Cell cell)
-{
-    // Получаем все клетки, на которые можно переместиться для данного юнита
-    var reachableCells = GetReachableCells(selectedUnit);
-
-    // Проверяем, есть ли переданная клетка в списке достижимых
-    return reachableCells.Contains(cell);
-}
-
-public void MoveUnitToCell(Unit selectedUnit, Cell cell)
-{
-    // Получаем все клетки, на которые можно переместиться для данного юнита
-    var reachableCells = GetReachableCells(selectedUnit);
-
-    // Если переданная клетка является достижимой, перемещаем юнит
-    if (reachableCells.Contains(cell))
+    public bool CanMoveToCell(Unit unit, Cell cell)
     {
-        // Снимаем выбор с предыдущей клетки
-        UnselectCell(selectedUnit.CurrentCell);
-
-        // Обновляем текущую клетку юнита
-        selectedUnit.CurrentCell = cell;
-
-        // Помечаем клетку, на которую перемещаемся, как выбранную и находится на ней юнит
-        SelectCell(cell, selectedUnit.Type);
-        cell.UnitOn = UnitOnStatus.Yes;
-        cell.ChangeColor(cell.CellSelectedColor);
-
-        // Обновляем статус юнита
-        selectedUnit.Status = UnitStatus.Moved;
+        return _reachableCells.Contains(cell);
     }
-}
 
-    internal void UnselectUnit(Unit unit)
+    public void MoveUnitToCell(Unit unit, Cell cell)
     {
-        throw new NotImplementedException();
+        if (_reachableCells.Contains(cell))
+        {
+            SelectCell(cell, UnitType.Player);
+
+        }
+        // Check if there is an enemy on the cell
+        if (cell.UnitOn == UnitOnStatus.Yes && cell.UnitOnCell.Type == UnitType.Enemy)
+        {
+            // Attack the enemy
+            _selectedUnit.Attack(cell.UnitOnCell);
+
+            // Check if the enemy is still alive
+            if (cell.UnitOnCell.CurrentHealth <= 0)
+            {
+                // Remove the enemy from the grid
+                cell.UnitOnCell.RemoveFromGrid();
+                cell.UnitOn = UnitOnStatus.No;
+
+                // Update the score and display it
+                GameManager.Instance.Score++;
+                UIManager.Instance.UpdateScoreText(GameManager.Instance.Score);
+
+                // Check if the game is over
+                if (GameManager.Instance.Score >= GameManager.Instance.ScoreToWin)
+                {
+                    GameManager.Instance.EndGame();
+                }
+            }
+
+            // Unselect the unit
+            UnselectUnit(_selectedUnit);
+        }
+        else
+        {
+            // Move the unit to the cell
+            _selectedUnit.MoveTo(cell);
+
+            // Update the unit's status
+            _selectedUnit.Status = UnitStatus.Moved;
+
+            // Unselect the unit
+            UnselectUnit(_selectedUnit);
+        }
     }
+    private void EndGame()
+    {
+        Debug.Log("Game Over!");
+        // Code to end the game
+    }
+
+    // Method to restart the game
+    private void RestartGame()
+    {
+        Debug.Log("Restarting Game...");
+        // Code to restart the game
+    }
+
+
 }
 
 

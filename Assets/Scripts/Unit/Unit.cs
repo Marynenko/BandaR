@@ -20,7 +20,8 @@ public class Unit : MonoBehaviour
     private const float _positionY = .8f;
     private const float _maxDistance = 3f;
     [SerializeField] private int _countMovementCell;
-    [SerializeField] private List<Vector2> _possibleMovements;
+   
+    public List<Vector2> PossibleMovements;
     
     public UnitType Type;
     public UnitStatus Status;

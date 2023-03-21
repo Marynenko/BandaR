@@ -7,7 +7,10 @@ public enum State
 {
     Standard,
     Selected,
-    Movement
+    Movement,
+    Impassable,
+    Reachable,
+    Default
 }
 
 public enum UnitOnStatus // test v.1
