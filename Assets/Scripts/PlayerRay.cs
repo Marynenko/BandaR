@@ -26,9 +26,9 @@ public class PlayerRay : MonoBehaviour
 
                 if (unit != null) // Если Unit существует
                 {
-                    if (unit.Status == UnitStatus.Unselected)
+                    if (unit.Status == UnitStatus.Unselected) // Если Unit не выбран
                     {
-                        if (unit.Type == UnitType.Player)
+                        if (unit.Type == UnitType.Player) // Если тип = Игрок
                         {
                             // выбираем Player и клетку, на которой он находится
                             _gridInteractor.SelectUnit(unit);
@@ -72,7 +72,10 @@ public class PlayerRay : MonoBehaviour
                     {
                         if (cell != selectedUnit.CurrentCell)
                         {
-                            if (_gridInteractor.CanMoveToCell(selectedUnit, cell))
+                            // получаем список возможных ходов для текущей клетки и типа юнита
+                            List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type);
+
+                            if (availableMoves.Contains(cell))
                             {
                                 _gridInteractor.MoveUnitToCell(selectedUnit, cell);
                                 OnUnitMoved?.Invoke(selectedUnit, cell);
@@ -95,3 +98,4 @@ public class PlayerRay : MonoBehaviour
         }
     }
 }
+

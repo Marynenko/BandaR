@@ -24,10 +24,12 @@ public class Cell : MonoBehaviour
     public GridInteractor GICell;
     [SerializeField] private MeshRenderer MeshRenderer;
 
+
     [HideInInspector] public State EUnitState; // Состояние клетки.
     [HideInInspector] public UnitOnStatus UnitOn; // Юнит на клетке или нет.    
     [HideInInspector] public Vector2 Position; // Позиция Клетки.
-
+    public float GridX;
+    public float GridY;
 
     public Color CellStandardColor; //Стандартный цвет клетки.
     public Color CellHoveringColor;// Цвет при наведении на клетку.
@@ -38,6 +40,12 @@ public class Cell : MonoBehaviour
 
 
     // Юнит который на клетке. ДОПИЛИТЬ
+
+    private void Start()
+    {
+        GridX = transform.position.x;
+        GridY = transform.position.y;
+    }
 
     public void ChangeColor(Color color)
     {

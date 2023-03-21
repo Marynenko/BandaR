@@ -31,34 +31,7 @@ public class GridInteractor : Grid
         }
     }
 
-    public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
-    {
-        List<Cell> availableMoves = new List<Cell>();
 
-        if (cell == null || cell.UnitOn == UnitOnStatus.Yes)
-        {
-            return availableMoves;
-        }
-
-        int maxMoves = unitType == UnitType.Player ? _playerMaxMoves : _enemyMaxMoves;
-
-        // Проверяем все соседние клетки
-        foreach (var neighborCell in GetNeighborCells(cell))
-        {
-            if (neighborCell.UnitOn == UnitOnStatus.No)
-            {
-                // Расстояние между текущей и соседней клетками
-                int distance = Mathf.Abs(neighborCell.X - cell.X) + Mathf.Abs(neighborCell.Y - cell.Y);
-
-                if (distance <= maxMoves)
-                {
-                    availableMoves.Add(neighborCell);
-                }
-            }
-        }
-
-        return availableMoves;
-    }
 
     public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
     {

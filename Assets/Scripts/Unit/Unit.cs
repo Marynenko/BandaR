@@ -20,17 +20,11 @@ public class Unit : MonoBehaviour
     private const float _positionY = .8f;
     private const float _maxDistance = 3f;
     [SerializeField] private int _countMovementCell;
-   
-    public List<Vector2> PossibleMovements;
-    
+
+    [HideInInspector] public Vector2 Position;
     public UnitType Type;
     public UnitStatus Status;
-
     public Cell CurrentCell;
-    [HideInInspector] public Vector2 Position;
-
-
-
     
     [ContextMenu("Initialize Unit")]
     public void InitializeUnit()
@@ -47,6 +41,7 @@ public class Unit : MonoBehaviour
                 CurrentCell = hit.collider.GetComponent<Cell>();
                 CurrentCell.UnitOn = UnitOnStatus.Yes;
                 Status = UnitStatus.Unselected;
+
             }
 
         }
