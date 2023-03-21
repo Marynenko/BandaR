@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public class GridInteractor : Grid
 {
@@ -10,86 +7,83 @@ public class GridInteractor : Grid
     [SerializeField] private readonly int _playerMaxMoves;
     [SerializeField] private readonly int _enemyMaxMoves;
 
-    public Unit SelectedUnit { get; private set; }
+    public List<Cell> Cells;
+    public Unit SelectedUnit { get; set; }
 
     public void SelectUnit(Unit unit)
     {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-
+        UnselectUnit(SelectedUnit);
         SelectedUnit = unit;
+    }
+
+    public void UnselectUnit(Unit unit)
+    {
+        if (unit == SelectedUnit)
+        {
+            SelectedUnit = null;
+        }
     }
 
     public void SelectCell(Cell cell, UnitType unitType)
     {
-        _availableMoves = GetAvailableMoves(cell, unitType);
-        foreach (var move in _availableMoves)
-        {
-            move.ChangeColor(move.CellMovementColor);
-        }
-    }
-
-
-
-    public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
-    {
-        List<Cell> availableMoves = new List<Cell>();
-
+        UnselectCells();
         if (unitType == UnitType.Player)
         {
-            // проверяем все клетки вокруг текущей клетки и добавляем их в список возможных ходов, если они свободны
-            for (int x = cell.GridX - 1; x <= cell.GridX + 1; x++)
+            _availableMoves = GetAvailableMoves(cell, unitType, _playerMaxMoves);
+        }
+        else if (unitType == UnitType.Enemy)
+        {
+            _availableMoves = GetAvailableMoves(cell, unitType, _enemyMaxMoves);
+        }
+        foreach (var moveCell in _availableMoves)
+        {
+            moveCell.ChangeColor(moveCell.CellMovementColor);
+        }
+    }
+
+    public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves)
+    {
+        List<Cell> result = new List<Cell>();
+        result.Add(cell);
+        if (maxMoves <= 0)
+        {
+            return result;
+        }
+        foreach (var neighbour in cell.Neighbours)
+        {
+            if (neighbour.IsWalkable() && neighbour.UnitOn == UnitOnStatus.No)
             {
-                for (int y = cell.GridY - 1; y <= cell.GridY + 1; y++)
-                {
-                    if (x >= 0 && x < _grid.Width && y >= 0 && y < _grid.Height)
-                    {
-                        Cell adjacentCell = _grid.Cells[x, y];
-                        if (adjacentCell != cell && adjacentCell.IsEmpty && !adjacentCell.HasObstacle)
-                        {
-                            availableMoves.Add(adjacentCell);
-                        }
-                    }
-                }
+                result.AddRange(GetAvailableMoves(neighbour, unitType, maxMoves - 1));
             }
         }
-
-        return availableMoves;
+        return result;
     }
 
+    //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
+    //{
+    //    if (unitType == UnitType.Player)
+    //    {
+    //        return GetAvailableMoves(cell, unitType, _playerMaxMoves);
+    //    }
+    //    else if (unitType == UnitType.Enemy)
+    //    {
+    //        return GetAvailableMoves(cell, unitType, _enemyMaxMoves);
+    //    }
+    //    return new List<Cell>();
+    //}
 
-    public void UnselectUnit(Unit unit)
+    public void UnselectCells()
     {
-        SelectedUnit = null;
-        foreach (var move in _availableMoves)
+        foreach (var cell in Cells)
         {
-            move.ChangeColor(move.CellStandardColor);
+            cell.ChangeColor(cell.CellStandardColor);
         }
-    }
-
-    public bool CanMoveToCell(Unit unit, Cell cell)
-    {
-        return _availableMoves.Contains(cell);
     }
 
     public void MoveUnitToCell(Unit unit, Cell cell)
     {
-        if (CanMoveToCell(unit, cell))
-        {
-            unit.MoveTo(cell);
-            foreach (var move in _availableMoves)
-            {
-                move.ChangeColor(move.CellStandardColor);
-            }
-        }
+        //unit.MoveToCell(cell);
+        UnselectUnit(unit);
+        UnselectCells();
     }
-
-
-
-
-
 }
-
-

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6517724835466682206}
   - component: {fileID: 6517724835466682207}
   - component: {fileID: 7934988050377011889}
+  - component: {fileID: -8602177647681033498}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -92,8 +93,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4e2f6a8878281f489a47417d333f8db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _countMovementCell: 0
-  _possibleMovements: []
-  _status: 0
+  _unitType: 0
+  _maxHealth: 0
+  _currentHealth: 0
+  _damage: 0
+  _armor: 0
   CurrentCell: {fileID: 0}
-  Position: {x: 0, y: 0}
+  MaxMoves: 0
+  CurrentMoves: 0
+--- !u!65 &-8602177647681033498
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6517724835466682210}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.99999994, y: 0.99999994, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

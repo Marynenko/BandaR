@@ -17,12 +17,13 @@ public class PlayerRay : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);            
 
             if (Physics.Raycast(ray, out hit))
             {
                 var unit = hit.collider.GetComponent<Unit>();
                 var cell = hit.collider.GetComponent<Cell>();
+                Debug.Log(Input.mousePosition + " " + hit.collider.name);
 
                 if (unit != null) // Если Unit существует
                 {
@@ -73,7 +74,7 @@ public class PlayerRay : MonoBehaviour
                         if (cell != selectedUnit.CurrentCell)
                         {
                             // получаем список возможных ходов для текущей клетки и типа юнита
-                            List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type);
+                            List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, selectedUnit.MaxMoves);
 
                             if (availableMoves.Contains(cell))
                             {

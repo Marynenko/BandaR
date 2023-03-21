@@ -21,23 +21,10 @@ public class GridGenerator : Grid
                 var position = new Vector3(x * (cellSize.x + _offset), 0, y * (cellSize.z + _offset));
 
                 var cell = Instantiate(_cell, position, Quaternion.identity, _parent);
-                cell.name = $"X: {x} Y: {y}";
-                cell.Position = new Vector2(x, y);
-                cell.GICell = GGridInteractor;
+                cell.Initialize(x, y, GGridInteractor, true);
 
                 GGridInteractor.Cells.Add(cell);
             }
         }
     }
-
-    //private void CheckOtherUnitCell(Unit unit, Cell cell)
-    //{
-    //    foreach (var pos in PositionsUnit)
-    //    {
-    //        if (!pos.Equals(unit.Position))
-    //            GICell.UnselectCell(cell);
-
-    //    }
-
-    //}
 }

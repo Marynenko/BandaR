@@ -106,12 +106,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5176267a04f6b7949b9ea2e560d86d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridInteractor: {fileID: 0}
+  GICell: {fileID: 0}
   MeshRenderer: {fileID: 4528502720491522035}
-  EUnitState: 0
-  EUnitOn: 0
+  UnitState: 0
+  UnitOn: 0
   Position: {x: 0, y: 0}
   CellStandardColor: {r: 0, g: 0.27450982, b: 0.011764706, a: 0}
-  CellHoveringColor: {r: 0.9126068, g: 1, b: 0.011764705, a: 0}
   CellUnitOnColor: {r: 0, g: 0.1509434, b: 0.008385749, a: 0}
   CellEnemyOnColor: {r: 1, g: 0, b: 0, a: 0}
+  CellSelectedColor: {r: 1, g: 0.93442965, b: 0, a: 0}
+  CellMovementColor: {r: 0, g: 0.69411767, b: 0.011764706, a: 0}
