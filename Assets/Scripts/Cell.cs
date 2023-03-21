@@ -34,6 +34,8 @@ public class Cell : MonoBehaviour
     public Color CellUnitOnColor; // Цвет клетки на которой стоит гл. герой.
     public Color CellEnemyOnColor; // Цвет клетки на которой стоит враг.
     public Color CellSelectedColor; // Цвет клетки - выбранной
+    public Color CellMovementColor; // Цвет клетки - Для движения
+
 
     // Юнит который на клетке. ДОПИЛИТЬ
 

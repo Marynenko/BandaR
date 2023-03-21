@@ -24,7 +24,7 @@ public class PlayerRay : MonoBehaviour
                 var unit = hit.collider.GetComponent<Unit>();
                 var cell = hit.collider.GetComponent<Cell>();
 
-                if (unit != null)
+                if (unit != null) // Если Unit существует
                 {
                     if (unit.Status == UnitStatus.Unselected)
                     {
