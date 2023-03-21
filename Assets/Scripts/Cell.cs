@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.CanvasScaler;
 
@@ -37,21 +38,26 @@ public class Cell : MonoBehaviour
         MeshRenderer.material.color = color;
     }
 
+    internal void ChangeColor(object cellSelectedColor)
+    {
+        throw new NotImplementedException();
+    }
+
     //private void OnMouseEnter()
     //{
-        //var grid = GICell;
+    //var grid = GICell;
 
-        //foreach (var unit in grid.Units)
-        //{
-        //    if (unit.Status != UnitStatus.Selected)
-        //        if (unit.CurrentCell.Position == Position)
-        //        {
-        //            if (unit.Type == UnitType.Enemy)
-        //            {
-        //                ChangeColor(CellEnemyOnColor);
-        //            }
-        //        }
-        //}
+    //foreach (var unit in grid.Units)
+    //{
+    //    if (unit.Status != UnitStatus.Selected)
+    //        if (unit.CurrentCell.Position == Position)
+    //        {
+    //            if (unit.Type == UnitType.Enemy)
+    //            {
+    //                ChangeColor(CellEnemyOnColor);
+    //            }
+    //        }
+    //}
 
     //}
 

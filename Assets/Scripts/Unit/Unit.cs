@@ -11,7 +11,8 @@ public enum UnitType
 public enum UnitStatus
 {
     Selected,
-    Unselected
+    Unselected,
+    Moved
 }
 
 public class Unit : MonoBehaviour
@@ -27,42 +28,7 @@ public class Unit : MonoBehaviour
     public Cell CurrentCell;
     [HideInInspector] public Vector2 Position;
 
-    public bool CheckUnitOnCell(Cell cellToCheck)
-    {
-        var ray = ReturnCurrentPosition();
-        RaycastHit unitPositionHitCell;
 
-        if (Physics.Raycast(ray, out unitPositionHitCell, _maxDistance))
-        {
-            if (unitPositionHitCell.collider.GetComponent<Cell>().Position.Equals(cellToCheck.Position))
-            {
-                CurrentCell = unitPositionHitCell.collider.GetComponent<Cell>();
-                CurrentCell.UnitOn = UnitOnStatus.Yes;
-                Status = UnitStatus.Selected;
-
-                return true;
-            }
-        }
-        else
-        {
-            //Status = UnitStatus.Unselected;
-            CurrentCell.UnitOn = UnitOnStatus.No;
-        }
-
-        return false;
-    }
-
-    private Ray ReturnCurrentPosition() => new Ray(transform.position, Vector3.down);
-
-    private void ShowPossibleMovement()
-    {
-        CalculatePossibleMovements(CurrentCell, _countMovementCell);
-    }
-
-    private void CalculatePossibleMovements(Cell currentCell, int countMovementCell)
-    {
-        //Vector2 possibleMovement = currentCell.Position + .05f;
-    }
 
     
     [ContextMenu("Initialize Unit")]
