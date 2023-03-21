@@ -37,7 +37,7 @@ public class Unit : MonoBehaviour
             if (unitPositionHitCell.collider.GetComponent<Cell>().Position.Equals(cellToCheck.Position))
             {
                 CurrentCell = unitPositionHitCell.collider.GetComponent<Cell>();
-                CurrentCell.EUnitOn = UnitOn.Yes;
+                CurrentCell.UnitOn = UnitOnStatus.Yes;
                 Status = UnitStatus.Selected;
 
                 return true;
@@ -46,7 +46,7 @@ public class Unit : MonoBehaviour
         else
         {
             //Status = UnitStatus.Unselected;
-            CurrentCell.EUnitOn = UnitOn.No;
+            CurrentCell.UnitOn = UnitOnStatus.No;
         }
 
         return false;
@@ -78,7 +78,7 @@ public class Unit : MonoBehaviour
                 transform.position = new Vector3(hit.transform.position.x, _positionY, hit.transform.position.z);
 
                 CurrentCell = hit.collider.GetComponent<Cell>();
-                CurrentCell.EUnitOn = UnitOn.Yes;
+                CurrentCell.UnitOn = UnitOnStatus.Yes;
                 Status = UnitStatus.Unselected;
             }
 

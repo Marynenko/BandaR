@@ -9,7 +9,7 @@ public enum State
     Movement
 }
 
-public enum UnitOn // test v.1
+public enum UnitOnStatus // test v.1
 {
     Yes,
     No
@@ -20,9 +20,8 @@ public class Cell : MonoBehaviour
     public GridInteractor GICell;
     [SerializeField] private MeshRenderer MeshRenderer;
 
-
     [HideInInspector] public State EUnitState; // Состояние клетки.
-    [HideInInspector] public UnitOn EUnitOn; // Юнит на клетке или нет.    
+    [HideInInspector] public UnitOnStatus UnitOn; // Юнит на клетке или нет.    
     [HideInInspector] public Vector2 Position; // Позиция Клетки.
 
 

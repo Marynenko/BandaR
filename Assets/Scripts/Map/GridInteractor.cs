@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.CanvasScaler;
 
@@ -11,7 +10,7 @@ public class GridInteractor : Grid
 
     public void ChangeUnitStats(Unit unit, UnitStatus status)
     {
-        if (status == UnitStatus.Unselected)
+        if (status == UnitStatus.Selected)
         {
             SelectUnit(unit);
             SelectCell(unit.CurrentCell, unit.Status);
@@ -38,39 +37,17 @@ public class GridInteractor : Grid
 
     }
 
-    private bool CheckOtherUnit(Unit unitToCheck)
-    {
-        foreach (var unit in Units) 
-        {
-            if (unitToCheck.Equals(unit))
-                break;
-            else if (unitToCheck.Status == UnitStatus.Unselected && unit.Status == UnitStatus.Unselected) // Unselect
-                return true;
-            else if (unitToCheck.Status == UnitStatus.Unselected && unit.Status == UnitStatus.Selected) // Select
-                return false;
-            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == UnitStatus.Unselected) // Select
-                return false;
-            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == UnitStatus.Selected) // Select
-                return false;
-            else if (unitToCheck.Status == UnitStatus.Selected && unit.Status == unitToCheck.Status) // Select
-                return false;
-        }
-
-        return true;
-
-    }
-
     public void SelectCell(Cell cell, UnitStatus status)
     {
         if (status == UnitStatus.Selected)
         {
-            cell.EUnitOn = UnitOn.Yes;
+            cell.UnitOn = UnitOnStatus.Yes;
             cell.EUnitState = State.Movement;
             cell.ChangeColor(cell.CellUnitOnColor);
         }
         else
         {
-            cell.EUnitOn = UnitOn.No;
+            cell.UnitOn = UnitOnStatus.No;
             cell.EUnitState = State.Selected;
             cell.ChangeColor(cell.CellStandardColor);
         }
@@ -80,7 +57,7 @@ public class GridInteractor : Grid
     public void UnselectCell(Cell cell)
     {
         cell.EUnitState = State.Standard;
-        cell.EUnitOn = UnitOn.No;
+        cell.UnitOn = UnitOnStatus.No;
         cell.ChangeColor(cell.CellStandardColor);
     }
 
