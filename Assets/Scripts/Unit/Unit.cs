@@ -22,43 +22,44 @@ public class Unit : MonoBehaviour
 
     [SerializeField] private UnitType _unitType;
 
-    [SerializeField] private int _maxHealth;
-    [SerializeField] private int _currentHealth;
-    [SerializeField] private int _damage;
-    [SerializeField] private int _armor;
+    public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
+    public static event UnitSelectedEventHandler OnUnitSelected;
+
+    public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
+    public static event UnitActionEventHandler OnUnitAction;
 
     public Cell CurrentCell;
-    public UnitType Type => _unitType;
-    public UnitStatus Status {get; set;}
 
-    public int MaxHealth { get => _maxHealth; }
-    public int CurrentHealth { get => _currentHealth; }
-    public int Damage { get => _damage; }
-    public int Armor { get => _armor; }
+    public UnitType Type;
+    public UnitStatus Status = UnitStatus.Unselected;
+
     public float MoveSpeed { get; private set; }
 
     public int MaxMoves;
     public int CurrentMoves;
     #endregion
 
-    public void SetCurrentCell(Cell cell)
+    public void Select()
     {
-        CurrentCell = cell;
-    }
-
-    public void TakeDamage(int damage)
-    {
-        _currentHealth -= damage;
-        if (_currentHealth <= 0)
+        // ...
+        if (OnUnitSelected != null)
         {
-            Die();
+            OnUnitSelected.Invoke(this, this.Type);
         }
     }
 
-    private void Die()
+    public void Move(Cell targetCell)
     {
-        // Code to handle death of unit
-        Destroy(gameObject);
+        // ...
+        if (OnUnitAction != null)
+        {
+            OnUnitAction.Invoke(UnitActionType.Move, this, targetCell);
+        }
+    }
+
+    public void SetCurrentCell(Cell cell)
+    {
+        CurrentCell = cell;
     }
 
     public IEnumerator MoveToCell(Cell cell)
@@ -74,13 +75,6 @@ public class Unit : MonoBehaviour
         CurrentCell.RemoveUnit(this);
         CurrentCell = cell;
         //CurrentCell.SetUnit(this);
-
-    }
-
-    public void Attack(Unit otherUnit)
-    {
-        int finalDamage = Mathf.Max(_damage - otherUnit.Armor, 0);
-        otherUnit.TakeDamage(finalDamage);
     }
 
 
