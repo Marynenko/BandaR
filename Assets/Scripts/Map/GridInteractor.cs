@@ -141,6 +141,15 @@ public class GridInteractor : Grid
         return result;
     }
 
+    public void UnselectCells()
+    {
+        foreach (var cell in Cells)
+        {
+            cell.ChangeColor(cell.CellStandardColor);
+        }
+    }
+}
+
     //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
     //{
     //    if (unitType == UnitType.Player)
@@ -153,14 +162,6 @@ public class GridInteractor : Grid
     //    }
     //    return new List<Cell>();
     //}
-
-    public void UnselectCells()
-    {
-        foreach (var cell in Cells)
-        {
-            cell.ChangeColor(cell.CellStandardColor);
-        }
-    }
 
     //public void MoveUnit(Unit unit, Cell cell)
     //{

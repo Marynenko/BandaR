@@ -29,53 +29,87 @@ public class Unit : MonoBehaviour
     public static event UnitActionEventHandler OnUnitAction;
 
     public Cell CurrentCell;
-
     public UnitType Type;
     public UnitStatus Status = UnitStatus.Unselected;
 
-    public float MoveSpeed { get; private set; }
-
-    public int MaxMoves;
-    public int CurrentMoves;
     #endregion
+
+    #region Public Methods
 
     public void Select()
     {
-        // ...
-        if (OnUnitSelected != null)
+        if (Status == UnitStatus.Selected && OnUnitSelected != null)
         {
-            OnUnitSelected.Invoke(this, this.Type);
+            return;
         }
+
+        Status = UnitStatus.Selected;
+        OnUnitSelected?.Invoke(this, Type);
     }
 
     public void Move(Cell targetCell)
     {
-        // ...
-        if (OnUnitAction != null)
+        if (Status == UnitStatus.Moved && OnUnitAction != null)
         {
-            OnUnitAction.Invoke(UnitActionType.Move, this, targetCell);
+            return;
+        }
+
+        // Проверяем может ли юнит переместиться на целевую ячейку
+        if (targetCell != CurrentCell && Vector3.Distance(targetCell.transform.position, transform.position) <= MAX_DISTANCE)
+        {
+            CurrentCell.RemoveUnit(this);
+            targetCell.SetUnit(this);
+            transform.position = new Vector3(targetCell.transform.position.x, POSITION_Y, targetCell.transform.position.z);
+            OnUnitAction?.Invoke(UnitActionType.Move, this, targetCell);
         }
     }
 
-    public void SetCurrentCell(Cell cell)
+    public void MoveToCell(Cell cell)
     {
-        CurrentCell = cell;
-    }
-
-    public IEnumerator MoveToCell(Cell cell)
-    {
-        var targetPosition = cell.transform.position;
-
-        while (transform.position != targetPosition)
+        if (Status == UnitStatus.Moved)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
-            yield return null;
+            return;
         }
 
-        CurrentCell.RemoveUnit(this);
-        CurrentCell = cell;
-        //CurrentCell.SetUnit(this);
+        float distance = Vector3.Distance(transform.position, cell.transform.position);
+
+        if (distance > MAX_DISTANCE)
+        {
+            return;
+        }
+
+        transform.position = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
+        Move(cell);
     }
+
+    //public void MoveToCell(Cell cell)
+    //{
+    //    if (cell != null && Vector3.Distance(cell.transform.position, transform.position) <= MAX_DISTANCE)
+    //    {
+    //        CurrentCell.RemoveUnit(this);
+    //        cell.SetUnit(this);
+    //        transform.position = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
+    //        OnUnitAction?.Invoke(UnitActionType.Move, this, cell);
+    //    }
+    //}
+    #endregion
+
+    #region trash
+
+    //public IEnumerator MoveToCell(Cell cell)
+    //{
+    //    var targetPosition = cell.transform.position;
+
+    //    while (transform.position != targetPosition)
+    //    {
+    //        transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
+    //        yield return null;
+    //    }
+
+    //    CurrentCell.RemoveUnit(this);
+    //    CurrentCell = cell;
+    //    //CurrentCell.SetUnit(this);
+    //}
 
 
     [ContextMenu("Initialize Unit")]
@@ -97,5 +131,5 @@ public class Unit : MonoBehaviour
 
         }
     }
-
+    #endregion
 }
