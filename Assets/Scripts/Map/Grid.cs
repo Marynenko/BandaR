@@ -6,6 +6,7 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {   
     [SerializeField] protected GridInteractor GGridInteractor;
+    [SerializeField] public PlayerRay GridPlayerRay;
     public List<Unit> Units;
 
     private void Start()
@@ -16,6 +17,8 @@ public class Grid : MonoBehaviour
         {
             unit.InitializeUnit();
         }
+
+        //GridPlayerRay += 
     }
 
 }

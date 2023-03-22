@@ -10,7 +10,7 @@ public class PlayerRay : MonoBehaviour
     public event Action<Unit> OnPlayerSelected;
     public event Action<Unit> OnEnemySelected;
     public event Action<Unit> OnUnitDeselected;
-    public event Action<Unit, Cell> OnUnitMoved;
+    public event Action<Unit, Cell> OnUnitMoved; 
 
     private void Update()
     {

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum UnitType
@@ -17,6 +16,7 @@ public enum UnitStatus
 
 public class Unit : MonoBehaviour
 {
+    #region Variables
     private const float POSITION_Y = .8f;
     private const float MAX_DISTANCE = 3f;
 
@@ -38,7 +38,8 @@ public class Unit : MonoBehaviour
     public float MoveSpeed { get; private set; }
 
     public int MaxMoves;
-    public int CurrentMoves;    
+    public int CurrentMoves;
+    #endregion
 
     public void SetCurrentCell(Cell cell)
     {

@@ -3,12 +3,18 @@ using UnityEngine;
 
 public class GridInteractor : Grid
 {
+
     [SerializeField] private List<Cell> _availableMoves;
     [SerializeField] private readonly int _playerMaxMoves;
     [SerializeField] private readonly int _enemyMaxMoves;
 
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
+    private void Start()
+    {
+         //+= OnPlayerSelected;
+    }
+
 
     public void SelectUnit(Unit unit)
     {
