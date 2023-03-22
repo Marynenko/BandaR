@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 public enum UnitType
@@ -20,11 +21,6 @@ public class Unit : MonoBehaviour
     private const float POSITION_Y = .8f;
     private const float MAX_DISTANCE = 3f;
 
-    [SerializeField] private UnitType _unitType;
-
-    public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
-    public static event UnitSelectedEventHandler OnUnitSelected;
-
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
     public static event UnitActionEventHandler OnUnitAction;
 
@@ -35,63 +31,56 @@ public class Unit : MonoBehaviour
     #endregion
 
     #region Public Methods
-
-    public void Select()
-    {
-        if (Status == UnitStatus.Selected && OnUnitSelected != null)
-        {
-            return;
-        }
-
-        Status = UnitStatus.Selected;
-        OnUnitSelected?.Invoke(this, Type);
-    }
-
     public void Move(Cell targetCell)
     {
-        if (Status == UnitStatus.Moved && OnUnitAction != null)
-        {
-            return;
-        }
+        if (CurrentCell == targetCell) return;
+        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
 
-        // Проверяем может ли юнит переместиться на целевую ячейку
-        if (targetCell != CurrentCell && Vector3.Distance(targetCell.transform.position, transform.position) <= MAX_DISTANCE)
+        if (Status != UnitStatus.Moved)
         {
+            Status = UnitStatus.Moved;
             CurrentCell.RemoveUnit(this);
             targetCell.SetUnit(this);
-            transform.position = new Vector3(targetCell.transform.position.x, POSITION_Y, targetCell.transform.position.z);
-            OnUnitAction?.Invoke(UnitActionType.Move, this, targetCell);
+            CurrentCell = targetCell;
+
+            if (OnUnitAction != null)
+            {
+                OnUnitAction(UnitActionType.Move, this, targetCell);
+            }
+
+            MoveToCell(targetCell);
         }
     }
 
     public void MoveToCell(Cell cell)
     {
-        if (Status == UnitStatus.Moved)
-        {
-            return;
-        }
-
-        float distance = Vector3.Distance(transform.position, cell.transform.position);
-
-        if (distance > MAX_DISTANCE)
-        {
-            return;
-        }
-
-        transform.position = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
-        Move(cell);
+        Vector3 newPosition = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
+        transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE);
+        CurrentCell.RemoveUnit(this);
+        cell.SetUnit(this);
+        CurrentCell = cell;
     }
 
-    //public void MoveToCell(Cell cell)
-    //{
-    //    if (cell != null && Vector3.Distance(cell.transform.position, transform.position) <= MAX_DISTANCE)
-    //    {
-    //        CurrentCell.RemoveUnit(this);
-    //        cell.SetUnit(this);
-    //        transform.position = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
-    //        OnUnitAction?.Invoke(UnitActionType.Move, this, cell);
-    //    }
-    //}
+    [ContextMenu("Initialize Unit")]
+    public void InitializeUnit()
+    {
+        var ray = new Ray(transform.position, Vector3.down);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, MAX_DISTANCE))
+        {
+            if (hit.collider.GetComponent<Cell>())
+            {
+                transform.position = new Vector3(hit.transform.position.x, POSITION_Y, hit.transform.position.z);
+
+                CurrentCell = hit.collider.GetComponent<Cell>();
+
+                CurrentCell.UnitOn = StatusUnitOn.Yes;
+                Status = UnitStatus.Unselected;
+            }
+
+        }
+    }
     #endregion
 
     #region trash
@@ -110,26 +99,5 @@ public class Unit : MonoBehaviour
     //    CurrentCell = cell;
     //    //CurrentCell.SetUnit(this);
     //}
-
-
-    [ContextMenu("Initialize Unit")]
-    public void InitializeUnit()
-    {
-        var ray = new Ray(transform.position, Vector3.down);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, MAX_DISTANCE))
-        {
-            if (hit.collider.GetComponent<Cell>())
-            {
-                transform.position = new Vector3(hit.transform.position.x, POSITION_Y, hit.transform.position.z);
-
-                CurrentCell = hit.collider.GetComponent<Cell>();
-                CurrentCell.UnitOn = UnitOnStatus.Yes;
-                Status = UnitStatus.Unselected;
-            }
-
-        }
-    }
     #endregion
 }

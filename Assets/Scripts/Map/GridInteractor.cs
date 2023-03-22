@@ -9,27 +9,29 @@ public class GridInteractor : Grid
     public static event UnitActionEventHandler OnUnitAction;
     public delegate void EnemySelectedEventHandler(Unit enemy);
     public static event EnemySelectedEventHandler OnEnemySelected;
-
     public delegate void PlayerSelectedEventHandler(Unit player);
     public static event PlayerSelectedEventHandler OnPlayerSelected;
 
     [SerializeField] private List<Cell> _availableMoves;
-    [SerializeField] private readonly int _playerMaxMoves;
-    [SerializeField] private readonly int _enemyMaxMoves;
 
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
+
     private void Start()
     {
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
+        OnEnemySelected += HandleEnemySelected;
+        OnPlayerSelected += HandlePlayerSelected;
     }
 
 
     public void SelectUnit(Unit unit)
     {
-        UnselectUnit(SelectedUnit);
-
+        //var selectedUnitExist = SelectedUnit != null;
+        if ((SelectedUnit != null) == true)
+            UnselectUnit(SelectedUnit);
+        
         if (unit.Type == UnitType.Enemy)
         {
             OnEnemySelected?.Invoke(unit);
@@ -45,7 +47,7 @@ public class GridInteractor : Grid
         unit.Status = UnitStatus.Unselected;
         OnUnitSelected?.Invoke(unit, unit.Type);
         unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
-        unit.CurrentCell.UnitOn = UnitOnStatus.No;
+        unit.CurrentCell.UnitOn = StatusUnitOn.No;
     }
 
     public void SelectCell(Cell cell, UnitType unitType)
@@ -53,11 +55,11 @@ public class GridInteractor : Grid
         UnselectCells();
         if (unitType == UnitType.Player)
         {
-            _availableMoves = GetAvailableMoves(cell, unitType, _playerMaxMoves);
+            _availableMoves = GetAvailableMoves(cell, unitType, 2);
         }
         else if (unitType == UnitType.Enemy)
         {
-            _availableMoves = GetAvailableMoves(cell, unitType, _enemyMaxMoves);
+            _availableMoves = GetAvailableMoves(cell, unitType, 2);
         }
         foreach (var moveCell in _availableMoves)
         {
@@ -70,11 +72,13 @@ public class GridInteractor : Grid
         if (unit.CurrentCell != null)
         {
             unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
-            unit.CurrentCell.UnitOn = UnitOnStatus.No;
+            unit.CurrentCell.UnitOn = StatusUnitOn.No;
         }
+
         targetCell.ChangeColor(Color.gray);
-        targetCell.UnitOn = UnitOnStatus.Yes;
+        targetCell.UnitOn = StatusUnitOn.Yes;
         unit.MoveToCell(targetCell);
+
         if (OnUnitAction != null)
         {
             OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
@@ -110,16 +114,18 @@ public class GridInteractor : Grid
         {
             UnselectUnit(SelectedUnit);
         }
+        
+
         SelectedUnit = enemy;
         enemy.Status = UnitStatus.Selected;
-        enemy.CurrentCell.ChangeColor(Color.red);
+        enemy.CurrentCell.ChangeColor(enemy.CurrentCell.CellEnemyOnColor);
     }
 
     private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
     {
         if (actionType == UnitActionType.Move)
         {
-            // Handle move action
+            unit.Move(cell);
         }
     }
 
@@ -133,7 +139,7 @@ public class GridInteractor : Grid
         }
         foreach (var neighbour in cell.Neighbours)
         {
-            if (neighbour.IsWalkable() && neighbour.UnitOn == UnitOnStatus.No)
+            if (neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
             {
                 result.AddRange(GetAvailableMoves(neighbour, unitType, maxMoves - 1));
             }
@@ -148,7 +154,6 @@ public class GridInteractor : Grid
             cell.ChangeColor(cell.CellStandardColor);
         }
     }
-}
 
     //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
     //{

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.UI.CanvasScaler;
 
 public enum State
 {
@@ -13,7 +15,7 @@ public enum State
     Default
 }
 
-public enum UnitOnStatus // test v.1
+public enum StatusUnitOn // test v.1
 {
     Yes,
     No
@@ -21,14 +23,20 @@ public enum UnitOnStatus // test v.1
 
 public class Cell : MonoBehaviour
 {
+    private const float POSITION_Y = .8f;
+    private const float MAX_DISTANCE = 3f;
+
+    private List<Unit> _units = new List<Unit>();
+    private bool _isWalkable;
+
     public GridInteractor GICell;
     public List<Cell> Neighbours { get; private set; }
 
     [SerializeField] private MeshRenderer MeshRenderer;
 
     [HideInInspector] public State UnitState; // Состояние клетки.
-    [HideInInspector] public UnitOnStatus UnitOn; // Юнит на клетке или нет.    
-    [HideInInspector] public Vector2 Position; // Позиция Клетки.
+    [HideInInspector] public StatusUnitOn UnitOn; // Юнит на клетке или нет.    
+    [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
 
     public Color CellStandardColor; //Стандартный цвет клетки.
     public Color CellUnitOnColor; // Цвет клетки на которой стоит гл. герой.
@@ -37,32 +45,47 @@ public class Cell : MonoBehaviour
     public Color CellMovementColor; // Цвет клетки - Для движения
 
     public int Row { get; private set; }
-    public int Column { get; private set; }    
-
-    private bool _isWalkable;
+    public int Column { get; private set; }
 
     // Юнит который на клетке. ДОПИЛИТЬ
 
-    public void ChangeColor(Color color)
+    public void SetUnit(Unit unit)
     {
-        MeshRenderer.material.color = color;
+        _units.Add(unit);
+        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
     }
-    public void Initialize(int row, int column, GridInteractor gridInteractor, bool isWalkable)
+
+    public void RemoveUnit(Unit unit)
+    {
+        if (_units.Contains(unit))
+        {
+            _units.Remove(unit);
+        }
+    }
+
+    public void Initialize(int row, int column, GridInteractor gridInteractor, bool isWalkable, StatusUnitOn unitOn)
     {
         name = $"X: {row} Y: {column}";
         Row = row;
         Column = column;
         GICell = gridInteractor;
         _isWalkable = isWalkable;
-        Position = new Vector2(row, column);
+        UnitOn = unitOn;
+        UnitState = State.Default;
+        Coordinates = new Vector2(row, column);
         Neighbours = new List<Cell>(4);
     }
 
     public bool IsWalkable()
     {
-        return _isWalkable && UnitOn == UnitOnStatus.No;
+        return _isWalkable && UnitOn == StatusUnitOn.No;
     }
 
+    #region Set Color
+    public void ChangeColor(Color color)
+    {
+        MeshRenderer.material.color = color;
+    }
     public void SetHighlight()
     {
         MeshRenderer.material.color = CellSelectedColor;
@@ -77,22 +100,17 @@ public class Cell : MonoBehaviour
     {
         MeshRenderer.material.color = CellMovementColor;
     }
+    #endregion
 
     public void PlaceUnit(Unit unit)
     {
         GICell.SelectedUnit = unit;
-        UnitOn = UnitOnStatus.Yes;
-    }
-
-    public void RemoveUnit(Unit unit)
-    {
-        unit = null;
-        UnitOn = UnitOnStatus.No;
+        UnitOn = StatusUnitOn.Yes;
     }
 
     public void FindNeighbors(List<Cell> cells)
     {
-        int width = Convert.ToInt32(GICell.Cells.Max(cell => cell.Position.x) + 1);
+        int width = Convert.ToInt32(GICell.Cells.Max(cell => cell.Coordinates.x) + 1);
 
         // Находим индекс текущей клетки в списке всех клеток
         int index = cells.IndexOf(this);
@@ -109,5 +127,6 @@ public class Cell : MonoBehaviour
         if (left != null) Neighbours.Add(left);
         if (right != null) Neighbours.Add(right);
     }
+
 }
 

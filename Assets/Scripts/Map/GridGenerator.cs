@@ -21,7 +21,7 @@ public class GridGenerator : Grid
                 var position = new Vector3(x * (cellSize.x + _offset), 0, y * (cellSize.z + _offset));
 
                 var cell = Instantiate(_cell, position, Quaternion.identity, _parent);
-                cell.Initialize(x, y, GGridInteractor, true);
+                cell.Initialize(x, y, GGridInteractor, true, StatusUnitOn.No);
 
                 GGridInteractor.Cells.Add(cell);
             }

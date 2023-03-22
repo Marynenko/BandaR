@@ -18,9 +18,21 @@ public class PlayerRay : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
+                Cell cell;
                 var unit = hit.collider.GetComponent<Unit>();
-                var cell = hit.collider.GetComponent<Cell>();
-                Debug.Log(Input.mousePosition + " " + hit.collider.name);
+                if (unit != null)
+                    cell = unit.CurrentCell;
+                else
+                {
+                    cell = hit.collider.GetComponent<Cell>();
+                    foreach (var localUnit in _gridInteractor.Units)
+                        if (localUnit.CurrentCell == cell)
+                        {
+                            unit = localUnit;
+                            break;
+                        }
+                }
+                //Debug.Log(Input.mousePosition + " " + hit.collider.name);
 
                 if (unit != null) // Если Unit существует
                 {
@@ -32,7 +44,7 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.SelectUnit(unit);
                             var currentCell = unit.CurrentCell;
                             _gridInteractor.SelectCell(currentCell, unit.Type);
-                            currentCell.UnitOn = UnitOnStatus.Yes;
+                            currentCell.UnitOn = StatusUnitOn.Yes;
                             unit.Status = UnitStatus.Selected;
                             OnUnitSelected?.Invoke(unit, unit.Type);
                         }
@@ -43,7 +55,7 @@ public class PlayerRay : MonoBehaviour
                             var currentCell = unit.CurrentCell;
                             currentCell.ChangeColor(currentCell.CellEnemyOnColor);
                             _gridInteractor.SelectCell(currentCell, unit.Type);
-                            currentCell.UnitOn = UnitOnStatus.Yes;
+                            currentCell.UnitOn = StatusUnitOn.Yes;
                             unit.Status = UnitStatus.Selected;
                             OnUnitSelected?.Invoke(unit, unit.Type);
                         }
@@ -56,7 +68,7 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.UnselectUnit(unit);
                             unit.Status = UnitStatus.Unselected;
                             unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
-                            unit.CurrentCell.UnitOn = UnitOnStatus.No;
+                            unit.CurrentCell.UnitOn = StatusUnitOn.No;
                             OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                     }
@@ -64,19 +76,26 @@ public class PlayerRay : MonoBehaviour
 
                 else if (cell != null)
                 {
+                    
                     var selectedUnit = _gridInteractor.SelectedUnit;
 
-                    if (cell != selectedUnit.CurrentCell)
+                    if (selectedUnit != null && cell == selectedUnit.CurrentCell)
+                    {
+                        // клик на юните
+                        OnUnitSelected?.Invoke(selectedUnit, selectedUnit.Type);
+                    }
+
+                    else if (selectedUnit != null) // Добавляем проверку на null
                     {
                         // получаем список возможных ходов для текущей клетки и типа юнита
-                        List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, selectedUnit.MaxMoves);
+                        List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 2);
 
                         if (availableMoves.Contains(cell))
-                        {   
+                        {
                             // перемещаем юнита на выбранную клетку
                             _gridInteractor.MoveUnit(selectedUnit, cell);
                             selectedUnit.Status = UnitStatus.Unselected;
-                            selectedUnit.CurrentCell.UnitOn = UnitOnStatus.No;
+                            selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
                             _gridInteractor.UnselectUnit(selectedUnit);
                             OnUnitAction?.Invoke(UnitActionType.Move, selectedUnit, cell);
                         }
@@ -85,11 +104,16 @@ public class PlayerRay : MonoBehaviour
                             // сбрасываем выбор юнита
                             _gridInteractor.UnselectUnit(selectedUnit);
                             selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.CellStandardColor);
-                            selectedUnit.CurrentCell.UnitOn = UnitOnStatus.No;
+                            selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
                             OnUnitSelected?.Invoke(selectedUnit, selectedUnit.Type);
                         }
                     }
+                    else
+                    {
+                        Debug.LogWarning("No unit is currently selected.");
+                    }
                 }
+
             }
         }
     }
