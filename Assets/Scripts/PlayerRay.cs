@@ -9,30 +9,23 @@ public class PlayerRay : MonoBehaviour
     public event Action<Unit, UnitType> OnUnitSelected;
     public event Action<UnitActionType, Unit, Cell> OnUnitAction;
 
+    private void Start()
+    {
+        _gridInteractor.InitializeActions();
+    }
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit hit;
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Cell cell;
+            Unit unit;
+            RaycastHit hit;
 
+            
             if (Physics.Raycast(ray, out hit))
             {
-                Cell cell;
-                var unit = hit.collider.GetComponent<Unit>();
-                if (unit != null)
-                    cell = unit.CurrentCell;
-                else
-                {
-                    cell = hit.collider.GetComponent<Cell>();
-                    foreach (var localUnit in _gridInteractor.Units)
-                        if (localUnit.CurrentCell == cell)
-                        {
-                            unit = localUnit;
-                            break;
-                        }
-                }
-                //Debug.Log(Input.mousePosition + " " + hit.collider.name);
+                CheckUnitOrCellExit(hit, out cell, out unit);
 
                 if (unit != null) // Если Unit существует
                 {
@@ -44,8 +37,8 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.SelectUnit(unit);
                             var currentCell = unit.CurrentCell;
                             _gridInteractor.SelectCell(currentCell, unit.Type);
-                            currentCell.UnitOn = StatusUnitOn.Yes;
-                            unit.Status = UnitStatus.Selected;
+                            //currentCell.UnitOn = StatusUnitOn.Yes;
+                            //unit.Status = UnitStatus.Selected;
                             OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                         else if (unit.Type == UnitType.Enemy)
@@ -115,6 +108,23 @@ public class PlayerRay : MonoBehaviour
                 }
 
             }
+        }
+    }
+
+    private void CheckUnitOrCellExit(RaycastHit hit, out Cell cell, out Unit unit)
+    {
+        unit = hit.collider.GetComponent<Unit>();
+        if (unit != null)
+            cell = unit.CurrentCell;
+        else
+        {
+            cell = hit.collider.GetComponent<Cell>();
+            foreach (var localUnit in _gridInteractor.Units)
+                if (localUnit.CurrentCell == cell)
+                {
+                    unit = localUnit;
+                    break;
+                }
         }
     }
 }

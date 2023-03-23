@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridInteractor : Grid
@@ -17,7 +19,7 @@ public class GridInteractor : Grid
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
 
-    private void Start()
+    public void InitializeActions()
     {
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
@@ -25,11 +27,19 @@ public class GridInteractor : Grid
         OnPlayerSelected += HandlePlayerSelected;
     }
 
+    List<Direction> directions = new List<Direction>()
+    {
+        new Direction(0, 1),   // Up
+        new Direction(0, -1),  // Down
+        new Direction(-1, 0),  // Left
+        new Direction(1, 0)    // Right
+    };
+
 
     public void SelectUnit(Unit unit)
     {
         //var selectedUnitExist = SelectedUnit != null;
-        if ((SelectedUnit != null) == true)
+        if (SelectedUnit != null)
             UnselectUnit(SelectedUnit);
         
         if (unit.Type == UnitType.Enemy)
@@ -106,6 +116,7 @@ public class GridInteractor : Grid
         SelectedUnit = player;
         player.Status = UnitStatus.Selected;
         player.CurrentCell.ChangeColor(Color.green);
+        player.CurrentCell.UnitOn = StatusUnitOn.Yes;
     }
 
     private void HandleEnemySelected(Unit enemy)
@@ -137,7 +148,7 @@ public class GridInteractor : Grid
         {
             return result;
         }
-        foreach (var neighbour in cell.Neighbours)
+        foreach (var neighbour in GetNeighbourCells(cell))
         {
             if (neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
             {
@@ -147,6 +158,31 @@ public class GridInteractor : Grid
         return result;
     }
 
+    public List<Cell> GetNeighbourCells(Cell cell)
+    {
+        List<Cell> result = new List<Cell>();
+
+        foreach (Direction dir in directions)
+        {
+            int xOffset = dir.XOffset;
+            int yOffset = dir.YOffset;
+
+            int x = cell.Row + xOffset;
+            int y = cell.Column + yOffset;
+
+            Cell neighbour = Cells.FirstOrDefault(c => c.Row == x && c.Column == y);
+
+            if (neighbour != null)
+            {
+                result.Add(neighbour);
+            }
+        }
+
+        return result;
+    }
+
+
+
     public void UnselectCells()
     {
         foreach (var cell in Cells)
@@ -155,23 +191,24 @@ public class GridInteractor : Grid
         }
     }
 
-    //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType)
-    //{
-    //    if (unitType == UnitType.Player)
-    //    {
-    //        return GetAvailableMoves(cell, unitType, _playerMaxMoves);
-    //    }
-    //    else if (unitType == UnitType.Enemy)
-    //    {
-    //        return GetAvailableMoves(cell, unitType, _enemyMaxMoves);
-    //    }
-    //    return new List<Cell>();
-    //}
-
-    //public void MoveUnit(Unit unit, Cell cell)
-    //{
-    //    //unit.MoveToCell(cell);
-    //    UnselectUnit(unit);
-    //    UnselectCells();
-    //}
+    private bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < 3 && y >= 0 && y < 3;
+    }
 }
+
+public class Direction
+{
+    public int XOffset { get; private set; }
+    public int YOffset { get; private set; }
+
+    public Direction(int xOffset, int yOffset)
+    {
+        XOffset = xOffset;
+        YOffset = yOffset;
+    }
+}
+
+
+
+

@@ -21,6 +21,16 @@ public enum StatusUnitOn // test v.1
     No
 }
 
+//public enum Direction
+//{
+//    Up,
+//    Down,
+//    Left,
+//    Right
+
+//}
+
+
 public class Cell : MonoBehaviour
 {
     private const float POSITION_Y = .8f;
@@ -108,25 +118,31 @@ public class Cell : MonoBehaviour
         UnitOn = StatusUnitOn.Yes;
     }
 
-    public void FindNeighbors(List<Cell> cells)
-    {
-        int width = Convert.ToInt32(GICell.Cells.Max(cell => cell.Coordinates.x) + 1);
+    //public void FindNeighbors()
+    //{
+    //    var cells = new List<Cell>();
+    //    int width = Convert.ToInt32(GICell.Cells.Max(cell => cell.Coordinates.x) + 1);
 
-        // Находим индекс текущей клетки в списке всех клеток
-        int index = cells.IndexOf(this);
+    //    // Находим индекс текущей клетки в списке всех клеток
+    //    int index = cells.IndexOf(this);
 
-        // Находим соседние клетки по индексам в списке
-        Cell up = (index >= width) ? cells[index - width] : null;
-        Cell down = (index < cells.Count - width) ? cells[index + width] : null;
-        Cell left = (index % width != 0) ? cells[index - 1] : null;
-        Cell right = (index % width != width - 1) ? cells[index + 1] : null;
+    //    // Находим соседние клетки по индексам в списке
+    //    Cell up = (index >= width) ? cells[index - width] : null;
+    //    Cell down = (index < cells.Count - width) ? cells[index + width] : null;
+    //    Cell left = (index % width != 0) ? cells[index - 1] : null;
+    //    Cell right = (index % width != width - 1) ? cells[index + 1] : null;
 
-        // Добавляем соседние клетки в список
-        if (up != null) Neighbours.Add(up);
-        if (down != null) Neighbours.Add(down);
-        if (left != null) Neighbours.Add(left);
-        if (right != null) Neighbours.Add(right);
-    }
+    //    // Добавляем соседние клетки в список
+    //    if (up != null) Neighbours.Add(up);
+    //    if (down != null) Neighbours.Add(down);
+    //    if (left != null) Neighbours.Add(left);
+    //    if (right != null) Neighbours.Add(right);
+    //}
+
+
+
 
 }
+
+
 
