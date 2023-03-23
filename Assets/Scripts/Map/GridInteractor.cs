@@ -115,7 +115,7 @@ public class GridInteractor : Grid
         }
         SelectedUnit = player;
         player.Status = UnitStatus.Selected;
-        player.CurrentCell.ChangeColor(Color.green);
+        player.CurrentCell.ChangeColor(player.CurrentCell.CellSelectedColor);
         player.CurrentCell.UnitOn = StatusUnitOn.Yes;
     }
 
@@ -144,6 +144,7 @@ public class GridInteractor : Grid
     {
         List<Cell> result = new List<Cell>();
         result.Add(cell);
+
         if (maxMoves <= 0)
         {
             return result;
