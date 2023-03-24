@@ -21,6 +21,7 @@ public class GridInteractor : Grid
 
     public void InitializeActions()
     {
+        Initialization();
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
         OnEnemySelected += HandleEnemySelected;

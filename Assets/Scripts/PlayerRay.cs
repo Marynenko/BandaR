@@ -37,8 +37,6 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.SelectUnit(unit);
                             var currentCell = unit.CurrentCell;
                             _gridInteractor.SelectCell(currentCell, unit.Type);
-                            //currentCell.UnitOn = StatusUnitOn.Yes;
-                            //unit.Status = UnitStatus.Selected;
                             OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                         else if (unit.Type == UnitType.Enemy)

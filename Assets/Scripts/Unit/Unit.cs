@@ -72,9 +72,7 @@ public class Unit : MonoBehaviour
             if (hit.collider.GetComponent<Cell>())
             {
                 transform.position = new Vector3(hit.transform.position.x, POSITION_Y, hit.transform.position.z);
-
                 CurrentCell = hit.collider.GetComponent<Cell>();
-
                 CurrentCell.UnitOn = StatusUnitOn.Yes;
                 Status = UnitStatus.Unselected;
             }

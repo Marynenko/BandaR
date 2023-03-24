@@ -112,11 +112,6 @@ public class Cell : MonoBehaviour
     }
     #endregion
 
-    public void PlaceUnit(Unit unit)
-    {
-        GICell.SelectedUnit = unit;
-        UnitOn = StatusUnitOn.Yes;
-    }
 
     //public void FindNeighbors()
     //{
