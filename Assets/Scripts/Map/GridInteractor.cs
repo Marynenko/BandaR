@@ -39,7 +39,6 @@ public class GridInteractor : Grid
 
     public void SelectUnit(Unit unit)
     {
-        //var selectedUnitExist = SelectedUnit != null;
         if (SelectedUnit != null)
             UnselectUnit(SelectedUnit);
         
@@ -66,11 +65,13 @@ public class GridInteractor : Grid
         UnselectCells();
         if (unitType == UnitType.Player)
         {
-            _availableMoves = GetAvailableMoves(cell, unitType, 2);
+            _availableMoves = GetAvailableMoves(cell, unitType, 1);
+            _availableMoves.Remove(cell);
         }
         else if (unitType == UnitType.Enemy)
         {
-            _availableMoves = GetAvailableMoves(cell, unitType, 2);
+            _availableMoves = GetAvailableMoves(cell, unitType, 1);
+            _availableMoves.Remove(cell);
         }
         foreach (var moveCell in _availableMoves)
         {
@@ -114,6 +115,7 @@ public class GridInteractor : Grid
         {
             UnselectUnit(SelectedUnit);
         }
+
         SelectedUnit = player;
         player.Status = UnitStatus.Selected;
         player.CurrentCell.ChangeColor(player.CurrentCell.CellSelectedColor);
@@ -143,47 +145,107 @@ public class GridInteractor : Grid
 
     public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves)
     {
-        List<Cell> result = new List<Cell>();
-        result.Add(cell);
+        var visitedCells = new HashSet<Cell>();
+        var AvailableMoves = new List<Cell>();
 
-        if (maxMoves <= 0)
+        var queue = new Queue<(Cell, int)>();
+        queue.Enqueue((cell, maxMoves));
+
+        while (queue.Count > 0)
         {
-            return result;
-        }
-        foreach (var neighbour in GetNeighbourCells(cell))
-        {
-            if (neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
+            var (currentCell, remainingMoves) = queue.Dequeue();
+
+            visitedCells.Add(currentCell);
+            AvailableMoves.Add(currentCell);
+
+            if (remainingMoves > 0)
             {
-                result.AddRange(GetAvailableMoves(neighbour, unitType, maxMoves - 1));
+                foreach (var neighbour in GetNeighbourCells(currentCell))
+                {
+                    if (!visitedCells.Contains(neighbour) && neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
+                    {
+                        queue.Enqueue((neighbour, remainingMoves - 1));
+                    }
+                }
             }
         }
-        return result;
+
+        return AvailableMoves;
     }
+
+
 
     public List<Cell> GetNeighbourCells(Cell cell)
     {
-        List<Cell> result = new List<Cell>();
+        List<Cell> neighbours = new List<Cell>();
 
-        foreach (Direction dir in directions)
+        foreach (Direction direction in directions)
         {
-            int xOffset = dir.XOffset;
-            int yOffset = dir.YOffset;
+            int neighbourX = cell.Row + direction.XOffset;
+            int neighbourY = cell.Column + direction.YOffset;
 
-            int x = cell.Row + xOffset;
-            int y = cell.Column + yOffset;
+            var Width = _gridGenerator.GridSize.x;
+            var Height = _gridGenerator.GridSize.y;
 
-            Cell neighbour = Cells.FirstOrDefault(c => c.Row == x && c.Column == y);
 
-            if (neighbour != null)
+            if (neighbourX >= 0 && neighbourX < Width && neighbourY >= 0 && neighbourY < Height)
             {
-                result.Add(neighbour);
+                Cell neighbour = GridCells[neighbourX, neighbourY];
+                if (neighbour != null)
+                {
+                    neighbours.Add(neighbour);
+                }
             }
         }
 
-        return result;
+        return neighbours;
     }
 
 
+    #region Код что бы выделить все 8 клеток вокруг Героя
+    //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves) // Код что бы выделить все 8 клеток вокруг героя.
+    //{
+    //    List<Cell> AvailableMoves = new List<Cell>();
+    //    AvailableMoves.Add(cell);
+
+    //    if (maxMoves <= 0)
+    //    {
+    //        return AvailableMoves;
+    //    }
+    //    foreach (var neighbour in GetNeighbourCells(cell))
+    //    {
+    //        if (neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
+    //        {
+
+    //            AvailableMoves.AddRange(GetAvailableMoves(neighbour, unitType, maxMoves - 1));
+    //        }
+    //    }
+    //    return AvailableMoves;
+    //}
+
+    //public List<Cell> GetNeighbourCells(Cell cell) // Версия что бы получать все 8 клеток вокруг персонажа.
+    //{
+    //    List<Cell> NeighboursCells = new List<Cell>();
+
+    //    foreach (Direction dir in directions)
+    //    {
+    //        int xOffset = dir.XOffset;
+    //        int yOffset = dir.YOffset;
+
+    //        int x = cell.Row + xOffset;
+    //        int y = cell.Column + yOffset;
+
+    //        Cell neighbour = Cells.FirstOrDefault(c => c.Row == x && c.Column == y);
+
+    //        if (neighbour != null)
+    //        {
+    //            NeighboursCells.Add(neighbour);
+    //        }
+    //    }
+
+    //    return NeighboursCells;
+    //}
+    #endregion
 
     public void UnselectCells()
     {

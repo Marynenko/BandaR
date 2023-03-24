@@ -37,7 +37,7 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.SelectUnit(unit);
                             var currentCell = unit.CurrentCell;
                             _gridInteractor.SelectCell(currentCell, unit.Type);
-                            OnUnitSelected?.Invoke(unit, unit.Type);
+                            //OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                         else if (unit.Type == UnitType.Enemy)
                         {
@@ -48,7 +48,7 @@ public class PlayerRay : MonoBehaviour
                             _gridInteractor.SelectCell(currentCell, unit.Type);
                             currentCell.UnitOn = StatusUnitOn.Yes;
                             unit.Status = UnitStatus.Selected;
-                            OnUnitSelected?.Invoke(unit, unit.Type);
+                            //OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                     }
                     else if (unit.Status == UnitStatus.Selected)
@@ -60,7 +60,7 @@ public class PlayerRay : MonoBehaviour
                             unit.Status = UnitStatus.Unselected;
                             unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
                             unit.CurrentCell.UnitOn = StatusUnitOn.No;
-                            OnUnitSelected?.Invoke(unit, unit.Type);
+                            //OnUnitSelected?.Invoke(unit, unit.Type);
                         }
                     }
                 }
@@ -79,7 +79,8 @@ public class PlayerRay : MonoBehaviour
                     else if (selectedUnit != null) // Добавляем проверку на null
                     {
                         // получаем список возможных ходов для текущей клетки и типа юнита
-                        List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 2);
+                        List<Cell> availableMoves = _gridInteractor.GetAvailableMoves(cell, selectedUnit.Type, 1);
+                        availableMoves.Remove(selectedUnit.CurrentCell);
 
                         if (availableMoves.Contains(cell))
                         {
