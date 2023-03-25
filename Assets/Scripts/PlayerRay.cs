@@ -62,7 +62,7 @@ public class PlayerRay : MonoBehaviour
             {
                 _gridInteractor.SelectUnit(unit);
                 var currentCell = unit.CurrentCell;
-                currentCell.ChangeColor(currentCell.CellEnemyOnColor);
+                currentCell.ChangeColor(currentCell.ColorEnemyOnCell);
                 _gridInteractor.SelectCell(currentCell, unit.Type);
                 currentCell.UnitOn = StatusUnitOn.Yes;
                 unit.Status = UnitStatus.Selected;
@@ -93,24 +93,33 @@ public class PlayerRay : MonoBehaviour
             return;
         }
 
+        // Снимаем выделение с текущей ячейки
+        selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.ColorStandardCell);
+        selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
+        selectedUnit.CurrentCell.SetIsWalkable(true);
+        
+
         var availableMoves = _gridInteractor.GetAvailableMoves(cell, selectedUnit.Type, 1);
-        availableMoves.Remove(selectedUnit.CurrentCell);
 
         if (availableMoves.Contains(cell))
         {
             _gridInteractor.MoveUnit(selectedUnit, cell);
+
             selectedUnit.Status = UnitStatus.Unselected;
-            selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
+
+            // Выделяем ячейку, на которую переместился юнит
+            cell.ChangeColor(cell.ColorUnitOnCell);
+            cell.UnitOn = StatusUnitOn.Yes;
+
             _gridInteractor.UnselectUnit(selectedUnit);
             OnUnitAction?.Invoke(UnitActionType.Move, selectedUnit, cell);
         }
         else
         {
             _gridInteractor.UnselectUnit(selectedUnit);
-            selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.CellStandardColor);
-            selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
         }
     }
+
 
 }
 

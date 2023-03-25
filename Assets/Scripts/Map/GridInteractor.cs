@@ -54,38 +54,45 @@ public class GridInteractor : Grid
     {
         unit.Status = UnitStatus.Unselected;
         OnUnitSelected?.Invoke(unit, unit.Type);
-        unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
+        unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
         unit.CurrentCell.UnitOn = StatusUnitOn.No;
     }
 
     public void SelectCell(Cell cell, UnitType unitType)
     {
         UnselectCells();
+        List<Cell> availableMovesCopy;
         if (unitType == UnitType.Player)
         {
             _availableMoves = GetAvailableMoves(cell, unitType, 1);
-            _availableMoves.Remove(cell);
+            availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
         else if (unitType == UnitType.Enemy)
         {
             _availableMoves = GetAvailableMoves(cell, unitType, 1);
-            _availableMoves.Remove(cell);
+            availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
-        foreach (var moveCell in _availableMoves)
+        else
         {
-            moveCell.ChangeColor(moveCell.CellMovementColor);
+            return;
+        }
+        availableMovesCopy.Remove(cell);
+        foreach (var moveCell in availableMovesCopy)
+        {
+            moveCell.ChangeColor(moveCell.ColorMovementCell);
         }
     }
+
 
     public void MoveUnit(Unit unit, Cell targetCell)
     {
         if (unit.CurrentCell != null)
         {
-            unit.CurrentCell.ChangeColor(unit.CurrentCell.CellStandardColor);
+            unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
             unit.CurrentCell.UnitOn = StatusUnitOn.No;
         }
 
-        targetCell.ChangeColor(Color.gray);
+        targetCell.ChangeColor(targetCell.ColorUnitOnCell);
         targetCell.UnitOn = StatusUnitOn.Yes;
         unit.MoveToCell(targetCell);
 
@@ -116,7 +123,7 @@ public class GridInteractor : Grid
 
         SelectedUnit = player;
         player.Status = UnitStatus.Selected;
-        player.CurrentCell.ChangeColor(player.CurrentCell.CellSelectedColor);
+        player.CurrentCell.ChangeColor(player.CurrentCell.ColorSelectedCell);
         player.CurrentCell.UnitOn = StatusUnitOn.Yes;
     }
 
@@ -130,7 +137,7 @@ public class GridInteractor : Grid
 
         SelectedUnit = enemy;
         enemy.Status = UnitStatus.Selected;
-        enemy.CurrentCell.ChangeColor(enemy.CurrentCell.CellEnemyOnColor);
+        enemy.CurrentCell.ChangeColor(enemy.CurrentCell.ColorEnemyOnCell);
     }
 
     private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
@@ -298,7 +305,7 @@ public class GridInteractor : Grid
     {
         foreach (var cell in Cells)
         {
-            cell.ChangeColor(cell.CellStandardColor);
+            cell.ChangeColor(cell.ColorStandardCell);
         }
     }
 }

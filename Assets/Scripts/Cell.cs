@@ -38,11 +38,11 @@ public class Cell : MonoBehaviour
     [HideInInspector] public StatusUnitOn UnitOn; // Юнит на клетке или нет.    
     [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
 
-    public Color CellStandardColor; //Стандартный цвет клетки.
-    public Color CellUnitOnColor; // Цвет клетки на которой стоит гл. герой.
-    public Color CellEnemyOnColor; // Цвет клетки на которой стоит враг.
-    public Color CellSelectedColor; // Цвет клетки - выбранной
-    public Color CellMovementColor; // Цвет клетки - Для движения
+    public Color ColorStandardCell; //Стандартный цвет клетки.
+    public Color ColorUnitOnCell; // Цвет клетки на которой стоит гл. герой.
+    public Color ColorEnemyOnCell; // Цвет клетки на которой стоит враг.
+    public Color ColorSelectedCell; // Цвет клетки - выбранной
+    public Color ColorMovementCell; // Цвет клетки - Для движения
 
     public int Row { get; private set; }
     public int Column { get; private set; }
@@ -81,6 +81,8 @@ public class Cell : MonoBehaviour
         return _isWalkable && UnitOn == StatusUnitOn.No;
     }
 
+    public bool SetIsWalkable(bool atribute) => _isWalkable = atribute;
+
     #region Set Color
     public void ChangeColor(Color color)
     {
@@ -88,45 +90,19 @@ public class Cell : MonoBehaviour
     }
     public void SetHighlight()
     {
-        MeshRenderer.material.color = CellSelectedColor;
+        MeshRenderer.material.color = ColorSelectedCell;
     }
 
     public void SetStandard()
     {
-        MeshRenderer.material.color = CellStandardColor;
+        MeshRenderer.material.color = ColorStandardCell;
     }
 
     public void SetMovement()
     {
-        MeshRenderer.material.color = CellMovementColor;
+        MeshRenderer.material.color = ColorMovementCell;
     }
     #endregion
-
-
-    //public void FindNeighbors()
-    //{
-    //    var cells = new List<Cell>();
-    //    int width = Convert.ToInt32(GICell.Cells.Max(cell => cell.Coordinates.x) + 1);
-
-    //    // Находим индекс текущей клетки в списке всех клеток
-    //    int index = cells.IndexOf(this);
-
-    //    // Находим соседние клетки по индексам в списке
-    //    Cell up = (index >= width) ? cells[index - width] : null;
-    //    Cell down = (index < cells.Count - width) ? cells[index + width] : null;
-    //    Cell left = (index % width != 0) ? cells[index - 1] : null;
-    //    Cell right = (index % width != width - 1) ? cells[index + 1] : null;
-
-    //    // Добавляем соседние клетки в список
-    //    if (up != null) Neighbors.Add(up);
-    //    if (down != null) Neighbors.Add(down);
-    //    if (left != null) Neighbors.Add(left);
-    //    if (right != null) Neighbors.Add(right);
-    //}
-
-
-
-
 }
 
 
