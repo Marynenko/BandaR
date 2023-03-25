@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GridInteractor : Grid
 {
+    [SerializeField] private List<Cell> _availableMoves;
+
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
@@ -12,9 +14,6 @@ public class GridInteractor : Grid
     public static event EnemySelectedEventHandler OnEnemySelected;
     public delegate void PlayerSelectedEventHandler(Unit player);
     public static event PlayerSelectedEventHandler OnPlayerSelected;
-
-
-    [SerializeField] private List<Cell> _availableMoves;
 
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
@@ -35,7 +34,6 @@ public class GridInteractor : Grid
         new Direction(-1, 0),  // Left
         new Direction(1, 0)    // Right
     };
-
 
     public void SelectUnit(Unit unit)
     {
@@ -173,8 +171,6 @@ public class GridInteractor : Grid
         return AvailableMoves;
     }
 
-
-
     public List<Cell> GetNeighbourCells(Cell cell)
     {
         List<Cell> neighbours = new List<Cell>();
@@ -206,7 +202,6 @@ public class GridInteractor : Grid
         var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
         return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
     }
-
 
     public List<Cell> FindPathToTarget(Cell startCell, Cell endCell)
     {
@@ -262,7 +257,6 @@ public class GridInteractor : Grid
         return new List<Cell>();
     }
 
-
     private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell)
     {
         List<Cell> path = new List<Cell>() { currentCell };
@@ -275,7 +269,6 @@ public class GridInteractor : Grid
 
         return path;
     }
-
 
     private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
     {
