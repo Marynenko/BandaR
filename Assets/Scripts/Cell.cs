@@ -83,26 +83,11 @@ public class Cell : MonoBehaviour
 
     public bool SetIsWalkable(bool atribute) => _isWalkable = atribute;
 
-    #region Set Color
     public void ChangeColor(Color color)
     {
         MeshRenderer.material.color = color;
     }
-    public void SetHighlight()
-    {
-        MeshRenderer.material.color = ColorSelectedCell;
-    }
 
-    public void SetStandard()
-    {
-        MeshRenderer.material.color = ColorStandardCell;
-    }
-
-    public void SetMovement()
-    {
-        MeshRenderer.material.color = ColorMovementCell;
-    }
-    #endregion
 }
 
 

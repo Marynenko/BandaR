@@ -10,21 +10,22 @@ public class GridInteractor : Grid
     public static event UnitSelectedEventHandler OnUnitSelected;
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
     public static event UnitActionEventHandler OnUnitAction;
-    public delegate void EnemySelectedEventHandler(Unit enemy);
-    public static event EnemySelectedEventHandler OnEnemySelected;
-    public delegate void PlayerSelectedEventHandler(Unit player);
-    public static event PlayerSelectedEventHandler OnPlayerSelected;
 
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
 
     public void InitializeActions()
     {
+        RayHandler.OnUnitAction += HandleUnitAction;
         Initialization();
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
-        OnEnemySelected += HandleEnemySelected;
-        OnPlayerSelected += HandlePlayerSelected;
+    }
+
+    private void OnDestroy()
+    {
+        OnUnitSelected -= HandleUnitSelected;
+        OnUnitAction -= HandleUnitAction;
     }
 
     List<Direction> directions = new List<Direction>()
@@ -39,16 +40,10 @@ public class GridInteractor : Grid
     {
         if (SelectedUnit != null)
             UnselectUnit(SelectedUnit);
-        
-        if (unit.Type == UnitType.Enemy)
-        {
-            OnEnemySelected?.Invoke(unit);
-        }
-        else if (unit.Type == UnitType.Player)
-        {
-            OnPlayerSelected?.Invoke(unit);
-        }
+
+        OnUnitSelected?.Invoke(unit, unit.Type);
     }
+
 
     public void UnselectUnit(Unit unit)
     {
@@ -58,10 +53,15 @@ public class GridInteractor : Grid
         unit.CurrentCell.UnitOn = StatusUnitOn.No;
     }
 
-    public void SelectCell(Cell cell, UnitType unitType)
+    public void SelectCell(Cell cell, UnitType unitType, bool clearSelectedCells = false)
     {
-        UnselectCells();
+        if (clearSelectedCells)
+        {
+            UnselectCells();
+        }
+
         List<Cell> availableMovesCopy;
+
         if (unitType == UnitType.Player)
         {
             _availableMoves = GetAvailableMoves(cell, unitType, 1);
@@ -73,9 +73,8 @@ public class GridInteractor : Grid
             availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
         else
-        {
             return;
-        }
+
         availableMovesCopy.Remove(cell);
         foreach (var moveCell in availableMovesCopy)
         {
@@ -83,70 +82,6 @@ public class GridInteractor : Grid
         }
     }
 
-
-    public void MoveUnit(Unit unit, Cell targetCell)
-    {
-        if (unit.CurrentCell != null)
-        {
-            unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
-            unit.CurrentCell.UnitOn = StatusUnitOn.No;
-        }
-
-        targetCell.ChangeColor(targetCell.ColorUnitOnCell);
-        targetCell.UnitOn = StatusUnitOn.Yes;
-        unit.MoveToCell(targetCell);
-
-        if (OnUnitAction != null)
-        {
-            OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
-        }
-    }
-
-    private void HandleUnitSelected(Unit unit, UnitType unitType)
-    {
-        if (unitType == UnitType.Player)
-        {
-            HandlePlayerSelected(unit);
-        }
-        else if (unitType == UnitType.Enemy)
-        {
-            HandleEnemySelected(unit);
-        }
-    }
-
-    private void HandlePlayerSelected(Unit player)
-    {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-
-        SelectedUnit = player;
-        player.Status = UnitStatus.Selected;
-        player.CurrentCell.ChangeColor(player.CurrentCell.ColorSelectedCell);
-        player.CurrentCell.UnitOn = StatusUnitOn.Yes;
-    }
-
-    private void HandleEnemySelected(Unit enemy)
-    {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-        
-
-        SelectedUnit = enemy;
-        enemy.Status = UnitStatus.Selected;
-        enemy.CurrentCell.ChangeColor(enemy.CurrentCell.ColorEnemyOnCell);
-    }
-
-    private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
-    {
-        if (actionType == UnitActionType.Move)
-        {
-            unit.Move(cell);
-        }
-    }
 
     public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves)
     {
@@ -301,6 +236,73 @@ public class GridInteractor : Grid
         }
     }
 
+    public void MoveUnit(Unit unit, Cell targetCell)
+    {
+        if (unit.CurrentCell != null)
+        {
+            unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
+            unit.CurrentCell.UnitOn = StatusUnitOn.No;
+        }
+
+        targetCell.ChangeColor(targetCell.ColorUnitOnCell);
+        targetCell.UnitOn = StatusUnitOn.Yes;
+        unit.MoveToCell(targetCell);
+
+        if (OnUnitAction != null)
+        {
+            OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
+        }
+    }
+
+    private void HandleUnitSelected(Unit unit, UnitType unitType)
+    {
+        if (unitType == UnitType.Player)
+        {
+            HandlePlayerSelected(unit);
+        }
+        else if (unitType == UnitType.Enemy)
+        {
+            HandleEnemySelected(unit);
+        }
+    }
+
+    private void HandlePlayerSelected(Unit player)
+    {
+        if (SelectedUnit != null)
+        {
+            UnselectUnit(SelectedUnit);
+        }
+
+        SelectedUnit = player;
+        player.Status = UnitStatus.Selected;
+        SelectCell(player.CurrentCell, UnitType.Player, true);
+        player.CurrentCell.UnitOn = StatusUnitOn.Yes;
+    }
+
+
+
+    private void HandleEnemySelected(Unit enemy)
+    {
+        if (SelectedUnit != null)
+        {
+            UnselectUnit(SelectedUnit);
+        }
+        
+        SelectedUnit = enemy;
+        enemy.Status = UnitStatus.Selected;
+        SelectCell(enemy.CurrentCell, UnitType.Enemy, true);
+        enemy.CurrentCell.UnitOn = StatusUnitOn.Yes;
+    }
+
+    private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
+    {
+        if (actionType == UnitActionType.Move)
+        {
+            unit.Move(cell);
+        }
+    }
+
+    
     public void UnselectCells()
     {
         foreach (var cell in Cells)
@@ -308,6 +310,21 @@ public class GridInteractor : Grid
             cell.ChangeColor(cell.ColorStandardCell);
         }
     }
+
+    public void HighlightCell(Cell cell, Color color)
+    {
+        cell.ChangeColor(color);
+    }
+
+    public void ClearHighlightedCells()
+    {
+        foreach (var cell in Cells)
+        {
+            cell.ChangeColor(cell.ColorStandardCell);
+        }
+    }
+
+
 }
 
 public class Direction

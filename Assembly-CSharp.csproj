@@ -57,10 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Cell.cs" />
+    <Compile Include="Assets\Scripts\GameManager\RayHandler.cs" />
+    <Compile Include="Assets\Scripts\GameManager\RayPlayer.cs" />
     <Compile Include="Assets\Scripts\Map\Grid.cs" />
     <Compile Include="Assets\Scripts\Map\GridGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\GridInteractor.cs" />
-    <Compile Include="Assets\Scripts\PlayerRay.cs" />
     <Compile Include="Assets\Scripts\Unit\Enemy.cs" />
     <Compile Include="Assets\Scripts\Unit\Player.cs" />
     <Compile Include="Assets\Scripts\Unit\Unit.cs" />
