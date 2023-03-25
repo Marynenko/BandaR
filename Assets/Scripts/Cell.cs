@@ -21,16 +21,6 @@ public enum StatusUnitOn // test v.1
     No
 }
 
-//public enum Direction
-//{
-//    Up,
-//    Down,
-//    Left,
-//    Right
-
-//}
-
-
 public class Cell : MonoBehaviour
 {
     private const float POSITION_Y = .8f;
@@ -40,7 +30,7 @@ public class Cell : MonoBehaviour
     private bool _isWalkable;
 
     public GridInteractor GICell;
-    public List<Cell> Neighbours { get; private set; }
+    public List<Cell> Neighbors { get; set; }
 
     [SerializeField] private MeshRenderer MeshRenderer;
 
@@ -83,7 +73,7 @@ public class Cell : MonoBehaviour
         UnitOn = unitOn;
         UnitState = State.Default;
         Coordinates = new Vector2(row, column);
-        Neighbours = new List<Cell>(4);
+        Neighbors = new List<Cell>(4);
     }
 
     public bool IsWalkable()
@@ -128,10 +118,10 @@ public class Cell : MonoBehaviour
     //    Cell right = (index % width != width - 1) ? cells[index + 1] : null;
 
     //    // Добавляем соседние клетки в список
-    //    if (up != null) Neighbours.Add(up);
-    //    if (down != null) Neighbours.Add(down);
-    //    if (left != null) Neighbours.Add(left);
-    //    if (right != null) Neighbours.Add(right);
+    //    if (up != null) Neighbors.Add(up);
+    //    if (down != null) Neighbors.Add(down);
+    //    if (left != null) Neighbors.Add(left);
+    //    if (right != null) Neighbors.Add(right);
     //}
 
 

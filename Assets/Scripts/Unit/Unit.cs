@@ -12,7 +12,8 @@ public enum UnitStatus
 {
     Selected,
     Unselected,
-    Moved
+    Moved,
+    Moving
 }
 
 public class Unit : MonoBehaviour

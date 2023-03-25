@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,6 +12,7 @@ public class GridInteractor : Grid
     public static event EnemySelectedEventHandler OnEnemySelected;
     public delegate void PlayerSelectedEventHandler(Unit player);
     public static event PlayerSelectedEventHandler OnPlayerSelected;
+
 
     [SerializeField] private List<Cell> _availableMoves;
 
@@ -201,51 +201,100 @@ public class GridInteractor : Grid
         return neighbours;
     }
 
+    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
+    {
+        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
+        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
+    }
 
-    #region Код что бы выделить все 8 клеток вокруг Героя
-    //public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves) // Код что бы выделить все 8 клеток вокруг героя.
-    //{
-    //    List<Cell> AvailableMoves = new List<Cell>();
-    //    AvailableMoves.Add(cell);
 
-    //    if (maxMoves <= 0)
-    //    {
-    //        return AvailableMoves;
-    //    }
-    //    foreach (var neighbour in GetNeighbourCells(cell))
-    //    {
-    //        if (neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
-    //        {
+    private List<Cell> FindPathToTarget(Cell startCell, Cell targetCell)
+    {
+        // Создаем словарь для хранения затрат на перемещение до каждой ячейки
+        Dictionary<Cell, float> gScore = new Dictionary<Cell, float>();
 
-    //            AvailableMoves.AddRange(GetAvailableMoves(neighbour, unitType, maxMoves - 1));
-    //        }
-    //    }
-    //    return AvailableMoves;
-    //}
+        // Инициализируем словарь для хранения стоимостей перемещения до стартовой ячейки
+        gScore[startCell] = 0;
 
-    //public List<Cell> GetNeighbourCells(Cell cell) // Версия что бы получать все 8 клеток вокруг персонажа.
-    //{
-    //    List<Cell> NeighboursCells = new List<Cell>();
+        // Инициализируем список ячеек, которые еще нужно посетить
+        List<Cell> openList = new List<Cell> { startCell };
 
-    //    foreach (Direction dir in directions)
-    //    {
-    //        int xOffset = dir.XOffset;
-    //        int yOffset = dir.YOffset;
+        // Создаем словарь для хранения пути до каждой ячейки
+        Dictionary<Cell, Cell> cameFrom = new Dictionary<Cell, Cell>();
 
-    //        int x = cell.Row + xOffset;
-    //        int y = cell.Column + yOffset;
+        // Пока есть ячейки, которые нужно посетить
+        while (openList.Count > 0)
+        {
+            // Находим ячейку с наименьшей стоимостью перемещения            
+            Cell currentCell = openList.OrderBy(cell => gScore.GetValueOrDefault(cell, float.MaxValue)).First();
 
-    //        Cell neighbour = Cells.FirstOrDefault(c => c.Row == x && c.Column == y);
+            // Если текущая ячейка равна целевой, то мы нашли путь
+            if (currentCell == targetCell)
+            {
+                // Создаем список ячеек пути
+                List<Cell> path = new List<Cell> { currentCell };
 
-    //        if (neighbour != null)
-    //        {
-    //            NeighboursCells.Add(neighbour);
-    //        }
-    //    }
+                // Идем в обратном порядке от целевой ячейки к стартовой, добавляя каждую ячейку в путь
+                while (cameFrom.ContainsKey(currentCell))
+                {
+                    currentCell = cameFrom[currentCell];
+                    path.Insert(0, currentCell);
+                }
 
-    //    return NeighboursCells;
-    //}
-    #endregion
+                return path;
+            }
+
+            // Удаляем текущую ячейку из списка ячеек, которые нужно посетить
+            openList.Remove(currentCell);
+
+            // Проходимся по соседним ячейкам
+            foreach (Cell neighborCell in _grid.GetNeighbors(currentCell))
+            {
+                // Вычисляем затраты на перемещение до соседней ячейки
+                float tentativeScore = gScore.FirstOrDefault(pair => pair.Key == currentCell).Value + GetDistanceBetweenCells(currentCell, neighborCell);
+
+
+                // Если затраты на перемещение до соседней ячейки меньше, чем ранее вычисленные затраты
+                if (tentativeScore < gScore.GetValueOrDefault(neighborCell, float.MaxValue))
+                {
+                    // Добавляем соседнюю ячейку в список ячеек, которые нужно посетить
+                    openList.Add(neighborCell);
+
+                    // Обновляем стоимость перемещения до соседней ячейки
+                    gScore[neighborCell] = tentativeScore;
+
+                    // Добавляем текущую ячейку в словарь пути к соседней ячейке
+                    cameFrom[neighborCell] = currentCell;
+                }
+            }
+        }
+
+        // Если путь не найден, возвращаем null
+        return null;
+    }
+    private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
+    {
+        // Здесь мы можем использовать любой алгоритм для вычисления расстояния между ячейками.
+        // Например, можно использовать евклидово расстояние:
+        float dx = cell1.Coordinates.x - cell2.Coordinates.x;
+        float dy = cell1.Coordinates.y - cell2.Coordinates.y;
+        return Mathf.Sqrt(dx * dx + dy * dy);
+    }
+
+    private float Heuristic(Cell a, Cell b)
+    {
+        // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
+        return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
+    }
+
+    private void MoveUnitAlongPath(Unit unit, List<Cell> path)
+    {
+        // Двигаем юнита поочередно на каждую ячейку из списка
+        foreach (var cell in path)
+        {
+            unit.Move(cell); // было MoveTo
+        }
+    }
 
     public void UnselectCells()
     {
@@ -253,11 +302,6 @@ public class GridInteractor : Grid
         {
             cell.ChangeColor(cell.CellStandardColor);
         }
-    }
-
-    private bool IsWithinBounds(int x, int y)
-    {
-        return x >= 0 && x < 3 && y >= 0 && y < 3;
     }
 }
 
