@@ -208,70 +208,75 @@ public class GridInteractor : Grid
     }
 
 
-    private List<Cell> FindPathToTarget(Cell startCell, Cell targetCell)
+    public List<Cell> FindPathToTarget(Cell startCell, Cell endCell)
     {
-        // Создаем словарь для хранения затрат на перемещение до каждой ячейки
         Dictionary<Cell, float> gScore = new Dictionary<Cell, float>();
-
-        // Инициализируем словарь для хранения стоимостей перемещения до стартовой ячейки
         gScore[startCell] = 0;
 
-        // Инициализируем список ячеек, которые еще нужно посетить
-        List<Cell> openList = new List<Cell> { startCell };
+        Dictionary<Cell, float> fScore = new Dictionary<Cell, float>();
+        fScore[startCell] = Heuristic(startCell, endCell);
 
-        // Создаем словарь для хранения пути до каждой ячейки
+        List<Cell> closedList = new List<Cell>();
+        List<Cell> openList = new List<Cell>() { startCell };
+
         Dictionary<Cell, Cell> cameFrom = new Dictionary<Cell, Cell>();
 
-        // Пока есть ячейки, которые нужно посетить
         while (openList.Count > 0)
         {
-            // Находим ячейку с наименьшей стоимостью перемещения            
-            Cell currentCell = openList.OrderBy(cell => gScore.GetValueOrDefault(cell, float.MaxValue)).First();
+            Cell currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
 
-            // Если текущая ячейка равна целевой, то мы нашли путь
-            if (currentCell == targetCell)
+
+            if (currentCell == endCell)
             {
-                // Создаем список ячеек пути
-                List<Cell> path = new List<Cell> { currentCell };
-
-                // Идем в обратном порядке от целевой ячейки к стартовой, добавляя каждую ячейку в путь
-                while (cameFrom.ContainsKey(currentCell))
-                {
-                    currentCell = cameFrom[currentCell];
-                    path.Insert(0, currentCell);
-                }
-
-                return path;
+                return ReconstructPath(cameFrom, endCell);
             }
 
-            // Удаляем текущую ячейку из списка ячеек, которые нужно посетить
             openList.Remove(currentCell);
+            closedList.Add(currentCell);
 
-            // Проходимся по соседним ячейкам
-            foreach (Cell neighborCell in _grid.GetNeighbors(currentCell))
+            foreach (Cell neighborCell in GetNeighbourCells(currentCell))
             {
-                // Вычисляем затраты на перемещение до соседней ячейки
-                float tentativeScore = gScore.FirstOrDefault(pair => pair.Key == currentCell).Value + GetDistanceBetweenCells(currentCell, neighborCell);
-
-
-                // Если затраты на перемещение до соседней ячейки меньше, чем ранее вычисленные затраты
-                if (tentativeScore < gScore.GetValueOrDefault(neighborCell, float.MaxValue))
+                if (closedList.Contains(neighborCell))
                 {
-                    // Добавляем соседнюю ячейку в список ячеек, которые нужно посетить
-                    openList.Add(neighborCell);
-
-                    // Обновляем стоимость перемещения до соседней ячейки
-                    gScore[neighborCell] = tentativeScore;
-
-                    // Добавляем текущую ячейку в словарь пути к соседней ячейке
-                    cameFrom[neighborCell] = currentCell;
+                    continue;
                 }
+
+                float tentativeScore = gScore[currentCell] + GetDistanceBetweenCells(currentCell, neighborCell);
+
+                if (!openList.Contains(neighborCell))
+                {
+                    openList.Add(neighborCell);
+                }
+                else if (tentativeScore >= (gScore.TryGetValue(neighborCell, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
+
+                {
+                    continue;
+                }
+
+                cameFrom[neighborCell] = currentCell;
+                gScore[neighborCell] = tentativeScore;
+                fScore[neighborCell] = gScore[neighborCell] + Heuristic(neighborCell, endCell);
             }
         }
 
-        // Если путь не найден, возвращаем null
-        return null;
+        return new List<Cell>();
     }
+
+
+    private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell)
+    {
+        List<Cell> path = new List<Cell>() { currentCell };
+
+        while (cameFrom.ContainsKey(currentCell))
+        {
+            currentCell = cameFrom[currentCell];
+            path.Insert(0, currentCell);
+        }
+
+        return path;
+    }
+
+
     private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
     {
         // Здесь мы можем использовать любой алгоритм для вычисления расстояния между ячейками.
@@ -287,7 +292,7 @@ public class GridInteractor : Grid
         return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
     }
 
-    private void MoveUnitAlongPath(Unit unit, List<Cell> path)
+    public void MoveUnitAlongPath(Unit unit, List<Cell> path)
     {
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
