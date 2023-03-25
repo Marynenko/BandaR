@@ -16,14 +16,15 @@ public class GridInteractor : Grid
 
     public void InitializeActions()
     {
-        RayHandler.OnUnitAction += HandleUnitAction;
         Initialization();
+        RayHandler.OnUnitAction += HandleUnitAction;
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
     }
 
     private void OnDestroy()
     {
+        RayHandler.OnUnitAction += HandleUnitAction;
         OnUnitSelected -= HandleUnitSelected;
         OnUnitAction -= HandleUnitAction;
     }
