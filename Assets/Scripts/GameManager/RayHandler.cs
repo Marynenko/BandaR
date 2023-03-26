@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RayHandler : MonoBehaviour
@@ -23,15 +24,7 @@ public class RayHandler : MonoBehaviour
             if (unit.Type == UnitType.Player)
             {
                 _gridInteractor.SelectUnit(unit);
-                var availableMoves = _gridInteractor.AvailableMoves;
-
-                foreach (var cell in availableMoves)
-                {
-                    if (!cell.Equals(unit.CurrentCell))
-                    {
-                        _gridInteractor.HighlightCell(cell, cell.ColorMovementCell);
-                    }
-                }
+                HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
             }
         }
         else if (selectedUnit.Equals(unit))
@@ -41,16 +34,7 @@ public class RayHandler : MonoBehaviour
         else if (unit.Type == UnitType.Player)
         {
             _gridInteractor.SelectUnit(unit);
-            var currentCell = unit.CurrentCell;
-            var availableMoves = _gridInteractor.AvailableMoves;
-
-            foreach (var cell in availableMoves)
-            {
-                if (!cell.Equals(currentCell))
-                {
-                    _gridInteractor.HighlightCell(cell, cell.ColorMovementCell);
-                }
-            }
+            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
         }
         else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
         {
@@ -65,17 +49,15 @@ public class RayHandler : MonoBehaviour
         {
             _gridInteractor.UnselectUnit(selectedUnit);
             _gridInteractor.SelectUnit(unit);
-            var currentCell = unit.CurrentCell;
-            var availableMoves = _gridInteractor.AvailableMoves;
-
-            foreach (var cell in availableMoves)
-            {
-                if (!cell.Equals(currentCell))
-                {
-                    _gridInteractor.HighlightCell(cell, cell.ColorMovementCell);
-                }
-            }
+            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
         }
+    }
+
+    private void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color)
+    {
+        _gridInteractor.UnselectCells();
+        _gridInteractor.HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
+        availableMoves.Skip(1).ToList().ForEach(cell => _gridInteractor.HighlightCell(cell, color));
     }
 
 
@@ -94,7 +76,9 @@ public class RayHandler : MonoBehaviour
             return;
         }
 
-        var availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 1);
+        //var availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 1);
+        _gridInteractor.UnselectUnit(selectedUnit);
+        var availableMoves = _gridInteractor.GetAvailableMoves(cell, selectedUnit.Type, 1);
 
         if (availableMoves.Contains(cell))
         {

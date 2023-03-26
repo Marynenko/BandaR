@@ -6,6 +6,14 @@ public class GridInteractor : Grid
 {
     private List<Cell> _availableMoves;
 
+    private List<Direction> directions = new List<Direction>()
+    {
+        new Direction(0, 1),   // Up
+        new Direction(0, -1),  // Down
+        new Direction(-1, 0),  // Left
+        new Direction(1, 0)    // Right
+    };
+
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
@@ -28,15 +36,7 @@ public class GridInteractor : Grid
         RayHandler.OnUnitAction += HandleUnitAction;
         OnUnitSelected -= HandleUnitSelected;
         OnUnitAction -= HandleUnitAction;
-    }
-
-    List<Direction> directions = new List<Direction>()
-    {
-        new Direction(0, 1),   // Up
-        new Direction(0, -1),  // Down
-        new Direction(-1, 0),  // Left
-        new Direction(1, 0)    // Right
-    };
+    }    
 
     public void SelectUnit(Unit unit)
     {
@@ -50,12 +50,12 @@ public class GridInteractor : Grid
     public void UnselectUnit(Unit unit)
     {
         unit.Status = UnitStatus.Unselected;
-        OnUnitSelected?.Invoke(unit, unit.Type);
         unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
         unit.CurrentCell.UnitOn = StatusUnitOn.No;
+        unit.CurrentCell.SetIsWalkable(true);
     }
 
-    public void SelectCell(Cell cell, UnitType unitType, bool clearSelectedCells = false)
+    public void SelectCell(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
     {
         if (clearSelectedCells)
         {
@@ -64,18 +64,31 @@ public class GridInteractor : Grid
 
         List<Cell> availableMovesCopy;
 
-        if (unitType == UnitType.Player)
-        {
-            _availableMoves = GetAvailableMoves(cell, unitType, 1);
-            availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
-        }
-        else if (unitType == UnitType.Enemy)
+        if (unitType == UnitType.Player || unitType == UnitType.Enemy)
         {
             _availableMoves = GetAvailableMoves(cell, unitType, 1);
             availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
         else
+        {
             return;
+        }
+
+        if (selectedUnitColor.HasValue)
+        {
+            availableMovesCopy.ElementAt(0).ChangeColor(selectedUnitColor.Value);
+        }
+        else
+        {
+            if (unitType == UnitType.Player)
+            {
+                availableMovesCopy.ElementAt(0).ChangeColor(cell.ColorUnitOnCell);
+            }
+            else if (unitType == UnitType.Enemy)
+            {
+                availableMovesCopy.ElementAt(0).ChangeColor(cell.ColorEnemyOnCell);
+            }
+        }
 
         availableMovesCopy.Remove(cell);
         foreach (var moveCell in availableMovesCopy)
@@ -83,7 +96,6 @@ public class GridInteractor : Grid
             moveCell.ChangeColor(moveCell.ColorMovementCell);
         }
     }
-
 
     public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves)
     {
@@ -234,7 +246,7 @@ public class GridInteractor : Grid
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
         {
-            unit.Move(cell); // было MoveTo
+            unit.MoveToCell(cell); // изменен вызов метода
         }
     }
 
@@ -243,18 +255,22 @@ public class GridInteractor : Grid
         if (unit.CurrentCell != null)
         {
             unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
-            unit.CurrentCell.UnitOn = StatusUnitOn.No;
-        }
+            unit.CurrentCell.UnitOn = StatusUnitOn.No; // ---- Убрать! Уже это делаем в методе HandleCellClick стр. 80
 
-        targetCell.ChangeColor(targetCell.ColorUnitOnCell);
-        targetCell.UnitOn = StatusUnitOn.Yes;
-        unit.MoveToCell(targetCell);
+            Color unitColor = unit.Type == UnitType.Player ? Color.blue : Color.red; // получение цвета юнита в зависимости от его типа
 
-        if (OnUnitAction != null)
-        {
-            OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
+            targetCell.ChangeColor(unitColor);
+            targetCell.UnitOn = StatusUnitOn.Yes;
+            unit.MoveToCell(targetCell); // изменен вызов метода
+
+            if (OnUnitAction != null)
+            {
+                OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
+            }
         }
     }
+
+
 
     private void HandleUnitSelected(Unit unit, UnitType unitType)
     {
@@ -300,7 +316,7 @@ public class GridInteractor : Grid
     {
         if (actionType == UnitActionType.Move)
         {
-            unit.Move(cell);
+            unit.MoveToCell(cell);
         }
     }
 
@@ -317,16 +333,6 @@ public class GridInteractor : Grid
     {
         cell.ChangeColor(color);
     }
-
-    public void ClearHighlightedCells()
-    {
-        foreach (var cell in Cells)
-        {
-            cell.ChangeColor(cell.ColorStandardCell);
-        }
-    }
-
-
 }
 
 public class Direction

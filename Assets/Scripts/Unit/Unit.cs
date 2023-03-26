@@ -28,39 +28,11 @@ public class Unit : MonoBehaviour
     public Cell CurrentCell;
     public UnitType Type;
     public UnitStatus Status = UnitStatus.Unselected;
+    public int MaxMoves;
 
     #endregion
 
-    #region Public Methods
-    public void Move(Cell targetCell)
-    {
-        if (CurrentCell == targetCell) return;
-        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
-
-        if (Status != UnitStatus.Moved)
-        {
-            Status = UnitStatus.Moved;
-            CurrentCell.RemoveUnit(this);
-            targetCell.SetUnit(this);
-            CurrentCell = targetCell;
-
-            if (OnUnitAction != null)
-            {
-                OnUnitAction(UnitActionType.Move, this, targetCell);
-            }
-
-            MoveToCell(targetCell);
-        }
-    }
-
-    public void MoveToCell(Cell cell)
-    {
-        Vector3 newPosition = new Vector3(cell.transform.position.x, POSITION_Y, cell.transform.position.z);
-        transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE);
-        CurrentCell.RemoveUnit(this);
-        cell.SetUnit(this);
-        CurrentCell = cell;
-    }
+    #region Public Methods    
 
     [ContextMenu("Initialize Unit")]
     public void InitializeUnit()
@@ -78,6 +50,28 @@ public class Unit : MonoBehaviour
                 Status = UnitStatus.Unselected;
             }
 
+        }
+    }
+
+    public void MoveToCell(Cell targetCell)
+    {
+        if (CurrentCell == targetCell) return;
+        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
+
+        if (Status != UnitStatus.Moved)
+        {
+            Status = UnitStatus.Moved;
+            CurrentCell.RemoveUnit(this);
+            targetCell.SetUnit(this);
+            CurrentCell = targetCell;
+
+            if (OnUnitAction != null)
+            {
+                OnUnitAction(UnitActionType.Move, this, targetCell);
+            }
+
+            Vector3 newPosition = new Vector3(targetCell.transform.position.x, POSITION_Y, targetCell.transform.position.z);
+            transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE);
         }
     }
 
