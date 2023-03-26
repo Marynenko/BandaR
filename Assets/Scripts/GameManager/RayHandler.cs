@@ -23,14 +23,11 @@ public class RayHandler : MonoBehaviour
             if (unit.Type == UnitType.Player)
             {
                 _gridInteractor.SelectUnit(unit);
-                var currentCell = unit.CurrentCell;
-                _gridInteractor.UnselectCells(); // очистка выделенных клеток
-                _gridInteractor.SelectCell(currentCell, unit.Type);
-                var availableMoves = _gridInteractor.GetAvailableMoves(currentCell, unit.Type, 1);
+                var availableMoves = _gridInteractor.AvailableMoves;
 
                 foreach (var cell in availableMoves)
                 {
-                    if (!cell.Equals(currentCell))
+                    if (!cell.Equals(unit.CurrentCell))
                     {
                         _gridInteractor.HighlightCell(cell, cell.ColorMovementCell);
                     }
@@ -45,9 +42,7 @@ public class RayHandler : MonoBehaviour
         {
             _gridInteractor.SelectUnit(unit);
             var currentCell = unit.CurrentCell;
-            _gridInteractor.UnselectCells(); // очистка выделенных клеток
-            _gridInteractor.SelectCell(currentCell, unit.Type, true);
-            var availableMoves = _gridInteractor.GetAvailableMoves(currentCell, unit.Type, 1);
+            var availableMoves = _gridInteractor.AvailableMoves;
 
             foreach (var cell in availableMoves)
             {
@@ -63,7 +58,7 @@ public class RayHandler : MonoBehaviour
             if (selectedUnit.CanAttack(currentCell))
             {
                 selectedUnit.Attack(unit);
-                _gridInteractor.UnselectCells(); // очистка выделенных клеток
+                _gridInteractor.UnselectCells();
             }
         }
         else
@@ -71,9 +66,7 @@ public class RayHandler : MonoBehaviour
             _gridInteractor.UnselectUnit(selectedUnit);
             _gridInteractor.SelectUnit(unit);
             var currentCell = unit.CurrentCell;
-            _gridInteractor.UnselectCells(); // очистка выделенных клеток
-            _gridInteractor.SelectCell(currentCell, unit.Type, true);
-            var availableMoves = _gridInteractor.GetAvailableMoves(currentCell, unit.Type, 1);
+            var availableMoves = _gridInteractor.AvailableMoves;
 
             foreach (var cell in availableMoves)
             {
@@ -84,6 +77,8 @@ public class RayHandler : MonoBehaviour
             }
         }
     }
+
+
 
     public void HandleCellClick(Cell cell)
     {

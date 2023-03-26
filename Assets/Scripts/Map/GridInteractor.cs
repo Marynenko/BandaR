@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class GridInteractor : Grid
 {
-    [SerializeField] private List<Cell> _availableMoves;
+    private List<Cell> _availableMoves;
 
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
     public static event UnitActionEventHandler OnUnitAction;
 
+    public IReadOnlyList<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
 
