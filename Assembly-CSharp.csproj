@@ -59,7 +59,8 @@
     <Compile Include="Assets\Scripts\Cell.cs" />
     <Compile Include="Assets\Scripts\GameManager\GameController.cs" />
     <Compile Include="Assets\Scripts\GameManager\IGameController.cs" />
-    <Compile Include="Assets\Scripts\GameManager\RayPlayer.cs" />
+    <Compile Include="Assets\Scripts\GameManager\IInputHandler.cs" />
+    <Compile Include="Assets\Scripts\GameManager\InputPlayer.cs" />
     <Compile Include="Assets\Scripts\Map\Grid.cs" />
     <Compile Include="Assets\Scripts\Map\GridGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\GridInteractor.cs" />

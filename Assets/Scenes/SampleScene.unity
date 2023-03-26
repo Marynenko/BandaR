@@ -301,7 +301,7 @@ PrefabInstance:
     - target: {fileID: 7934988050377011889, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MaxMoves
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7934988050377011889, guid: d00151081c233334e90c56236c0be649,
         type: 3}
@@ -886,7 +886,7 @@ PrefabInstance:
     - target: {fileID: 6075207307191765152, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}
       propertyPath: MaxMoves
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6075207307191765152, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}
@@ -1460,7 +1460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c553ef3daaf47d044ac961a58879070f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rayHandler: {fileID: 2077630392}
+  _gameController: {fileID: 2077630392}
 --- !u!1 &971218189
 GameObject:
   m_ObjectHideFlags: 0
@@ -2103,7 +2103,7 @@ GameObject:
   - component: {fileID: 2077630393}
   - component: {fileID: 2077630392}
   m_Layer: 0
-  m_Name: RayHandler
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -23,17 +23,12 @@ public enum StatusUnitOn // test v.1
 
 public class Cell : MonoBehaviour
 {
-    private const float POSITION_Y = .8f;
-    private const float MAX_DISTANCE = 3f;
-
-    private List<Unit> _units = new List<Unit>();
     private bool _isWalkable;
 
     public GridInteractor GICell;
     public List<Cell> Neighbors { get; set; }
 
     [SerializeField] private MeshRenderer MeshRenderer;
-
     [HideInInspector] public State UnitState; // Состояние клетки.
     [HideInInspector] public StatusUnitOn UnitOn; // Юнит на клетке или нет.    
     [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
@@ -48,20 +43,6 @@ public class Cell : MonoBehaviour
     public int Column { get; private set; }
 
     // Юнит который на клетке. ДОПИЛИТЬ
-
-    public void SetUnit(Unit unit)
-    {
-        _units.Add(unit);
-        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
-    }
-
-    public void RemoveUnit(Unit unit)
-    {
-        if (_units.Contains(unit))
-        {
-            _units.Remove(unit);
-        }
-    }
 
     public void Initialize(int row, int column, GridInteractor gridInteractor, bool isWalkable, StatusUnitOn unitOn)
     {

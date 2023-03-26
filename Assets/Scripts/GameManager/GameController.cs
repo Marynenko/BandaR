@@ -37,18 +37,11 @@ public class GameController : MonoBehaviour, IGameController
         }
         else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
         {
-            var currentCell = unit.CurrentCell;
-            if (selectedUnit.CanAttack(currentCell))
-            {
-                selectedUnit.Attack(unit);
-                _gridInteractor.UnselectCells();
-            }
+            HandleUnitAttack(selectedUnit, unit);
         }
         else
         {
-            _gridInteractor.UnselectUnit(selectedUnit);
-            _gridInteractor.SelectUnit(unit);
-            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+            HandleUnitDeselection(selectedUnit, unit);
         }
     }
 
@@ -59,6 +52,78 @@ public class GameController : MonoBehaviour, IGameController
         availableMoves.Skip(1).ToList().ForEach(cell => _gridInteractor.HighlightCell(cell, color));
     }
 
+    public void HandleUnitClick(Unit unit)
+    {
+        var selectedUnit = _gridInteractor.SelectedUnit;
+
+        if (selectedUnit == null)
+        {
+            if (unit.Type == UnitType.Player)
+            {
+                _gridInteractor.SelectUnit(unit);
+                HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+            }
+        }
+        else if (selectedUnit.Equals(unit))
+        {
+            return;
+        }
+        else if (unit.Type == UnitType.Player)
+        {
+            _gridInteractor.SelectUnit(unit);
+            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+        }
+        else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
+        {
+            HandleUnitAttack(selectedUnit, unit);
+        }
+        else
+        {
+            HandleUnitDeselection(selectedUnit, unit);
+        }
+    }
+
+    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
+    {
+        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
+        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
+    }
+
+    private void HandleUnitDeselection(Unit selectedUnit, Unit unit)
+    {
+        _gridInteractor.UnselectUnit(selectedUnit);
+        _gridInteractor.UnselectCells();
+        _gridInteractor.SelectUnit(unit);
+        HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+    }
+
+    private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
+    {
+        if (selectedUnit.Status != UnitStatus.Selected)
+        {
+            return;
+        }
+
+        if (targetUnit.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
+        {
+            selectedUnit.Attack(targetUnit);
+
+            if (targetUnit.Health <= 0)
+            {
+                _gridInteractor.RemoveUnit(targetUnit);
+            }
+            else
+            {
+                _gridInteractor.UpdateUnit(targetUnit);
+            }
+
+            _gridInteractor.UnselectUnit(selectedUnit);
+
+            // Update available moves after attack
+            var availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 1);
+            _gridInteractor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
+        }
+    }
 
 
     public void HandleCellClick(Cell cell)
@@ -75,28 +140,58 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
-        //var availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 1);
-        _gridInteractor.UnselectUnit(selectedUnit);
         var availableMoves = _gridInteractor.GetAvailableMoves(cell, selectedUnit.Type, 1);
 
-        if (availableMoves.Contains(cell))
+        if (!availableMoves.Contains(cell))
         {
-            _gridInteractor.MoveUnit(selectedUnit, cell);
-
-            // Снимаем выделение с текущей ячейки
-            selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.ColorStandardCell);
-            selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
-            selectedUnit.CurrentCell.SetIsWalkable(true);
-
-            // Выделяем ячейку, на которую переместился юнит
-            cell.ChangeColor(selectedUnit.CurrentCell.ColorUnitOnCell);
-            cell.UnitOn = StatusUnitOn.Yes;
-
-            _gridInteractor.UnselectUnit(selectedUnit);
-
-            OnUnitAction?.Invoke(UnitActionType.Move, selectedUnit, cell);
+            return;
         }
 
+        var path = _gridInteractor.FindPathToTarget(selectedUnit.CurrentCell, cell);
+        if (path.Count == 0)
+        {
+            return;
+        }
+
+        _gridInteractor.UnselectUnit(selectedUnit);
+        _gridInteractor.MoveUnitAlongPath(selectedUnit, path);
+
+        selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.ColorStandardCell);
+        selectedUnit.CurrentCell.UnitOn = null;
+
+        cell.UnitOn = selectedUnit;
+        cell.ChangeColor(cell.ColorStandardCell);
+
+        _gridInteractor.SelectUnit(selectedUnit);
     }
+
+
+    private bool CanMoveToCell(Cell cell, Unit unit)
+    {
+        // Проверяем, есть ли юнит в списке доступных для перемещения ячеек
+        if (!_gridInteractor.AvailableMoves.Contains(cell))
+        {
+            return false;
+        }
+
+        // Проверяем, есть ли на ячейке другой юнит
+        if (cell.UnitOn != null)
+        {
+            return false;
+        }
+
+        // Проверяем, достаточно ли очков хода у юнита для перемещения на эту ячейку
+        if (unit.MovementPoints < cell.MovementCost)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
 }
 

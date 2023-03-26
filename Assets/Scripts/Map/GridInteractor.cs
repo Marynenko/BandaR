@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
+using UnityEngine.UIElements;
 
 public class GridInteractor : Grid
 {
+    private List<Unit> _units = new List<Unit>();
     private List<Cell> _availableMoves;
-
     private List<Direction> directions = new List<Direction>()
     {
         new Direction(0, 1),   // Up
@@ -13,6 +15,9 @@ public class GridInteractor : Grid
         new Direction(-1, 0),  // Left
         new Direction(1, 0)    // Right
     };
+
+    private const float POSITION_Y = .8f;
+    private const float MAX_DISTANCE = 3f;
 
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
@@ -53,6 +58,27 @@ public class GridInteractor : Grid
         unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
         unit.CurrentCell.UnitOn = StatusUnitOn.No;
         unit.CurrentCell.SetIsWalkable(true);
+    }
+
+
+    public void AddUnit(Unit unit)
+    {
+        _units.Add(unit);
+        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
+    }
+
+    public void RemoveUnit(Unit unit)
+    {
+        if (_units.Contains(unit))
+        {
+            _units.Remove(unit);
+        }
+    }
+
+    public void UpdateUnit(Unit unit)
+    {
+        // Обновить отображение юнита на игровом поле
+        unit.UpdateVisuals();
     }
 
     public void SelectCell(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
@@ -151,13 +177,7 @@ public class GridInteractor : Grid
         }
 
         return neighbours;
-    }
-
-    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
-    {
-        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
-        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
-    }
+    }    
 
     public List<Cell> FindPathToTarget(Cell startCell, Cell endCell)
     {

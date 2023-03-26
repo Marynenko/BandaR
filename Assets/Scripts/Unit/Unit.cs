@@ -1,6 +1,8 @@
 ﻿using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public enum UnitType
 {
@@ -28,7 +30,11 @@ public class Unit : MonoBehaviour
     public Cell CurrentCell;
     public UnitType Type;
     public UnitStatus Status = UnitStatus.Unselected;
-    public int MaxMoves;
+
+    public int Health { get; private set; } = 100;
+    public int AttackDamage { get; private set; } = 10;
+    public float AttackRange { get; private set; } = 1.5f;
+    public int MovementRange { get; private set; } = 3;
 
     #endregion
 
@@ -53,6 +59,22 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public bool CanMoveToCell(Cell targetCell)
+    {
+        if (CurrentCell == targetCell) return false;
+        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return false;
+
+        if (Status == UnitStatus.Moved) return false;
+
+        var path = _gridInteractor.GetPath(CurrentCell, targetCell, Type);
+        if (path == null) return false;
+
+        var cost = _gridInteractor.GetPathCost(path, Type);
+        if (cost > MovementPoints) return false;
+
+        return true;
+    }
+
     public void MoveToCell(Cell targetCell)
     {
         if (CurrentCell == targetCell) return;
@@ -75,19 +97,52 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool CanAttack(Cell targetCell)
+    public bool CanAttack(Unit targetUnit)
     {
-        return false;
-        // Проверка на возможность атаки
-        // Например, проверка, что целевая клетка находится в пределах радиуса атаки и что на клетке находится юнит противника
-        // Вернуть true если атака возможна, иначе false
+        if (targetUnit == null || targetUnit.Type != UnitType.Enemy)
+        {
+            return false;
+        }
+
+        var distance = Vector3.Distance(transform.position, targetUnit.transform.position);
+        return distance <= AttackRange;
     }
 
-    public void Attack(Unit targetUnit)
+
+    public void Attack(Unit target)
     {
-        // Реализация атаки на юнита
-        // Например, вычисление урона, уменьшение здоровья целевого юнита, обработка смерти юнита, обновление интерфейса и т.д.
+        if (Vector3.Distance(transform.position, target.transform.position) <= AttackRange)
+        {
+            target.TakeDamage(AttackDamage);
+        }
     }
+
+    public void TakeDamage(int damage)
+    {
+        Health -= damage;
+        if (Health <= 0)
+        {
+            Health = 0;
+            Die();
+            Destroy(gameObject);
+        }
+    }
+
+
+
+    public void Die()
+    {
+        _gridInteractor.RemoveUnit(this);
+    }
+
+    public void UpdateVisuals()
+    {
+        //healthBar.fillAmount = (float)Health / MaxHealth;
+    }
+
+
+
+
 
     #endregion
 
