@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RayPlayer : MonoBehaviour
 {
-    [SerializeField] private RayHandler _rayHandler;
+    [SerializeField] private GameController _rayHandler;
 
     private void Update()
     {
