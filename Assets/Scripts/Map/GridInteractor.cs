@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 
 public class GridInteractor : Grid
 {
-    private List<Unit> _units = new List<Unit>();
     private List<Cell> _availableMoves;
     private List<Direction> directions = new List<Direction>()
     {
@@ -16,7 +15,6 @@ public class GridInteractor : Grid
         new Direction(1, 0)    // Right
     };
 
-    private const float POSITION_Y = .8f;
     private const float MAX_DISTANCE = 3f;
 
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
@@ -28,9 +26,8 @@ public class GridInteractor : Grid
     public List<Cell> Cells;
     public Unit SelectedUnit { get; set; }
 
-    public void InitializeActions()
+    private void Start() 
     {
-        Initialization();
         GameController.OnUnitAction += HandleUnitAction;
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
@@ -60,20 +57,6 @@ public class GridInteractor : Grid
         unit.CurrentCell.SetIsWalkable(true);
     }
 
-
-    public void AddUnit(Unit unit)
-    {
-        _units.Add(unit);
-        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
-    }
-
-    public void RemoveUnit(Unit unit)
-    {
-        if (_units.Contains(unit))
-        {
-            _units.Remove(unit);
-        }
-    }
 
     public void UpdateUnit(Unit unit)
     {
@@ -266,7 +249,7 @@ public class GridInteractor : Grid
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
         {
-            unit.MoveToCell(cell); // изменен вызов метода
+            unit.MoveToCell(cell, this); // изменен вызов метода
         }
     }
 
@@ -275,13 +258,12 @@ public class GridInteractor : Grid
         if (unit.CurrentCell != null)
         {
             unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
-            unit.CurrentCell.UnitOn = StatusUnitOn.No; // ---- Убрать! Уже это делаем в методе HandleCellClick стр. 80
 
-            Color unitColor = unit.Type == UnitType.Player ? Color.blue : Color.red; // получение цвета юнита в зависимости от его типа
+            Color unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorUnitOnCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
 
             targetCell.ChangeColor(unitColor);
             targetCell.UnitOn = StatusUnitOn.Yes;
-            unit.MoveToCell(targetCell); // изменен вызов метода
+            unit.MoveToCell(targetCell, this); // изменен вызов метода
 
             if (OnUnitAction != null)
             {
@@ -289,6 +271,8 @@ public class GridInteractor : Grid
             }
         }
     }
+
+
 
 
 
@@ -336,11 +320,26 @@ public class GridInteractor : Grid
     {
         if (actionType == UnitActionType.Move)
         {
-            unit.MoveToCell(cell);
+            unit.MoveToCell(cell, this);
         }
     }
 
-    
+    public void HandleUnitDeselection(Unit selectedUnit, Unit unit)
+    {
+        UnselectUnit(selectedUnit);
+        UnselectCells();
+        SelectUnit(unit);
+        HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell);
+    }
+
+    public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color)
+    {
+        UnselectCells();
+        HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
+        availableMoves.Skip(1).ToList().ForEach(cell => HighlightCell(cell, color));
+    }
+
+
     public void UnselectCells()
     {
         foreach (var cell in Cells)

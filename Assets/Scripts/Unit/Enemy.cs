@@ -30,7 +30,7 @@ public class Enemy : Unit
 
     //private bool IsPlayerInSight()
     //{
-    //    foreach (Unit unit in _gridInteractor.Units)
+    //    foreach (Unit unit in _gridInteractor.AllUnits)
     //    {
     //        if (unit.Type == UnitType.Player)
     //        {

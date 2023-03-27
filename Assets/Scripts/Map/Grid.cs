@@ -4,15 +4,17 @@ using System.Linq;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
-{   
-    [SerializeField] protected GridInteractor GGridInteractor;
+{
+    private const float POSITION_Y = .8f;
+
+    protected GridInteractor GGridInteractor;
     protected GridGenerator _gridGenerator;
     protected Cell[,] GridCells = null;
 
-    public List<Unit> Units;
+    public List<Unit> AllUnits;
 
 
-    protected void Initialization()
+    private void Awake()
     {
         _gridGenerator = FindObjectOfType<GridGenerator>();
         var Width = _gridGenerator.GridSize.x;
@@ -27,12 +29,27 @@ public class Grid : MonoBehaviour
             cell.Initialize(x, y, GGridInteractor, true, StatusUnitOn.No);
             GridCells[x, y] = cell;
         }
-        // Получить все Unit в игре и добавить их в список Units
-        //Units = FindObjectsOfType<Unit>().ToList();
-        foreach (Unit unit in Units)
+        // Получить все Unit в игре и добавить их в список AllUnits
+        //AllUnits = FindObjectsOfType<Unit>().ToList();
+        foreach (Unit unit in AllUnits)
         {
             unit.InitializeUnit();
         }
     }
 
+    public void AddUnit(Unit unit)
+    {
+        AllUnits.Add(unit);
+        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
+    }
+
+    public void RemoveUnit(Unit unit)
+    {
+        if (AllUnits.Contains(unit))
+        {
+            AllUnits.Remove(unit);
+        }
+    }
 }
+
+

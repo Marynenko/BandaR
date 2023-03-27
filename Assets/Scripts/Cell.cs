@@ -38,6 +38,7 @@ public class Cell : MonoBehaviour
     public Color ColorEnemyOnCell; // Цвет клетки на которой стоит враг.
     public Color ColorSelectedCell; // Цвет клетки - выбранной
     public Color ColorMovementCell; // Цвет клетки - Для движения
+    internal readonly int MovementCost;
 
     public int Row { get; private set; }
     public int Column { get; private set; }

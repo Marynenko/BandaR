@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class GameController : MonoBehaviour, IGameController
 {
@@ -9,11 +10,6 @@ public class GameController : MonoBehaviour, IGameController
 
     public static event Action<UnitActionType, Unit, Cell> OnUnitAction;
 
-    private void Start()
-    {
-        _gridInteractor.InitializeActions();
-    }
-
     public void HandleUnitClick(Unit unit)
     {
         var selectedUnit = _gridInteractor.SelectedUnit;
@@ -23,7 +19,11 @@ public class GameController : MonoBehaviour, IGameController
             if (unit.Type == UnitType.Player)
             {
                 _gridInteractor.SelectUnit(unit);
-                HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+                var availableMoves = _gridInteractor.GetAvailableMoves(unit.CurrentCell, unit.Type, 1);
+                foreach (var move in availableMoves)
+                {
+                    move.ChangeColor(move.ColorMovementCell);
+                }
             }
         }
         else if (selectedUnit.Equals(unit))
@@ -33,45 +33,11 @@ public class GameController : MonoBehaviour, IGameController
         else if (unit.Type == UnitType.Player)
         {
             _gridInteractor.SelectUnit(unit);
-            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
-        }
-        else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
-        {
-            HandleUnitAttack(selectedUnit, unit);
-        }
-        else
-        {
-            HandleUnitDeselection(selectedUnit, unit);
-        }
-    }
-
-    public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color)
-    {
-        _gridInteractor.UnselectCells();
-        _gridInteractor.HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
-        availableMoves.Skip(1).ToList().ForEach(cell => _gridInteractor.HighlightCell(cell, color));
-    }
-
-    public void HandleUnitClick(Unit unit)
-    {
-        var selectedUnit = _gridInteractor.SelectedUnit;
-
-        if (selectedUnit == null)
-        {
-            if (unit.Type == UnitType.Player)
+            var availableMoves = _gridInteractor.GetAvailableMoves(unit.CurrentCell, unit.Type, 1);
+            foreach (var move in availableMoves)
             {
-                _gridInteractor.SelectUnit(unit);
-                HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
+                move.ChangeColor(move.ColorMovementCell);
             }
-        }
-        else if (selectedUnit.Equals(unit))
-        {
-            return;
-        }
-        else if (unit.Type == UnitType.Player)
-        {
-            _gridInteractor.SelectUnit(unit);
-            HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
         }
         else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
         {
@@ -79,7 +45,7 @@ public class GameController : MonoBehaviour, IGameController
         }
         else
         {
-            HandleUnitDeselection(selectedUnit, unit);
+            _gridInteractor.HandleUnitDeselection(selectedUnit, unit);
         }
     }
 
@@ -87,14 +53,6 @@ public class GameController : MonoBehaviour, IGameController
     {
         var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
         return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
-    }
-
-    private void HandleUnitDeselection(Unit selectedUnit, Unit unit)
-    {
-        _gridInteractor.UnselectUnit(selectedUnit);
-        _gridInteractor.UnselectCells();
-        _gridInteractor.SelectUnit(unit);
-        HighlightAvailableMoves(_gridInteractor.AvailableMoves, unit.CurrentCell.ColorMovementCell);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -157,41 +115,12 @@ public class GameController : MonoBehaviour, IGameController
         _gridInteractor.MoveUnitAlongPath(selectedUnit, path);
 
         selectedUnit.CurrentCell.ChangeColor(selectedUnit.CurrentCell.ColorStandardCell);
-        selectedUnit.CurrentCell.UnitOn = null;
+        selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
 
-        cell.UnitOn = selectedUnit;
-        cell.ChangeColor(cell.ColorStandardCell);
+        Color unitColor = selectedUnit.Type == UnitType.Player ? selectedUnit.CurrentCell.ColorUnitOnCell : selectedUnit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
+        cell.UnitOn = StatusUnitOn.Yes;            
+        cell.ChangeColor(unitColor); // -Тут поменять мне кажется.
 
         _gridInteractor.SelectUnit(selectedUnit);
     }
-
-
-    private bool CanMoveToCell(Cell cell, Unit unit)
-    {
-        // Проверяем, есть ли юнит в списке доступных для перемещения ячеек
-        if (!_gridInteractor.AvailableMoves.Contains(cell))
-        {
-            return false;
-        }
-
-        // Проверяем, есть ли на ячейке другой юнит
-        if (cell.UnitOn != null)
-        {
-            return false;
-        }
-
-        // Проверяем, достаточно ли очков хода у юнита для перемещения на эту ячейку
-        if (unit.MovementPoints < cell.MovementCost)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-
-
-
-
 }
-

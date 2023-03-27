@@ -31,9 +31,11 @@ public class Unit : MonoBehaviour
     public UnitType Type;
     public UnitStatus Status = UnitStatus.Unselected;
 
+    public int ID { get; private set; }
     public int Health { get; private set; } = 100;
     public int AttackDamage { get; private set; } = 10;
     public float AttackRange { get; private set; } = 1.5f;
+    public int MovementPoints { get; private set; } = 1;
     public int MovementRange { get; private set; } = 3;
 
     #endregion
@@ -59,23 +61,19 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool CanMoveToCell(Cell targetCell)
+    public bool CanMoveToCell(Cell cell, Unit unit, List<Cell> AvailableMoves)
     {
-        if (CurrentCell == targetCell) return false;
-        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return false;
-
-        if (Status == UnitStatus.Moved) return false;
-
-        var path = _gridInteractor.GetPath(CurrentCell, targetCell, Type);
-        if (path == null) return false;
-
-        var cost = _gridInteractor.GetPathCost(path, Type);
-        if (cost > MovementPoints) return false;
-
+        if (unit.CurrentCell == cell) return false;
+        if (Vector3.Distance(unit.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
+        if (unit.Status == UnitStatus.Moved) return false;
+        if (!AvailableMoves.Contains(cell)) return false;
+        if (cell.UnitOn != StatusUnitOn.No) return false; // Либо нет либо да
+        if (unit.MovementPoints < cell.MovementCost) return false;
         return true;
     }
 
-    public void MoveToCell(Cell targetCell)
+
+    public void MoveToCell(Cell targetCell, GridInteractor grid)
     {
         if (CurrentCell == targetCell) return;
         if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
@@ -83,8 +81,8 @@ public class Unit : MonoBehaviour
         if (Status != UnitStatus.Moved)
         {
             Status = UnitStatus.Moved;
-            CurrentCell.RemoveUnit(this);
-            targetCell.SetUnit(this);
+            grid.RemoveUnit(this);
+            grid.AddUnit(this);
             CurrentCell = targetCell;
 
             if (OnUnitAction != null)
@@ -96,6 +94,8 @@ public class Unit : MonoBehaviour
             transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE);
         }
     }
+
+
 
     public bool CanAttack(Unit targetUnit)
     {
@@ -132,7 +132,7 @@ public class Unit : MonoBehaviour
 
     public void Die()
     {
-        _gridInteractor.RemoveUnit(this);
+        //_gridInteractor.RemoveUnit(this);
     }
 
     public void UpdateVisuals()

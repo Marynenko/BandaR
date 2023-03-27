@@ -6,6 +6,5 @@ public interface IGameController
 {
     void HandleUnitClick(Unit unit);
     void HandleCellClick(Cell cell);
-    void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color);
 }
 
