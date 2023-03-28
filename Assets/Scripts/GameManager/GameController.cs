@@ -6,9 +6,15 @@ using static UnityEngine.UI.CanvasScaler;
 
 public class GameController : MonoBehaviour, IGameController
 {
-    [SerializeField] private GridInteractor _gridInteractor;
+    private GridInteractor _gridInteractor;
 
     public static event Action<UnitActionType, Unit, Cell> OnUnitAction;
+
+    private void Start()
+    {
+        var grid = FindObjectOfType<Grid>();
+        _gridInteractor = grid.Interactor;
+    }
 
     public void HandleUnitClick(Unit unit)
     {
@@ -49,12 +55,6 @@ public class GameController : MonoBehaviour, IGameController
         }
     }
 
-    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
-    {
-        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
-        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
-    }
-
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
     {
         if (selectedUnit.Status != UnitStatus.Selected)
@@ -82,7 +82,6 @@ public class GameController : MonoBehaviour, IGameController
             _gridInteractor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
         }
     }
-
 
     public void HandleCellClick(Cell cell)
     {
@@ -119,8 +118,20 @@ public class GameController : MonoBehaviour, IGameController
 
         Color unitColor = selectedUnit.Type == UnitType.Player ? selectedUnit.CurrentCell.ColorUnitOnCell : selectedUnit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
         cell.UnitOn = StatusUnitOn.Yes;            
-        cell.ChangeColor(unitColor); // -Тут поменять мне кажется.
+        cell.ChangeColor(unitColor); // -Тут поменять мне кажется. Уже поменял
 
         _gridInteractor.SelectUnit(selectedUnit);
+
+        // проверяем соседство юнитов после каждого перемещения
+        //if (AreUnitsAdjacent(selectedUnit, _gridInteractor.AllUnits))
+        //{
+        //    // начинаем бой или выполняем нужные действия
+        //}
+    }
+
+    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
+    {
+        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
+        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
     }
 }

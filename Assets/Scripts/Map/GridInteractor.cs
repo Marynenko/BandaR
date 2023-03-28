@@ -145,8 +145,8 @@ public class GridInteractor : Grid
             int neighbourX = cell.Row + direction.XOffset;
             int neighbourY = cell.Column + direction.YOffset;
 
-            var Width = _gridGenerator.GridSize.x;
-            var Height = _gridGenerator.GridSize.y;
+            var Width = Generator.GridSize.x;
+            var Height = Generator.GridSize.y;
 
 
             if (neighbourX >= 0 && neighbourX < Width && neighbourY >= 0 && neighbourY < Height)
@@ -271,9 +271,6 @@ public class GridInteractor : Grid
             }
         }
     }
-
-
-
 
 
     private void HandleUnitSelected(Unit unit, UnitType unitType)

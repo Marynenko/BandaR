@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.CanvasScaler;
 
 public enum State
 {
@@ -38,7 +34,7 @@ public class Cell : MonoBehaviour
     public Color ColorEnemyOnCell; // Цвет клетки на которой стоит враг.
     public Color ColorSelectedCell; // Цвет клетки - выбранной
     public Color ColorMovementCell; // Цвет клетки - Для движения
-    internal readonly int MovementCost;
+    internal readonly int MovementCost = 1;
 
     public int Row { get; private set; }
     public int Column { get; private set; }
@@ -68,8 +64,4 @@ public class Cell : MonoBehaviour
     public void ChangeColor(Color color)    {
         MeshRenderer.material.color = color;
     }
-
 }
-
-
-

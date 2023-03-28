@@ -7,26 +7,32 @@ public class Grid : MonoBehaviour
 {
     private const float POSITION_Y = .8f;
 
-    protected GridInteractor GGridInteractor;
-    protected GridGenerator _gridGenerator;
     protected Cell[,] GridCells = null;
 
+    public GridInteractor Interactor;
+    public GridGenerator Generator;
     public List<Unit> AllUnits;
 
 
     private void Awake()
     {
-        _gridGenerator = FindObjectOfType<GridGenerator>();
-        var Width = _gridGenerator.GridSize.x;
-        var Height = _gridGenerator.GridSize.y;
+        Interactor = FindObjectOfType<GridInteractor>();
+        Generator = FindObjectOfType<GridGenerator>();
+        var Width = Generator.GridSize.x;
+        var Height = Generator.GridSize.y;
 
         GridCells = new Cell[Width, Height];
 
-        foreach (var cell in GGridInteractor.Cells)
+        InitializaionGrid();
+    }
+
+    private void InitializaionGrid()
+    {
+        foreach (var cell in Interactor.Cells)
         {
             int x = Convert.ToInt32(cell.Coordinates.x);
             int y = Convert.ToInt32(cell.Coordinates.y);
-            cell.Initialize(x, y, GGridInteractor, true, StatusUnitOn.No);
+            cell.Initialize(x, y, Interactor, true, StatusUnitOn.No);
             GridCells[x, y] = cell;
         }
         // Получить все Unit в игре и добавить их в список AllUnits
