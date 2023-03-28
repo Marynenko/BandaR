@@ -1,8 +1,6 @@
 ﻿using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public enum UnitType
 {
@@ -23,6 +21,7 @@ public class Unit : MonoBehaviour
     #region Variables
     private const float POSITION_Y = .8f;
     private const float MAX_DISTANCE = 3f;
+    private const float MOVE_ANIMATION_DURATION = 1f;
 
     public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
     public static event UnitActionEventHandler OnUnitAction;
@@ -49,7 +48,6 @@ public class Unit : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, MAX_DISTANCE))
-        {
             if (hit.collider.GetComponent<Cell>())
             {
                 transform.position = new Vector3(hit.transform.position.x, POSITION_Y, hit.transform.position.z);
@@ -57,8 +55,6 @@ public class Unit : MonoBehaviour
                 CurrentCell.UnitOn = StatusUnitOn.Yes;
                 Status = UnitStatus.Unselected;
             }
-
-        }
     }
 
     public bool CanMoveToCell(Cell cell, Unit unit, List<Cell> AvailableMoves)
@@ -81,8 +77,8 @@ public class Unit : MonoBehaviour
         if (Status != UnitStatus.Moved)
         {
             Status = UnitStatus.Moved;
-            grid.RemoveUnit(this);
-            grid.AddUnit(this);
+            //grid.RemoveUnit(this);
+            //grid.AddUnit(this);
             CurrentCell = targetCell;
 
             if (OnUnitAction != null)
@@ -90,11 +86,17 @@ public class Unit : MonoBehaviour
                 OnUnitAction(UnitActionType.Move, this, targetCell);
             }
 
-            Vector3 newPosition = new Vector3(targetCell.transform.position.x, POSITION_Y, targetCell.transform.position.z);
-            transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE);
+            // Вычисляем позицию для перемещения с учетом высоты юнита
+            Vector3 newPosition = new Vector3(targetCell.transform.position.x, transform.position.y, targetCell.transform.position.z);
+
+            // Запускаем анимацию перемещения
+            var pos = transform.position;
+            var curPos = CurrentCell.transform.position;
+            transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
+                     .SetEase(Ease.Linear)
+                     .OnComplete(() => transform.position = newPosition);
         }
     }
-
 
 
     public bool CanAttack(Unit targetUnit)
@@ -128,8 +130,6 @@ public class Unit : MonoBehaviour
         }
     }
 
-
-
     public void Die()
     {
         //_gridInteractor.RemoveUnit(this);
@@ -139,28 +139,5 @@ public class Unit : MonoBehaviour
     {
         //healthBar.fillAmount = (float)Health / MaxHealth;
     }
-
-
-
-
-
-    #endregion
-
-    #region trash
-
-    //public IEnumerator MoveToCell(Cell cell)
-    //{
-    //    var targetPosition = cell.transform.position;
-
-    //    while (transform.position != targetPosition)
-    //    {
-    //        transform.position = Vector3.MoveTowards(transform.position, targetPosition, MoveSpeed * Time.deltaTime);
-    //        yield return null;
-    //    }
-
-    //    CurrentCell.RemoveUnit(this);
-    //    CurrentCell = cell;
-    //    //CurrentCell.SetUnit(this);
-    //}
     #endregion
 }

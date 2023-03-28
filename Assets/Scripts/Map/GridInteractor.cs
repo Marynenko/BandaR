@@ -57,7 +57,6 @@ public class GridInteractor : Grid
         unit.CurrentCell.SetIsWalkable(true);
     }
 
-
     public void UpdateUnit(Unit unit)
     {
         // Обновить отображение юнита на игровом поле

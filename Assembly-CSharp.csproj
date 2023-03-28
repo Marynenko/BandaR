@@ -56,7 +56,7 @@
     <Analyzer Include="G:\Programs\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Cell.cs" />
+    <Compile Include="Assets\Scripts\Cell\Cell.cs" />
     <Compile Include="Assets\Scripts\GameManager\GameController.cs" />
     <Compile Include="Assets\Scripts\GameManager\GameModel.cs" />
     <Compile Include="Assets\Scripts\GameManager\IGameController.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Map\GridInteractor.cs" />
     <Compile Include="Assets\Scripts\Map\GridSelector.cs" />
     <Compile Include="Assets\Scripts\Unit\Enemy.cs" />
+    <Compile Include="Assets\Scripts\Unit\IUnit.cs" />
     <Compile Include="Assets\Scripts\Unit\Player.cs" />
     <Compile Include="Assets\Scripts\Unit\Unit.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
