@@ -3,8 +3,15 @@ using UnityEngine;
 
 public class Player : Unit
 {
-    public float viewRange;
-    public float attackRange;
+    public override IUnit GetUnitType() => this;
 
-    private List<Unit> _playersInRange;
+    public new UnitStats Stats { get; private set; }
+
+    private void Awake()
+    {
+        Stats = GetComponent<UnitStats>();
+        // здесь можно добавить код инициализации других свойств юнита
+    }
+
+    // здесь можно добавить другие методы и свойства юнита
 }

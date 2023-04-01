@@ -1,30 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class GridGenerator : Grid
+public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private Transform _parent;
-    [SerializeField] private Cell _cell;    
-    [SerializeField] private float _offset;
+    [SerializeField] private GridInitializer Initializer;
+    public GameController GameController;
 
-    public Vector2Int GridSize;
-
-    [ContextMenu("Generate grid")]
-    private void GenerateGrid()
+    private void Start()
     {
-        var cellSize = _cell.GetComponent<MeshRenderer>().bounds.size;
-
-        for (int x = 0; x < GridSize.x; x++)
-        {
-            for (int y = 0; y < GridSize.y; y++)
-            {
-                // Что бы сгенерировать клетку, нужно знаеть ее поз.
-                var position = new Vector3(x * (cellSize.x + _offset), 0, y * (cellSize.z + _offset));
-
-                var cell = Instantiate(_cell, position, Quaternion.identity, _parent);
-                cell.Initialize(x, y, Interactor, true, StatusUnitOn.No);
-
-                Interactor.Cells.Add(cell);
-            }
-        }
+        Initializer.InitializationGrid();
+        GameController.enabled = true;
     }
+
+
+
+
 }
+

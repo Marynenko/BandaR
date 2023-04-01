@@ -1,61 +1,136 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    private const float POSITION_Y = .8f;
+    public Transform Parent;
+    public Cell CellPrefab; 
+    public Vector2Int GridSize;
+    public float CellSize;
 
-    protected Cell[,] GridCells = null;
-
-    public GridInteractor Interactor;
-    public GridGenerator Generator;
-    public List<Unit> AllUnits;
-
+    public GridInteractor Interactor { get; private set; }
+    public GridInitializer Initializer { get; private set; }
+    public List<IUnit> AllUnits { get; private set; }
+    public Cell[,] Cells { get; private set; }
 
     private void Awake()
     {
-        Interactor = FindObjectOfType<GridInteractor>();
-        Generator = FindObjectOfType<GridGenerator>();
-        var Width = Generator.GridSize.x;
-        var Height = Generator.GridSize.y;
+        Cells = new Cell[GridSize.x, GridSize.y];
+        AllUnits = new List<IUnit>();
+        Initializer = GetComponent<GridInitializer>();
+        Interactor = GetComponentInChildren<GridInteractor>();
+        Interactor.enabled = true; // Включаем интерактор после инициализации сетки
 
-        GridCells = new Cell[Width, Height];
-
-        InitializaionGrid();
     }
-
-    private void InitializaionGrid()
+    public void CreateGrid()
     {
-        foreach (var cell in Interactor.Cells)
+        var cellSize = CellPrefab.GetComponent<MeshRenderer>().bounds.size;
+
+        for (int x = 0; x < GridSize.x; x++)
         {
-            int x = Convert.ToInt32(cell.Coordinates.x);
-            int y = Convert.ToInt32(cell.Coordinates.y);
-            cell.Initialize(x, y, Interactor, true, StatusUnitOn.No);
-            GridCells[x, y] = cell;
-        }
-        // Получить все Unit в игре и добавить их в список AllUnits
-        //AllUnits = FindObjectsOfType<Unit>().ToList();
-        foreach (Unit unit in AllUnits)
-        {
-            unit.InitializeUnit();
+            for (int y = 0; y < GridSize.y; y++)
+            {
+                // Чтобы сгенерировать клетку, нужно знать ее позицию.
+                var position = new Vector3(x * (cellSize.x + CellSize), 0, y * (cellSize.z + CellSize));
+
+                var cell = Instantiate(CellPrefab, position, Quaternion.identity, Parent);
+                cell.Initialize(x, y, Interactor, true, UnitOn.No); // тут передается Grid
+
+
+                Cells[x, y] = cell;
+            }
         }
     }
 
-    public void AddUnit(Unit unit)
+    public void SetNeighborsToAllCells()
     {
-        AllUnits.Add(unit);
-        unit.transform.position = new Vector3(transform.position.x, POSITION_Y, transform.position.z);
+        foreach (var cell in Cells)
+        {
+            Interactor.GetNeighbourCells(cell);
+
+        }
     }
+
+    public void SetWalkableCells()
+    {
+        foreach (var cell in Cells)
+        {
+            if (cell.IsWalkable())
+            {
+                cell.SetIsWalkable(true);
+            }
+        }
+    }
+
+    public void SetImpassableCells()
+    {
+        var Units = AllUnits.OfType<Unit>().ToList();
+        foreach (var unit in Units)
+        {
+            Cell unitCell = unit.CurrentCell;
+            unitCell.IsWalkable();
+
+            foreach (var neighborCell in unitCell.Neighbors)
+            {
+                neighborCell.SetIsWalkable(false); // либо другое isWalkable
+            }
+        }
+    }
+
+    public void SetReachableCells()
+    {
+        var Units = AllUnits.OfType<Unit>().ToList();
+        foreach (var unit in Units)
+        {
+            unit.CurrentCell.SetReachable(unit.Stats.MovementPoints, true);
+        }
+    }
+
+    public void AddUnitsToCells(List<Unit> units)
+    {       
+        foreach (var unit in units)
+        {            
+            Vector2Int unitCellCoordinates = GetCellCoordinatesFromPosition(unit.transform.position);
+            Cell cell = Cells[unitCellCoordinates.x, unitCellCoordinates.y];
+
+            if (unitCellCoordinates != Vector2Int.one * int.MaxValue)
+            {
+                unit.InitializeUnit(this, cell);
+                AllUnits.Add(unit);
+            }
+        }
+    }
+
 
     public void RemoveUnit(Unit unit)
     {
-        if (AllUnits.Contains(unit))
+        if (unit == null) return;
+
+        unit.CurrentCell.CellStatus = UnitOn.No;
+        AllUnits.Remove(unit);
+        Destroy(unit.gameObject);
+    }
+
+    private void RemoveUnit(IUnit unit)
+    {
+        var unitToRemove = unit as Unit;
+        Cell currentCell = unitToRemove.CurrentCell;
+
+        if (currentCell != null)
         {
-            AllUnits.Remove(unit);
+            currentCell.ClearUnit();
+            AllUnits.Remove(unitToRemove);
+            Destroy(unitToRemove.gameObject);
         }
     }
+
+    public Vector2Int GetCellCoordinatesFromPosition(Vector3 position)
+    {
+        int x = Mathf.FloorToInt(position.x / CellPrefab.GetCellSize().x);
+        int y = Mathf.FloorToInt(position.z / CellPrefab.GetCellSize().z);
+
+        return new Vector2Int(x, y);
+    }
+
 }
-
-

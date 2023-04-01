@@ -2,13 +2,9 @@
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : Unit
+public class Enemy : Unit, IUnit
 {
-    public float viewRange;
-    public float attackRange;
-
-    private List<Unit> _playersInRange;
-
+    public override IUnit GetUnitType() => this;
     //public override void Initialize(Cell cell)
     //{
     //    base.Initialize(cell);
@@ -30,7 +26,7 @@ public class Enemy : Unit
 
     //private bool IsPlayerInSight()
     //{
-    //    foreach (Unit unit in _gridInteractor.AllUnits)
+    //    foreach (Unit unit in _interactor.AllUnits)
     //    {
     //        if (unit.Type == UnitType.Player)
     //        {

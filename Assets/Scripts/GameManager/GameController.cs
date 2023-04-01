@@ -1,37 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public class GameController : MonoBehaviour, IGameController
 {
-    private GridInteractor _gridInteractor;
-
-    public static event Action<UnitActionType, Unit, Cell> OnUnitAction;
-
-    private void Start()
-    {
-        var grid = FindObjectOfType<Grid>();
-        _gridInteractor = grid.Interactor;
-    }
+    [SerializeField] private Grid _grid;
+    [SerializeField] private GridInteractor _interactor;
+    [SerializeField] private GridGenerator _generator;
 
     public void HandleUnitClick(Unit unit)
     {
-        var selectedUnit = _gridInteractor.SelectedUnit;
+        var selectedUnit = _interactor.SelectedUnit;
 
         if (selectedUnit == null)
             if (unit.Type == UnitType.Player)
-                _gridInteractor.SelectUnit(unit);
+                _interactor.SelectUnit(unit);
 
         else if (selectedUnit.Equals(unit))
             return;
         else if (unit.Type == UnitType.Player)
-            _gridInteractor.SelectUnit(unit);
+            _interactor.SelectUnit(unit);
         else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
             HandleUnitAttack(selectedUnit, unit);
         else
-            _gridInteractor.HandleUnitDeselection(selectedUnit, unit);
+            _interactor.HandleUnitDeselection(selectedUnit, unit);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -47,24 +39,26 @@ public class GameController : MonoBehaviour, IGameController
 
             if (targetUnit.Health <= 0)
             {
-                _gridInteractor.RemoveUnit(targetUnit);
+                _grid.RemoveUnit(targetUnit);
             }
             else
             {
-                _gridInteractor.UpdateUnit(targetUnit);
+                _interactor.UpdateUnit(targetUnit);
             }
 
-            _gridInteractor.UnselectUnit(selectedUnit);
+            _interactor.UnselectUnit(selectedUnit);
+            selectedUnit.CurrentCell.UnselectCell();
+
 
             // Update available moves after attack
-            var availableMoves = _gridInteractor.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.Type, 1);
-            _gridInteractor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
+            var availableMoves = _interactor.GetAvailableMoves(selectedUnit.CurrentCell, 1);
+            _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
         }
     }
 
     public void HandleCellClick(Cell cell)
     {
-        var selectedUnit = _gridInteractor.SelectedUnit;
+        var selectedUnit = _interactor.SelectedUnit;
 
         if (selectedUnit == null || selectedUnit.Type != UnitType.Player || selectedUnit.Status != UnitStatus.Selected)
         {
@@ -76,32 +70,35 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
-        _gridInteractor.UnselectUnit(selectedUnit);
-        var availableMoves = _gridInteractor.AvailableMoves;
+        _interactor.UnselectUnit(selectedUnit);
+         selectedUnit.CurrentCell.UnselectCell();
+
+        var availableMoves = _interactor.AvailableMoves;
 
         if (!availableMoves.Contains(cell))
         {
             return;
         }
 
-        var path = _gridInteractor.FindPathToTarget(selectedUnit.CurrentCell, cell);
+        var path = _interactor.FindPathToTarget(selectedUnit.CurrentCell, cell);
         if (path.Count == 0)
         {
             return;
         }
 
-        _gridInteractor.MoveUnitAlongPath(selectedUnit, path);
+        _interactor.MoveUnitAlongPath(selectedUnit, path);
+        selectedUnit.CurrentCell.SelectCell();
 
-        selectedUnit.CurrentCell.UnitOn = StatusUnitOn.No;
-        Color unitColor = selectedUnit.Type == UnitType.Player ? selectedUnit.CurrentCell.ColorUnitOnCell : selectedUnit.CurrentCell.ColorEnemyOnCell;
-        cell.ChangeColor(unitColor);
-        cell.UnitOn = StatusUnitOn.Yes;
+        //selectedUnit.CurrentCell.CellStatus = UnitOn.No;
+        //Color unitColor = selectedUnit.Type == UnitType.Player ? selectedUnit.CurrentCell.ColorUnitOnCell : selectedUnit.CurrentCell.ColorEnemyOnCell;
 
-        _gridInteractor.SelectCell(cell, selectedUnit.Type);
-        _gridInteractor.SelectUnit(selectedUnit);
+        //cell.ChangeColor(unitColor);
+        //cell.CellStatus = UnitOn.Yes;
+
+        _interactor.SelectUnit(selectedUnit);
 
         // проверяем соседство юнитов после каждого перемещения
-        //if (AreUnitsAdjacent(selectedUnit, _gridInteractor.AllUnits))
+        //if (AreUnitsAdjacent(selectedUnit, _interactor.AllUnits))
         //{
         //    // начинаем бой или выполняем нужные действия
         //}

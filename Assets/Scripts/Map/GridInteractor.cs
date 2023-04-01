@@ -4,10 +4,11 @@ using UnityEngine;
 using static UnityEngine.UI.CanvasScaler;
 using UnityEngine.UIElements;
 
-public class GridInteractor : Grid
+public class GridInteractor : MonoBehaviour
 {
+    private Grid _grid;
     private List<Cell> _availableMoves;
-    private List<Direction> directions = new List<Direction>()
+    private readonly List<Direction> directions = new()
     {
         new Direction(0, 1),   // Up
         new Direction(0, -1),  // Down
@@ -15,7 +16,7 @@ public class GridInteractor : Grid
         new Direction(1, 0)    // Right
     };
 
-    private const float MAX_DISTANCE = 3f;
+    //private const float MAX_DISTANCE = 3f;
 
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
@@ -23,19 +24,20 @@ public class GridInteractor : Grid
     public static event UnitActionEventHandler OnUnitAction;
 
     public IReadOnlyList<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
-    public List<Cell> Cells;
+
     public Unit SelectedUnit { get; set; }
 
-    private void Start() 
+    public void OnEnable()
     {
-        GameController.OnUnitAction += HandleUnitAction;
+        //GameController.OnUnitAction += HandleUnitAction;
+        _grid = GetComponentInParent<Grid>();
+        _availableMoves = new List<Cell>();
         OnUnitSelected += HandleUnitSelected;
         OnUnitAction += HandleUnitAction;
     }
-
     private void OnDestroy()
     {
-        GameController.OnUnitAction += HandleUnitAction;
+        //GameController.OnUnitAction += HandleUnitAction;
         OnUnitSelected -= HandleUnitSelected;
         OnUnitAction -= HandleUnitAction;
     }    
@@ -43,7 +45,10 @@ public class GridInteractor : Grid
     public void SelectUnit(Unit unit)
     {
         if (SelectedUnit != null)
+        {
             UnselectUnit(SelectedUnit);
+            SelectedUnit.CurrentCell.UnselectCell();
+        }
 
         OnUnitSelected?.Invoke(unit, unit.Type);
     }
@@ -52,18 +57,94 @@ public class GridInteractor : Grid
     public void UnselectUnit(Unit unit)
     {
         unit.Status = UnitStatus.Unselected;
-        unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
-        unit.CurrentCell.UnitOn = StatusUnitOn.No;
-        unit.CurrentCell.SetIsWalkable(true);
     }
 
     public void UpdateUnit(Unit unit)
     {
         // Обновить отображение юнита на игровом поле
         unit.UpdateVisuals();
+    } 
+
+    private void HandleUnitSelected(Unit unit, UnitType unitType)
+    {
+        if (unitType == UnitType.Player)
+        {
+            HandlePlayerSelected(unit);
+        }
+        else if (unitType == UnitType.Enemy)
+        {
+            HandleEnemySelected(unit);
+        }
     }
 
-    public void SelectCell(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
+    private void HandlePlayerSelected(Unit player)
+    {
+        if (SelectedUnit != null)
+        {
+            UnselectUnit(SelectedUnit);
+        }
+
+        SelectedUnit = player;
+        player.Status = UnitStatus.Selected;
+        player.CurrentCell.SelectCell();
+        SelectCellToMove(player.CurrentCell, UnitType.Player, true);
+        player.CurrentCell.CellStatus = UnitOn.Yes; // тут или перед SelectCellToMove?
+    }
+
+    private void HandleEnemySelected(Unit enemy)
+    {
+        if (SelectedUnit != null)
+        {
+            UnselectUnit(SelectedUnit);
+            //SelectedUnit.CurrentCell.UnselectCell(SelectedUnit.CurrentCell);
+        }
+
+        SelectedUnit = enemy;
+        enemy.Status = UnitStatus.Selected;
+        enemy.CurrentCell.SelectCell();
+        SelectCellToMove(enemy.CurrentCell, UnitType.Enemy, true);
+    }
+
+    private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
+    {
+        if (actionType == UnitActionType.Move)
+        {
+            unit.MoveToCell(cell);
+        }
+    }
+
+    public void HandleUnitDeselection(Unit selectedUnit, Unit unit)
+    {
+        UnselectUnit(selectedUnit);
+        unit.CurrentCell.UnselectCell();
+        UnselectCells();
+        SelectUnit(unit);
+        HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell);
+    }
+
+    public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color)
+    {
+        UnselectCells();
+        HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
+        availableMoves.Skip(1).ToList().ForEach(cell => HighlightCell(cell, color));
+    }
+
+    public void UnselectCells()
+    {
+        var Cells = _grid.Cells;
+        foreach (var cell in Cells)
+        {
+            cell.ChangeColor(cell.ColorStandardCell);
+        }
+    }
+
+    public void HighlightCell(Cell cell, Color color)
+    {
+        cell.ChangeColor(color);
+    }
+
+
+    public void SelectCellToMove(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
     {
         if (clearSelectedCells)
         {
@@ -74,7 +155,7 @@ public class GridInteractor : Grid
 
         if (unitType == UnitType.Player || unitType == UnitType.Enemy)
         {
-            _availableMoves = GetAvailableMoves(cell, unitType, 1);
+            _availableMoves = GetAvailableMoves(cell, 1);
             availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
         else
@@ -105,7 +186,7 @@ public class GridInteractor : Grid
         }
     }
 
-    public List<Cell> GetAvailableMoves(Cell cell, UnitType unitType, int maxMoves)
+    public List<Cell> GetAvailableMoves(Cell cell, int maxMoves)
     {
         var visitedCells = new HashSet<Cell>();
         var AvailableMoves = new List<Cell>();
@@ -124,7 +205,7 @@ public class GridInteractor : Grid
             {
                 foreach (var neighbour in GetNeighbourCells(currentCell))
                 {
-                    if (!visitedCells.Contains(neighbour) && neighbour.IsWalkable() && neighbour.UnitOn == StatusUnitOn.No)
+                    if (!visitedCells.Contains(neighbour) && neighbour.IsWalkable() && neighbour.CellStatus == UnitOn.No)
                     {
                         queue.Enqueue((neighbour, remainingMoves - 1));
                     }
@@ -137,20 +218,16 @@ public class GridInteractor : Grid
 
     public List<Cell> GetNeighbourCells(Cell cell)
     {
-        List<Cell> neighbours = new List<Cell>();
+        List<Cell> neighbours = new();
 
         foreach (Direction direction in directions)
         {
             int neighbourX = cell.Row + direction.XOffset;
             int neighbourY = cell.Column + direction.YOffset;
 
-            var Width = Generator.GridSize.x;
-            var Height = Generator.GridSize.y;
-
-
-            if (neighbourX >= 0 && neighbourX < Width && neighbourY >= 0 && neighbourY < Height)
-            {
-                Cell neighbour = GridCells[neighbourX, neighbourY];
+            if (neighbourX >= 0 && neighbourX < _grid.GridSize.x && neighbourY >= 0 && neighbourY < _grid.GridSize.y)
+                {
+                Cell neighbour = _grid.Cells[neighbourX, neighbourY];
                 if (neighbour != null)
                 {
                     neighbours.Add(neighbour);
@@ -159,20 +236,24 @@ public class GridInteractor : Grid
         }
 
         return neighbours;
-    }    
+    }
 
     public List<Cell> FindPathToTarget(Cell startCell, Cell endCell)
     {
-        Dictionary<Cell, float> gScore = new Dictionary<Cell, float>();
-        gScore[startCell] = 0;
+        Dictionary<Cell, float> gScore = new()
+        {
+            [startCell] = 0
+        };
 
-        Dictionary<Cell, float> fScore = new Dictionary<Cell, float>();
-        fScore[startCell] = Heuristic(startCell, endCell);
+        Dictionary<Cell, float> fScore = new()
+        {
+            [startCell] = Heuristic(startCell, endCell)
+        };
 
-        List<Cell> closedList = new List<Cell>();
-        List<Cell> openList = new List<Cell>() { startCell };
+        List<Cell> closedList = new(); // список ячеек, которые уже были проверены.
+        List<Cell> openList = new() { startCell }; // список ячеек, которые еще не были проверены.
 
-        Dictionary<Cell, Cell> cameFrom = new Dictionary<Cell, Cell>();
+        Dictionary<Cell, Cell> cameFrom = new();
 
         while (openList.Count > 0)
         {
@@ -217,7 +298,7 @@ public class GridInteractor : Grid
 
     private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell)
     {
-        List<Cell> path = new List<Cell>() { currentCell };
+        List<Cell> path = new() { currentCell };
 
         while (cameFrom.ContainsKey(currentCell))
         {
@@ -248,7 +329,7 @@ public class GridInteractor : Grid
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
         {
-            unit.MoveToCell(cell, this); // изменен вызов метода
+            unit.MoveToCell(cell); // изменен вызов метода
         }
     }
 
@@ -261,93 +342,14 @@ public class GridInteractor : Grid
             Color unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorUnitOnCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
 
             targetCell.ChangeColor(unitColor);
-            targetCell.UnitOn = StatusUnitOn.Yes;
-            unit.MoveToCell(targetCell, this); // изменен вызов метода
+            targetCell.CellStatus = UnitOn.Yes;
+            unit.MoveToCell(targetCell); // изменен вызов метода
 
-            if (OnUnitAction != null)
-            {
-                OnUnitAction.Invoke(UnitActionType.Move, unit, targetCell);
-            }
+            OnUnitAction?.Invoke(UnitActionType.Move, unit, targetCell);
         }
     }
 
 
-    private void HandleUnitSelected(Unit unit, UnitType unitType)
-    {
-        if (unitType == UnitType.Player)
-        {
-            HandlePlayerSelected(unit);
-        }
-        else if (unitType == UnitType.Enemy)
-        {
-            HandleEnemySelected(unit);
-        }
-    }
-
-    private void HandlePlayerSelected(Unit player)
-    {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-
-        SelectedUnit = player;
-        player.Status = UnitStatus.Selected;
-        SelectCell(player.CurrentCell, UnitType.Player, true);
-        player.CurrentCell.UnitOn = StatusUnitOn.Yes;
-    }
-
-
-
-    private void HandleEnemySelected(Unit enemy)
-    {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-        
-        SelectedUnit = enemy;
-        enemy.Status = UnitStatus.Selected;
-        SelectCell(enemy.CurrentCell, UnitType.Enemy, true);
-        enemy.CurrentCell.UnitOn = StatusUnitOn.Yes;
-    }
-
-    private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
-    {
-        if (actionType == UnitActionType.Move)
-        {
-            unit.MoveToCell(cell, this);
-        }
-    }
-
-    public void HandleUnitDeselection(Unit selectedUnit, Unit unit)
-    {
-        UnselectUnit(selectedUnit);
-        UnselectCells();
-        SelectUnit(unit);
-        HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell);
-    }
-
-    public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color)
-    {
-        UnselectCells();
-        HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
-        availableMoves.Skip(1).ToList().ForEach(cell => HighlightCell(cell, color));
-    }
-
-
-    public void UnselectCells()
-    {
-        foreach (var cell in Cells)
-        {
-            cell.ChangeColor(cell.ColorStandardCell);
-        }
-    }
-
-    public void HighlightCell(Cell cell, Color color)
-    {
-        cell.ChangeColor(color);
-    }
 }
 
 public class Direction
