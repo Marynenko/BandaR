@@ -46,8 +46,8 @@ public class GameController : MonoBehaviour, IGameController
                 _interactor.UpdateUnit(targetUnit);
             }
 
-            _interactor.UnselectUnit(selectedUnit);
             selectedUnit.CurrentCell.UnselectCell();
+            _interactor.UnselectUnit(selectedUnit);
 
 
             // Update available moves after attack
@@ -70,8 +70,8 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
+        selectedUnit.CurrentCell.UnselectCell();
         _interactor.UnselectUnit(selectedUnit);
-         selectedUnit.CurrentCell.UnselectCell();
 
         var availableMoves = _interactor.AvailableMoves;
 
@@ -87,15 +87,9 @@ public class GameController : MonoBehaviour, IGameController
         }
 
         _interactor.MoveUnitAlongPath(selectedUnit, path);
-        selectedUnit.CurrentCell.SelectCell();
-
-        //selectedUnit.CurrentCell.CellStatus = UnitOn.No;
-        //Color unitColor = selectedUnit.Type == UnitType.Player ? selectedUnit.CurrentCell.ColorUnitOnCell : selectedUnit.CurrentCell.ColorEnemyOnCell;
-
-        //cell.ChangeColor(unitColor);
-        //cell.CellStatus = UnitOn.Yes;
 
         _interactor.SelectUnit(selectedUnit);
+        selectedUnit.CurrentCell.SelectCell();
 
         // проверяем соседство юнитов после каждого перемещения
         //if (AreUnitsAdjacent(selectedUnit, _interactor.AllUnits))

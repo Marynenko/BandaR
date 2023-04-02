@@ -46,8 +46,8 @@ public class GridInteractor : MonoBehaviour
     {
         if (SelectedUnit != null)
         {
-            UnselectUnit(SelectedUnit);
             SelectedUnit.CurrentCell.UnselectCell();
+            UnselectUnit(SelectedUnit);
         }
 
         OnUnitSelected?.Invoke(unit, unit.Type);
@@ -56,7 +56,9 @@ public class GridInteractor : MonoBehaviour
 
     public void UnselectUnit(Unit unit)
     {
-        unit.Status = UnitStatus.Unselected;
+        //unit.Status = UnitStatus.Unselected;
+        SelectedUnit = null;
+        unit.CurrentCell.ClearUnit();
     }
 
     public void UpdateUnit(Unit unit)
@@ -79,11 +81,7 @@ public class GridInteractor : MonoBehaviour
 
     private void HandlePlayerSelected(Unit player)
     {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-        }
-
+        player.CurrentCell.SetUnit(player);
         SelectedUnit = player;
         player.Status = UnitStatus.Selected;
         player.CurrentCell.SelectCell();
@@ -93,16 +91,12 @@ public class GridInteractor : MonoBehaviour
 
     private void HandleEnemySelected(Unit enemy)
     {
-        if (SelectedUnit != null)
-        {
-            UnselectUnit(SelectedUnit);
-            //SelectedUnit.CurrentCell.UnselectCell(SelectedUnit.CurrentCell);
-        }
-
+        enemy.CurrentCell.SetUnit(enemy);
         SelectedUnit = enemy;
         enemy.Status = UnitStatus.Selected;
         enemy.CurrentCell.SelectCell();
         SelectCellToMove(enemy.CurrentCell, UnitType.Enemy, true);
+        enemy.CurrentCell.CellStatus= UnitOn.Yes;
     }
 
     private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)
