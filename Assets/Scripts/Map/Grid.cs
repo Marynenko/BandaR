@@ -133,4 +133,14 @@ public class Grid : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
+
+    public Cell GetCell(int x, int y)
+    {
+        if (x < 0 || x >= GridSize.x || y < 0 || y >= GridSize.y)
+        {
+            return null;
+        }
+
+        return Cells[x, y];
+    }
 }

@@ -343,7 +343,6 @@ public class GridInteractor : MonoBehaviour
         }
     }
 
-
 }
 
 public class Direction

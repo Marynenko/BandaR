@@ -72,8 +72,8 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
-        _interactor.UnselectUnit(selectedUnit);
-        selectedUnit.CurrentCell.UnselectCell();
+        UnselectUnit(selectedUnit);
+        UnselectCell(selectedUnit.CurrentCell);
 
         if (!IsCellAvailableForMove(selectedUnit, cell))
         {
@@ -88,8 +88,7 @@ public class GameController : MonoBehaviour, IGameController
 
         MoveUnit(selectedUnit, path);
         SelectCell(selectedUnit.CurrentCell);
-
-        _interactor.SelectUnit(selectedUnit);
+        SelectUnit(selectedUnit);
 
         //CheckAdjacentUnits(selectedUnit, _grid.AllUnits, selectedUnit.Team.EnemyTeam);
         CheckAdjacentUnits(selectedUnit, _grid.AllUnits);
@@ -98,48 +97,22 @@ public class GameController : MonoBehaviour, IGameController
         if (IsUnitAdjacentToEnemy(selectedUnit, _grid.AllUnits))
         {
             // Если юнит находится рядом с вражескими юнитами, выделяем его ячейку красным цветом
-            selectedUnit.CurrentCell.SelectCell(); // Red
+            SelectCell(selectedUnit.CurrentCell); // Red
         }
     }
 
-    // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
-    private bool IsUnitAdjacentToEnemy(Unit unit, List<IUnit> units)
-    {
-        foreach (var neighborCell in unit.CurrentCell.Neighbors)
-        {
-            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighborCell && u.Type == UnitType.Enemy);
-            if (neighborUnit != null)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
+    private bool IsPlayerUnitSelected(Unit unit)
+    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Selected;
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
     private bool IsCellAvailableForMove(Unit unit, Cell cell)
-    {
-        return cell.IsWalkable() && unit.MovementPoints >= _interactor.FindPathToTarget(unit.CurrentCell, cell).Count;
-    }
+    => cell.IsWalkable() && unit.MovementPoints >= _interactor.FindPathToTarget(unit.CurrentCell, cell).Count;
 
-
-    private bool IsPlayerUnitSelected(Unit unit)
-    {
-        return unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Selected;
-    }
-
-
-    private void MoveUnit(Unit unit, List<Cell> path)
-    {
-        _interactor.MoveUnitAlongPath(unit, path);
-    }
-
-    private void SelectCell(Cell cell)
-    {
-        cell.SelectCell();
-    }
+    private void UnselectUnit(Unit unit) => _interactor?.UnselectUnit(unit);
+    private void UnselectCell(Cell cell) => cell.UnselectCell();
+    private void MoveUnit(Unit unit, List<Cell> path) => _interactor.MoveUnitAlongPath(unit, path);
+    private void SelectCell(Cell cell) => cell.SelectCell();
+    private void SelectUnit(Unit unit) => _interactor?.SelectUnit(unit);
 
     private void CheckAdjacentUnits(Unit unit, List<IUnit> units)
     {
@@ -147,9 +120,7 @@ public class GameController : MonoBehaviour, IGameController
         {
             var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighborCell);
             if (neighborUnit != null && neighborUnit.Type == unit.Type)
-            {
                 neighborUnit.OnUnitMoved(unit);
-            }
 
             // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
             if (IsUnitAdjacentToEnemy(unit, units))
@@ -166,12 +137,8 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
     {
         foreach (var neighborCell in unit1.CurrentCell.Neighbors)
-        {
             if (unit2.CurrentCell == neighborCell)
-            {
                 return true;
-            }
-        }
         return false;
     }
 
@@ -182,12 +149,65 @@ public class GameController : MonoBehaviour, IGameController
             unit.Attack(enemy);
 
             if (enemy.Health <= 0)
-            {
                 _grid.RemoveUnit(enemy);
-            }
         }
     }
 
+
+    // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
+    private bool IsUnitAdjacentToEnemy(Unit unit, List<IUnit> units)
+    {
+        foreach (var neighborCell in unit.CurrentCell.Neighbors)
+        {
+            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighborCell && u.Type == UnitType.Enemy);
+            if (neighborUnit != null)
+                return true;
+        }
+
+        return false;
+    }    
+
+    private bool IsAdjacentCellAvailableForMove(Unit unit, Cell cell)
+    {
+        if (!cell.IsWalkable()) // если клетка непроходима
+            return false;
+
+        // проверяем, что клетка находится рядом с текущей позицией юнита
+        var adjacentCells = GetAdjacentCells(unit.CurrentCell);
+        if (!adjacentCells.Contains(cell))
+            return false;
+
+        // проверяем, что юнит имеет достаточное количество очков передвижения
+        return unit.MovementPoints >= 1; // в данном случае передвижение на одну клетку
+    }
+
+    public List<Cell> GetAdjacentCells(Cell cell)
+    {
+        var adjacentCells = new List<Cell>();
+
+        // Проверяем соседние клетки по горизонтали и вертикали
+        for (int row = cell.Row - 1; row <= cell.Row + 1; row++)
+            for (int column = cell.Column - 1; column <= cell.Column + 1; column++)
+            {
+                // Пропускаем текущую клетку
+                if (row == cell.Row && column == cell.Column)
+                    continue;
+
+                // Получаем клетку по ее координатам
+                var adjacentCell = _grid.GetCell(row, column);
+
+                // Проверяем, что клетка существует и находится рядом с текущей клеткой
+                if (adjacentCell != null && IsCellAdjacent(cell, adjacentCell))
+                    adjacentCells.Add(adjacentCell);
+            }
+
+        return adjacentCells;
+    }
+
+    public bool IsCellAdjacent(Cell cell1, Cell cell2)
+    => Math.Abs(cell1.Row - cell2.Row) <= 1 && Math.Abs(cell1.Column - cell2.Column) <= 1;  
+
+    #region temporarly Trash
     private List<Unit> GetAdjacentEnemies(Unit unit, List<Unit> units)
     {
         var adjacentEnemies = new List<Unit>();
@@ -236,4 +256,5 @@ public class GameController : MonoBehaviour, IGameController
         //    return enemyUnits.Any(u => u.CurrentCell == cell);
         //}
     }
+    #endregion
 }
