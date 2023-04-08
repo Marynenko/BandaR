@@ -63,28 +63,20 @@ public class GameController : MonoBehaviour, IGameController
         var selectedUnit = _interactor.SelectedUnit;
 
         if (!IsPlayerUnitSelected(selectedUnit))
-        {
             return;
-        }
 
         if (cell == selectedUnit.CurrentCell)
-        {
             return;
-        }
 
         UnselectUnit(selectedUnit);
         UnselectCell(selectedUnit.CurrentCell);
 
         if (!IsCellAvailableForMove(selectedUnit, cell))
-        {
             return;
-        }
 
         var path = _interactor.FindPathToTarget(selectedUnit.CurrentCell, cell);
         if (path.Count == 0)
-        {
             return;
-        }
 
         MoveUnit(selectedUnit, path);
         SelectCell(selectedUnit.CurrentCell);
@@ -114,6 +106,7 @@ public class GameController : MonoBehaviour, IGameController
     private void SelectCell(Cell cell) => cell.SelectCell();
     private void SelectUnit(Unit unit) => _interactor?.SelectUnit(unit);
 
+    #region Вторая ветка проверкми клеток
     private void CheckAdjacentUnits(Unit unit, List<IUnit> units)
     {
         foreach (var neighborCell in unit.CurrentCell.Neighbors)
@@ -154,6 +147,7 @@ public class GameController : MonoBehaviour, IGameController
     }
 
 
+    
     // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
     private bool IsUnitAdjacentToEnemy(Unit unit, List<IUnit> units)
     {
@@ -165,8 +159,11 @@ public class GameController : MonoBehaviour, IGameController
         }
 
         return false;
-    }    
+    }
 
+    #endregion
+
+    #region Первая ветка Проверки клетки
     private bool IsAdjacentCellAvailableForMove(Unit unit, Cell cell)
     {
         if (!cell.IsWalkable()) // если клетка непроходима
@@ -205,7 +202,36 @@ public class GameController : MonoBehaviour, IGameController
     }
 
     public bool IsCellAdjacent(Cell cell1, Cell cell2)
-    => Math.Abs(cell1.Row - cell2.Row) <= 1 && Math.Abs(cell1.Column - cell2.Column) <= 1;  
+    => Math.Abs(cell1.Row - cell2.Row) <= 1 && Math.Abs(cell1.Column - cell2.Column) <= 1;
+
+    #endregion
+
+    #region Info об проверках клеток
+    /*
+     * Оба варианта имеют свои преимущества и недостатки, и выбор зависит от контекста.
+
+Методы CheckAdjacentUnits, IsUnitAdjacentTo, AttackEnemies и IsUnitAdjacentToEnemy являются частью более 
+    крупной функции и отвечают за определение и атаку близлежащих вражеских юнитов. 
+    Если вы хотите сохранить эту логику в одном месте, то лучше использовать эти методы. 
+    К тому же, методы IsUnitAdjacentTo и IsUnitAdjacentToEnemy могут быть использованы в других местах вашего приложения, 
+    где требуется определить, находятся ли два юнита рядом.
+
+С другой стороны, если вам нужно просто проверить, находится ли определенная клетка рядом с текущей позицией юнита и 
+    может ли юнит передвигаться на эту клетку, то вам нужен метод IsAdjacentCellAvailableForMove и его аналог GetAdjacentCells. 
+    Эти методы лучше использовать в сценариях, где вы хотите проверить возможность движения или атаки, 
+    без выполнения всех остальных действий, выполняемых в методах
+    CheckAdjacentUnits, IsUnitAdjacentTo, AttackEnemies и IsUnitAdjacentToEnemy.
+
+Какой метод использовать в конкретной ситуации, зависит от ваших потребностей и требований к производительности. 
+    Если вам нужно проверить соседние клетки очень часто, например, в цикле анимации, 
+    то использование метода IsAdjacentCellAvailableForMove и GetAdjacentCells может быть более эффективным, 
+    так как эти методы выполняют меньше действий, чем CheckAdjacentUnits, IsUnitAdjacentTo, AttackEnemies и IsUnitAdjacentToEnemy. 
+    
+    Если же вы хотите сохранить логику определения и атаки вражеских юнитов в одном месте, 
+    то лучше использовать методы CheckAdjacentUnits, IsUnitAdjacentTo, AttackEnemies и IsUnitAdjacentToEnemy.
+     * */
+
+    #endregion
 
     #region temporarly Trash
     private List<Unit> GetAdjacentEnemies(Unit unit, List<Unit> units)

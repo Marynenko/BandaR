@@ -220,9 +220,9 @@ public class GridInteractor : MonoBehaviour
             int neighbourY = cell.Column + direction.YOffset;
 
             if (neighbourX >= 0 && neighbourX < _grid.GridSize.x && neighbourY >= 0 && neighbourY < _grid.GridSize.y)
-                {
+            {
                 Cell neighbour = _grid.Cells[neighbourX, neighbourY];
-                if (neighbour != null)
+                if (neighbour != null && neighbour != cell)
                 {
                     neighbours.Add(neighbour);
                 }
@@ -251,7 +251,7 @@ public class GridInteractor : MonoBehaviour
 
         while (openList.Count > 0)
         {
-            Cell currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
+            var currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
 
 
             if (currentCell == endCell)
@@ -262,7 +262,7 @@ public class GridInteractor : MonoBehaviour
             openList.Remove(currentCell);
             closedList.Add(currentCell);
 
-            foreach (Cell neighborCell in GetNeighbourCells(currentCell))
+            foreach (var neighborCell in GetNeighbourCells(currentCell))
             {
                 if (closedList.Contains(neighborCell))
                 {
@@ -290,6 +290,8 @@ public class GridInteractor : MonoBehaviour
         return new List<Cell>();
     }
 
+
+
     private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell)
     {
         List<Cell> path = new() { currentCell };
@@ -305,12 +307,17 @@ public class GridInteractor : MonoBehaviour
 
     private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
     {
+        // Если ячейки равны, то расстояние между ними равно 0
+        if (cell1 == cell2)
+            return 0;
+
         // Здесь мы можем использовать любой алгоритм для вычисления расстояния между ячейками.
         // Например, можно использовать евклидово расстояние:
         float dx = cell1.Coordinates.x - cell2.Coordinates.x;
         float dy = cell1.Coordinates.y - cell2.Coordinates.y;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
+
 
     private float Heuristic(Cell a, Cell b)
     {
