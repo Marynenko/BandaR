@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameController : MonoBehaviour, IGameController
 {
@@ -16,14 +18,14 @@ public class GameController : MonoBehaviour, IGameController
             if (unit.Type == UnitType.Player)
                 _interactor.SelectUnit(unit);
 
-        else if (selectedUnit.Equals(unit))
-            return;
-        else if (unit.Type == UnitType.Player)
-            _interactor.SelectUnit(unit);
-        else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
-            HandleUnitAttack(selectedUnit, unit);
-        else
-            _interactor.HandleUnitDeselection(selectedUnit, unit);
+            else if (selectedUnit.Equals(unit))
+                return;
+            else if (unit.Type == UnitType.Player)
+                _interactor.SelectUnit(unit);
+            else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
+                HandleUnitAttack(selectedUnit, unit);
+            else
+                _interactor.HandleUnitDeselection(selectedUnit, unit);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -60,7 +62,7 @@ public class GameController : MonoBehaviour, IGameController
     {
         var selectedUnit = _interactor.SelectedUnit;
 
-        if (selectedUnit == null || selectedUnit.Type != UnitType.Player || selectedUnit.Status != UnitStatus.Selected)
+        if (!IsPlayerUnitSelected(selectedUnit))
         {
             return;
         }
@@ -70,12 +72,10 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
-        selectedUnit.CurrentCell.UnselectCell();
         _interactor.UnselectUnit(selectedUnit);
+        selectedUnit.CurrentCell.UnselectCell();
 
-        var availableMoves = _interactor.AvailableMoves;
-
-        if (!availableMoves.Contains(cell))
+        if (!IsCellAvailableForMove(selectedUnit, cell))
         {
             return;
         }
@@ -86,24 +86,154 @@ public class GameController : MonoBehaviour, IGameController
             return;
         }
 
-        _interactor.MoveUnitAlongPath(selectedUnit, path);
+        MoveUnit(selectedUnit, path);
+        SelectCell(selectedUnit.CurrentCell);
 
         _interactor.SelectUnit(selectedUnit);
-        selectedUnit.CurrentCell.SelectCell();
 
-        // проверяем соседство юнитов после каждого перемещения
-        //if (AreUnitsAdjacent(selectedUnit, _interactor.AllUnits))
-        //{
-        //    // начинаем бой или выполняем нужные действия
-        //}
+        //CheckAdjacentUnits(selectedUnit, _grid.AllUnits, selectedUnit.Team.EnemyTeam);
+        CheckAdjacentUnits(selectedUnit, _grid.AllUnits);
+
+        // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
+        if (IsUnitAdjacentToEnemy(selectedUnit, _grid.AllUnits))
+        {
+            // Если юнит находится рядом с вражескими юнитами, выделяем его ячейку красным цветом
+            selectedUnit.CurrentCell.SelectCell(); // Red
+        }
+    }
+
+    // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
+    private bool IsUnitAdjacentToEnemy(Unit unit, List<IUnit> units)
+    {
+        foreach (var neighborCell in unit.CurrentCell.Neighbors)
+        {
+            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighborCell && u.Type == UnitType.Enemy);
+            if (neighborUnit != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
-
-
-    public bool AreUnitsAdjacent(Unit unit1, Unit unit2)
+    // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
+    private bool IsCellAvailableForMove(Unit unit, Cell cell)
     {
-        var distance = Vector3.Distance(unit1.transform.position, unit2.transform.position);
-        return distance <= 1f; // или другое значение, в зависимости от размеров клетки и модели юнитов
+        return cell.IsWalkable() && unit.MovementPoints >= _interactor.FindPathToTarget(unit.CurrentCell, cell).Count;
+    }
+
+
+    private bool IsPlayerUnitSelected(Unit unit)
+    {
+        return unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Selected;
+    }
+
+
+    private void MoveUnit(Unit unit, List<Cell> path)
+    {
+        _interactor.MoveUnitAlongPath(unit, path);
+    }
+
+    private void SelectCell(Cell cell)
+    {
+        cell.SelectCell();
+    }
+
+    private void CheckAdjacentUnits(Unit unit, List<IUnit> units)
+    {
+        foreach (var neighborCell in unit.CurrentCell.Neighbors)
+        {
+            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighborCell);
+            if (neighborUnit != null && neighborUnit.Type == unit.Type)
+            {
+                neighborUnit.OnUnitMoved(unit);
+            }
+
+            // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
+            if (IsUnitAdjacentToEnemy(unit, units))
+            {
+                // Находим всех вражеских юнитов, которые находятся рядом с выбранным юнитом
+                var adjacentEnemies = units.OfType<Unit>().Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
+
+                // Атакуем каждого из вражеских юнитов, которые находятся рядом с выбранным юнитом
+                AttackEnemies(unit, adjacentEnemies as List<Unit>);
+            }
+        }
+    }
+
+    private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
+    {
+        foreach (var neighborCell in unit1.CurrentCell.Neighbors)
+        {
+            if (unit2.CurrentCell == neighborCell)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void AttackEnemies(Unit unit, List<Unit> enemies)
+    {
+        foreach (var enemy in enemies)
+        {
+            unit.Attack(enemy);
+
+            if (enemy.Health <= 0)
+            {
+                _grid.RemoveUnit(enemy);
+            }
+        }
+    }
+
+    private List<Unit> GetAdjacentEnemies(Unit unit, List<Unit> units)
+    {
+        var adjacentEnemies = new List<Unit>();
+
+        foreach (var neighborCell in unit.CurrentCell.Neighbors)
+        {
+            var neighborUnit = units.FirstOrDefault(u => u.CurrentCell == neighborCell && u.Type == UnitType.Enemy);
+            if (neighborUnit != null)
+            {
+                adjacentEnemies.Add(neighborUnit);
+            }
+        }
+
+        return adjacentEnemies;
+    }
+
+    private bool IsEnemy(Unit unit, Unit selectedUnit)
+    {
+        return unit != selectedUnit && unit.ID != selectedUnit.ID;
+    }
+
+    private void AttackUnit(Unit attacker, Unit defender)
+    {
+        // Рассчитываем урон, наносимый атакующим юнитом за одну атаку
+        //var damage = CalculateDamage(attacker, defender);
+        //// Наносим урон защищающемуся юниту
+        //defender.ReceiveDamage(damage);
+
+        //// Если защищающийся юнит погиб, удаляем его из списка всех юнитов на поле
+        //if (defender.IsDead)
+        //{
+        //    _grid.AllUnits.Remove(defender);
+        //}
+    }
+
+    private void CalculateDamage(Unit attacker, Unit defender) // return int change in the future
+    {
+        // Рассчитываем урон, наносимый атакующим юнитом за одну атаку, используя формулу, зависящую от параметров юнитов
+        //return (int)Mathf.Clamp(attacker.Attack - defender.Defense, 1, Mathf.Infinity);
+    }
+
+    private bool IsEnemyOnCell(Cell cell, Unit playerUnit)
+    {
+        return false;
+        //    var enemyUnits = _grid.AllUnits.Except(new List<Unit> { playerUnit }).Where(u => IsEnemy(playerUnit));
+        //    return enemyUnits.Any(u => u.CurrentCell == cell);
+        //}
     }
 }

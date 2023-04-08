@@ -74,8 +74,6 @@ public class Unit : MonoBehaviour, IUnit
         if (Status != UnitStatus.Moved)
         {
             Status = UnitStatus.Moved;
-            //grid.RemoveUnit(this);
-            //grid.AddUnit(this);
             CurrentCell = targetCell;
 
             //OnUnitAction?.Invoke(UnitActionType.Move, this, targetCell);
@@ -114,6 +112,8 @@ public class Unit : MonoBehaviour, IUnit
         }
     }
 
+
+
     public void TakeDamage(int damage)
     {
         Stats.Health = Stats.Health - damage; // используем метод SetHealth() для изменения здоровья
@@ -127,6 +127,7 @@ public class Unit : MonoBehaviour, IUnit
 
     public Action Die(IUnit unit)
     {
+        // Доработать        
         return delegate { };
     }
 
@@ -134,6 +135,11 @@ public class Unit : MonoBehaviour, IUnit
     public void UpdateVisuals()
     {
         //healthBar.fillAmount = (float)Health / MaxHealth;
+    }
+
+    public void OnUnitMoved(Unit movedUnit)
+    {
+        // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
     }
     #endregion
 }
