@@ -207,6 +207,7 @@ public class GridInteractor : MonoBehaviour
             }
         }
 
+        cell.Neighbours = AvailableMoves;
         return AvailableMoves;
     }
 
@@ -221,7 +222,7 @@ public class GridInteractor : MonoBehaviour
 
             if (neighbourX >= 0 && neighbourX < _grid.GridSize.x && neighbourY >= 0 && neighbourY < _grid.GridSize.y)
             {
-                Cell neighbour = _grid.Cells[neighbourX, neighbourY];
+                var neighbour = _grid.Cells[neighbourX, neighbourY];
                 if (neighbour != null && neighbour != cell)
                 {
                     neighbours.Add(neighbour);
@@ -232,8 +233,10 @@ public class GridInteractor : MonoBehaviour
         return neighbours;
     }
 
-    public List<Cell> FindPathToTarget(Cell startCell, Cell endCell)
+    public List<Cell> FindPathToTarget(Cell startCell, Cell endCell, out List<Cell> Path)
     {
+        Path = new List<Cell>();
+
         Dictionary<Cell, float> gScore = new()
         {
             [startCell] = 0
@@ -256,7 +259,7 @@ public class GridInteractor : MonoBehaviour
 
             if (currentCell == endCell)
             {
-                return ReconstructPath(cameFrom, endCell);
+                return ReconstructPath(cameFrom, endCell, out Path);
             }
 
             openList.Remove(currentCell);
@@ -290,19 +293,10 @@ public class GridInteractor : MonoBehaviour
         return new List<Cell>();
     }
 
-
-
-    private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell)
+    private float Heuristic(Cell a, Cell b)
     {
-        List<Cell> path = new() { currentCell };
-
-        while (cameFrom.ContainsKey(currentCell))
-        {
-            currentCell = cameFrom[currentCell];
-            path.Insert(0, currentCell);
-        }
-
-        return path;
+        // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
+        return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
     }
 
     private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
@@ -319,11 +313,19 @@ public class GridInteractor : MonoBehaviour
     }
 
 
-    private float Heuristic(Cell a, Cell b)
+    private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell, out List<Cell> Path)
     {
-        // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
-        return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
-    }
+        List<Cell> path = new() { currentCell };
+
+        while (cameFrom.ContainsKey(currentCell))
+        {
+            currentCell = cameFrom[currentCell];
+            path.Insert(0, currentCell);
+        }
+
+        Path = path;
+        return Path;
+    } 
 
     public void MoveUnitAlongPath(Unit unit, List<Cell> path)
     {

@@ -71,7 +71,7 @@ public class Grid : MonoBehaviour
             Cell unitCell = unit.CurrentCell;
             unitCell.IsWalkable();
 
-            foreach (var neighborCell in unitCell.Neighbors)
+            foreach (var neighborCell in unitCell.Neighbours)
             {
                 neighborCell.SetIsWalkable(false); // либо другое isWalkable
             }

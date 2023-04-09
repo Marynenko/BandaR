@@ -71,9 +71,9 @@ public class Unit : MonoBehaviour, IUnit
         if (CurrentCell == targetCell) return;
         if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
 
-        if (Status != UnitStatus.Moved)
+        if (Status != UnitStatus.Moved) // Можно поставить UnistStatus.Unselected.
         {
-            Status = UnitStatus.Moved;
+            Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
             CurrentCell = targetCell;
 
             //OnUnitAction?.Invoke(UnitActionType.Move, this, targetCell);

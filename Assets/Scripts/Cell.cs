@@ -26,7 +26,7 @@ public class Cell : MonoBehaviour
     private int _distance;
 
     public GridInteractor Interactor;
-    public List<Cell> Neighbors { get; set; }
+    public List<Cell> Neighbours { get; set; }
     public int Row { get; private set; }
     public int Column { get; private set; }
 
@@ -53,7 +53,7 @@ public class Cell : MonoBehaviour
         CellStatus = unitOn;
         CurrentState = State.Standard;
         Coordinates = new Vector2(row, column);
-        Neighbors = new List<Cell>(4);
+        Neighbours = new List<Cell>(4);
     }
 
     public bool IsWalkable()
@@ -74,7 +74,7 @@ public class Cell : MonoBehaviour
         if (movementPoints >= 0)
         {
             CurrentState = isReachable ? State.Reachable : State.Impassable;
-            foreach (Cell neighbor in Neighbors)
+            foreach (Cell neighbor in Neighbours)
             {
                 if (neighbor._isWalkable && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
                 {
