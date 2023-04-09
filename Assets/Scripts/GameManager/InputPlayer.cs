@@ -24,7 +24,11 @@ public class InputPlayer : MonoBehaviour, IInputHandler
                 _gameController.HandleCellClick(cell);
             }
         }
+
+        //_gameController.UnhighlightUnavailableCells();
     }
+
+
 }
 
 public enum UnitActionType

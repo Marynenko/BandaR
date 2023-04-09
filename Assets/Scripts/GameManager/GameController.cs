@@ -13,6 +13,21 @@ public class GameController : MonoBehaviour, IGameController
     private Unit lastSelectedUnit;
     private Cell lastSelectedCell;
 
+    public void UnhighlightUnavailableCells()
+    {
+        // Идем по всем клеткам на игровом поле
+        foreach (var cell in _grid.Cells)
+        {
+            if (cell.CurrentState == State.Reachable && cell != _interactor.SelectedUnit.CurrentCell)
+                UnselectCell(cell);
+            //// Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
+            //if (cell.CurrentState == State.Reachable && !IsCellAvailableForMove(_interactor.SelectedUnit, cell, out _))
+            //{
+            //    UnselectCell(cell);
+            //}
+        }
+    }
+
     public void HandleUnitClick(Unit unit)
     {
         var selectedUnit = _interactor.SelectedUnit;
@@ -84,7 +99,7 @@ public class GameController : MonoBehaviour, IGameController
             return;
 
         //var path = _interactor.FindPathToTarget(selectedUnit.CurrentCell, cell, out Path);
-        
+
         if (Path.Count == 0)
             return;
 
@@ -105,6 +120,9 @@ public class GameController : MonoBehaviour, IGameController
         // Сохраняем текущий юнит и ячейку как последние выбранные
         lastSelectedUnit = selectedUnit;
         lastSelectedCell = selectedUnit.CurrentCell;
+
+        UnselectUnit(selectedUnit);
+        UnselectCell(selectedUnit.CurrentCell);
     }
 
 

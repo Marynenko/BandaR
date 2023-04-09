@@ -93,7 +93,7 @@ public class Cell : MonoBehaviour
     public void SelectCell()
     {
         var unit = _currentUnit as Unit; // Тут где-то ошибка завтра првоерить 02.04
-        var unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorUnitOnCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
+        var unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorSelectedCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
         ChangeColor(unitColor);
         CellStatus = UnitOn.Yes;
         CurrentState = State.Impassable;
