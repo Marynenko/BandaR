@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour, IGameController
 
 
             // Update available moves after attack
-            var availableMoves = _interactor.GetAvailableMoves(selectedUnit.CurrentCell, 1);
+            var availableMoves = _interactor.GridSelector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
             _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
         }
     }
