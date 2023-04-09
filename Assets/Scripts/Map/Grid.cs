@@ -47,7 +47,8 @@ public class Grid : MonoBehaviour
     {
         foreach (var cell in Cells)
         {
-            Interactor.GetNeighbourCells(cell);
+            Interactor.PathConstructor.GetNeighbourCells(cell, this);
+
 
         }
     }

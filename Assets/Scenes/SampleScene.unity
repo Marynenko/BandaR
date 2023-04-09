@@ -752,7 +752,7 @@ MonoBehaviour:
   Parent: {fileID: 971218190}
   CellPrefab: {fileID: 5016756518378698790, guid: 3924b4532fcf7fc4c9b4785688018ac4,
     type: 3}
-  GridSize: {x: 3, y: 3}
+  GridSize: {x: 4, y: 4}
   CellSize: 0.05
 --- !u!114 &1624328207
 MonoBehaviour:

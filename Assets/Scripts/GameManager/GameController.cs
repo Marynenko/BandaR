@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameController : MonoBehaviour, IGameController
 {
@@ -18,13 +16,9 @@ public class GameController : MonoBehaviour, IGameController
         // Идем по всем клеткам на игровом поле
         foreach (var cell in _grid.Cells)
         {
+            //// Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
             if (cell.CurrentState == State.Reachable && cell != _interactor.SelectedUnit.CurrentCell)
                 UnselectCell(cell);
-            //// Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
-            //if (cell.CurrentState == State.Reachable && !IsCellAvailableForMove(_interactor.SelectedUnit, cell, out _))
-            //{
-            //    UnselectCell(cell);
-            //}
         }
     }
 
@@ -134,7 +128,7 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     {
         Path = new List<Cell>();
-        return cell.IsWalkable() && unit.MovementPoints >= _interactor.FindPathToTarget(unit.CurrentCell, cell, out Path).Count;
+        return cell.IsWalkable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, _grid).Count;
     }    
     
 

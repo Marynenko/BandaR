@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IGameModel
 {
-
+    void EndTurn(Unit activePlayer, Unit opponentPlayer);
 }

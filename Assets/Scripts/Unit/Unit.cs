@@ -8,30 +8,25 @@ using UnityEngine;
 public class Unit : MonoBehaviour, IUnit
 {
     #region Variables
-    private const float POSITION_Y = .8f;
+    [SerializeField] private UnitStats _stats;
     private const float MAX_DISTANCE = 3f;
-    //private readonly List<Unit> _playersInRange;
 
-    [SerializeField] UnitStats _stats;
-
+    public Cell CurrentCell;
     public UnitStats Stats
     {
         get { return _stats; }
     }
     public Grid Grid { get; private set; }
+
+    public UnitType Type;
+    public UnitStatus Status = UnitStatus.Unselected;
+
     public int ID { get { return Stats.ID; } }
     public float ViewRange { get { return Stats.ViewRange; } }
     public float AttackRange { get { return Stats.AttackRange; } }
     public int Health { get { return Stats.Health; } }
     public int AttackDamage { get { return Stats.AttackDamage; } }
     public int MovementPoints { get { return Stats.MovementPoints; } }
-
-    public Cell CurrentCell;
-    public UnitType Type;
-    public UnitStatus Status = UnitStatus.Unselected;
-
-    public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
-    public static event UnitActionEventHandler OnUnitAction;
 
     #endregion
 

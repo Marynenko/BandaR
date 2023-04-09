@@ -6,26 +6,16 @@ using UnityEngine.UIElements;
 
 public class GridInteractor : MonoBehaviour
 {
-    private Grid _grid;
-    private List<Cell> _availableMoves;
-    private readonly List<Direction> directions = new()
-    {
-        new Direction(0, 1),   // Up
-        new Direction(0, -1),  // Down
-        new Direction(-1, 0),  // Left
-        new Direction(1, 0)    // Right
-    };
-
-    //private const float MAX_DISTANCE = 3f;
-
     public delegate void UnitSelectedEventHandler(Unit unit, UnitType unitType);
     public static event UnitSelectedEventHandler OnUnitSelected;
-    public delegate void UnitActionEventHandler(UnitActionType actionType, Unit unit, Cell cell);
-    public static event UnitActionEventHandler OnUnitAction;
 
+    private Grid _grid;
+    private List<Cell> _availableMoves;
+
+    public PathConstructor PathConstructor;
     public IReadOnlyList<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
-
     public Unit SelectedUnit { get; set; }
+
 
     public void OnEnable()
     {
@@ -33,13 +23,10 @@ public class GridInteractor : MonoBehaviour
         _grid = GetComponentInParent<Grid>();
         _availableMoves = new List<Cell>();
         OnUnitSelected += HandleUnitSelected;
-        OnUnitAction += HandleUnitAction;
     }
     private void OnDestroy()
     {
-        //GameController.OnUnitAction += HandleUnitAction;
         OnUnitSelected -= HandleUnitSelected;
-        OnUnitAction -= HandleUnitAction;
     }    
 
     public void SelectUnit(Unit unit)
@@ -197,7 +184,7 @@ public class GridInteractor : MonoBehaviour
 
             if (remainingMoves > 0)
             {
-                foreach (var neighbour in GetNeighbourCells(currentCell))
+                foreach (var neighbour in PathConstructor.GetNeighbourCells(currentCell, _grid))
                 {
                     if (!visitedCells.Contains(neighbour) && neighbour.IsWalkable() && neighbour.CellStatus == UnitOn.No)
                     {
@@ -211,121 +198,7 @@ public class GridInteractor : MonoBehaviour
         return AvailableMoves;
     }
 
-    public List<Cell> GetNeighbourCells(Cell cell)
-    {
-        List<Cell> neighbours = new();
 
-        foreach (Direction direction in directions)
-        {
-            int neighbourX = cell.Row + direction.XOffset;
-            int neighbourY = cell.Column + direction.YOffset;
-
-            if (neighbourX >= 0 && neighbourX < _grid.GridSize.x && neighbourY >= 0 && neighbourY < _grid.GridSize.y)
-            {
-                var neighbour = _grid.Cells[neighbourX, neighbourY];
-                if (neighbour != null && neighbour != cell)
-                {
-                    neighbours.Add(neighbour);
-                }
-            }
-        }
-
-        return neighbours;
-    }
-
-    public List<Cell> FindPathToTarget(Cell startCell, Cell endCell, out List<Cell> Path)
-    {
-        Path = new List<Cell>();
-
-        Dictionary<Cell, float> gScore = new()
-        {
-            [startCell] = 0
-        };
-
-        Dictionary<Cell, float> fScore = new()
-        {
-            [startCell] = Heuristic(startCell, endCell)
-        };
-
-        List<Cell> closedList = new(); // список ячеек, которые уже были проверены.
-        List<Cell> openList = new() { startCell }; // список ячеек, которые еще не были проверены.
-
-        Dictionary<Cell, Cell> cameFrom = new();
-
-        while (openList.Count > 0)
-        {
-            var currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
-
-
-            if (currentCell == endCell)
-            {
-                return ReconstructPath(cameFrom, endCell, out Path);
-            }
-
-            openList.Remove(currentCell);
-            closedList.Add(currentCell);
-
-            foreach (var neighborCell in GetNeighbourCells(currentCell))
-            {
-                if (closedList.Contains(neighborCell))
-                {
-                    continue;
-                }
-
-                float tentativeScore = gScore[currentCell] + GetDistanceBetweenCells(currentCell, neighborCell);
-
-                if (!openList.Contains(neighborCell))
-                {
-                    openList.Add(neighborCell);
-                }
-                else if (tentativeScore >= (gScore.TryGetValue(neighborCell, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-
-                {
-                    continue;
-                }
-
-                cameFrom[neighborCell] = currentCell;
-                gScore[neighborCell] = tentativeScore;
-                fScore[neighborCell] = gScore[neighborCell] + Heuristic(neighborCell, endCell);
-            }
-        }
-
-        return new List<Cell>();
-    }
-
-    private float Heuristic(Cell a, Cell b)
-    {
-        // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
-        return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
-    }
-
-    private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
-    {
-        // Если ячейки равны, то расстояние между ними равно 0
-        if (cell1 == cell2)
-            return 0;
-
-        // Здесь мы можем использовать любой алгоритм для вычисления расстояния между ячейками.
-        // Например, можно использовать евклидово расстояние:
-        float dx = cell1.Coordinates.x - cell2.Coordinates.x;
-        float dy = cell1.Coordinates.y - cell2.Coordinates.y;
-        return Mathf.Sqrt(dx * dx + dy * dy);
-    }
-
-
-    private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell, out List<Cell> Path)
-    {
-        List<Cell> path = new() { currentCell };
-
-        while (cameFrom.ContainsKey(currentCell))
-        {
-            currentCell = cameFrom[currentCell];
-            path.Insert(0, currentCell);
-        }
-
-        Path = path;
-        return Path;
-    } 
 
     public void MoveUnitAlongPath(Unit unit, List<Cell> path)
     {
