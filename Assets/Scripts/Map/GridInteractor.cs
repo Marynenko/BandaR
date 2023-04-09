@@ -335,23 +335,6 @@ public class GridInteractor : MonoBehaviour
             unit.MoveToCell(cell); // изменен вызов метода
         }
     }
-
-    public void MoveUnit(Unit unit, Cell targetCell)
-    {
-        if (unit.CurrentCell != null)
-        {
-            unit.CurrentCell.ChangeColor(unit.CurrentCell.ColorStandardCell);
-
-            Color unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorUnitOnCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
-
-            targetCell.ChangeColor(unitColor);
-            targetCell.CellStatus = UnitOn.Yes;
-            unit.MoveToCell(targetCell); // изменен вызов метода
-
-            OnUnitAction?.Invoke(UnitActionType.Move, unit, targetCell);
-        }
-    }
-
 }
 
 public class Direction
