@@ -7,7 +7,7 @@ public class Grid : MonoBehaviour
     public Transform Parent;
     public Cell CellPrefab; 
     public Vector2Int GridSize;
-    public float CellSize;
+    public float Offset;
 
     public GridInteractor Interactor { get; private set; }
     public GridInitializer Initializer { get; private set; }
@@ -32,7 +32,7 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < GridSize.y; y++)
             {
                 // Чтобы сгенерировать клетку, нужно знать ее позицию.
-                var position = new Vector3(x * (cellSize.x + CellSize), 0, y * (cellSize.z + CellSize));
+                var position = new Vector3(x * (cellSize.x + Offset), 0, y * (cellSize.z + Offset));
 
                 var cell = Instantiate(CellPrefab, position, Quaternion.identity, Parent);
                 cell.Initialize(x, y, Interactor, true, false); // тут передается Grid

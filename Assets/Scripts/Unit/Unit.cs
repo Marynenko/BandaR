@@ -15,18 +15,14 @@ public class Unit : MonoBehaviour, IUnit
     #region Variables
     [SerializeField] private UnitStats _stats;
     private const float MAX_DISTANCE = 3f;
-
-    public Cell CurrentCell;
-    public UnitStats Stats
-    {
-        get { return _stats; }
-    }
-    public Grid Grid { get; private set; }
-
-    public UnitType Type;
+    
     public UnitStatus Status = UnitStatus.Unselected;
 
+    public Grid Grid { get; private set; }
+    public Cell CurrentCell { get; private set; }
+    public UnitStats Stats { get { return _stats; } }
     public int ID { get { return Stats.ID; } }
+    public UnitType Type { get { return Stats.Type; } }
     public float ViewRange { get { return Stats.ViewRange; } }
     public float AttackRange { get { return Stats.AttackRange; } }
     public int Health { get { return Stats.Health; } }
@@ -38,7 +34,6 @@ public class Unit : MonoBehaviour, IUnit
     #region Public Methods    
     public virtual IUnit GetUnitType() => this;
 
-    [ContextMenu("Initialize Unit")]
     public void InitializeUnit(Grid grid, Cell cell)
     {
         Grid = grid;

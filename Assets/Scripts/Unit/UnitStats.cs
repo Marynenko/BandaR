@@ -5,6 +5,7 @@ using UnityEngine;
 public class UnitStats : MonoBehaviour
 {
     public int ID;
+    public UnitType Type;
     public float ViewRange;
     public int MovementPoints;
     public int MovementRange;
