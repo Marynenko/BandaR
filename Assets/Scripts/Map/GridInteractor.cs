@@ -72,7 +72,7 @@ public class GridInteractor : MonoBehaviour
         player.Status = UnitStatus.Selected;
         player.CurrentCell.SelectCell();
         GridSelector.SelectCellToMove(player.CurrentCell, UnitType.Player, true);
-        player.CurrentCell.CellStatus = UnitOn.Yes; // тут или перед SelectCellToMove?
+        player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMove?
     }
 
     private void HandleEnemySelected(Unit enemy)
@@ -82,7 +82,7 @@ public class GridInteractor : MonoBehaviour
         enemy.Status = UnitStatus.Selected;
         enemy.CurrentCell.SelectCell();
         GridSelector.SelectCellToMove(enemy.CurrentCell, UnitType.Enemy, true);
-        enemy.CurrentCell.CellStatus= UnitOn.Yes;
+        enemy.CurrentCell.UnitOn = true;
     }
 
     private void HandleUnitAction(UnitActionType actionType, Unit unit, Cell cell)

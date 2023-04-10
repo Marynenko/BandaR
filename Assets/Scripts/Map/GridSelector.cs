@@ -83,7 +83,7 @@ public class GridSelector : MonoBehaviour
             {
                 foreach (var neighbour in _grid.Interactor.PathConstructor.GetNeighbourCells(currentCell, _grid))
                 {
-                    if (!visitedCells.Contains(neighbour) && neighbour.IsWalkable() && neighbour.CellStatus == UnitOn.No)
+                    if (!visitedCells.Contains(neighbour) && neighbour.IsAwailable() && neighbour.UnitOn == false)
                     {
                         queue.Enqueue((neighbour, remainingMoves - 1));
                     }

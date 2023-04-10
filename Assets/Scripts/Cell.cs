@@ -6,23 +6,19 @@ using static UnityEngine.UI.CanvasScaler;
 
 public enum State
 {
-    Standard,
-    Selected,
-    Movement,
-    Impassable,
-    Reachable,
-}
-
-public enum UnitOn // test v.1
-{
-    Yes,
-    No
+    Standard, // Стандартное состояние
+    Selected, // Выбран пользователем
+    Movement, // Пользователь выбрал этот тайл для движения юнита
+    Impassable, // Непроходимый тайл (например, стена или вода)
+    Reachable, // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
+    OccupiedByPlayer, // Занят игроком
+    OccupiedByEnemy, // Занят врагом
 }
 
 public class Cell : MonoBehaviour
 {
     private IUnit _currentUnit;
-    private bool _isWalkable;
+    private bool _awailable;
     private int _distance;
 
     public GridInteractor Interactor;
@@ -32,8 +28,9 @@ public class Cell : MonoBehaviour
 
     [SerializeField] private MeshRenderer MeshRenderer;
     [HideInInspector] public State CurrentState; // Состояние клетки.
-    [HideInInspector] public UnitOn CellStatus; // Юнит на клетке или нет.    
     [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
+
+    public bool UnitOn; // Юнит на клетке или нет.    
 
     public Color ColorStandardCell; //Стандартный цвет клетки.
     public Color ColorUnitOnCell; // Цвет клетки на которой стоит гл. герой.
@@ -43,25 +40,25 @@ public class Cell : MonoBehaviour
 
     internal readonly int MovementCost = 1;
 
-    public void Initialize(int row, int column, GridInteractor gridInteractor, bool isWalkable, UnitOn unitOn)
+    public void Initialize(int row, int column, GridInteractor gridInteractor, bool isAwailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
         Row = row;
         Column = column;
         Interactor = gridInteractor;
-        _isWalkable = isWalkable;
-        CellStatus = unitOn;
+        _awailable = isAwailable;
+        UnitOn = unitOn;
         CurrentState = State.Standard;
         Coordinates = new Vector2(row, column);
         Neighbours = new List<Cell>(4);
     }
 
-    public bool IsWalkable()
+    public bool IsAwailable()
     {
-        return _isWalkable && CellStatus == UnitOn.No;
+        return _awailable && !UnitOn;
     }
 
-    public bool SetIsWalkable(bool atribute) => _isWalkable = atribute;
+    public bool SetAwailable(bool atribute) => _awailable = atribute;
 
     public void ChangeColor(Color color)    {
         MeshRenderer.material.color = color;
@@ -76,7 +73,7 @@ public class Cell : MonoBehaviour
             CurrentState = isReachable ? State.Reachable : State.Impassable;
             foreach (Cell neighbor in Neighbours)
             {
-                if (neighbor._isWalkable && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
+                if (neighbor._awailable && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
                 {
                     neighbor.SetReachable(movementPoints - neighbor.MovementCost, isReachable);
                 }
@@ -95,17 +92,17 @@ public class Cell : MonoBehaviour
         var unit = _currentUnit as Unit; // Тут где-то ошибка завтра првоерить 02.04
         var unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorSelectedCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
         ChangeColor(unitColor);
-        CellStatus = UnitOn.Yes;
+        UnitOn = true;
         CurrentState = State.Impassable;
-        SetIsWalkable(false);
+        SetAwailable(false);
     }
 
     public void UnselectCell()
     {
         ChangeColor(ColorStandardCell);
-        CellStatus = UnitOn.No;
+        UnitOn = false;
         CurrentState = State.Reachable;
-        SetIsWalkable(true);
+        SetAwailable(true);
     }
 
     public void SetUnit(IUnit unit) => _currentUnit = unit;

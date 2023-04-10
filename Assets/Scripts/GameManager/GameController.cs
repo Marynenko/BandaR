@@ -128,7 +128,7 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     {
         Path = new List<Cell>();
-        return cell.IsWalkable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, _grid).Count;
+        return cell.IsAwailable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, _grid).Count;
     }    
     
 

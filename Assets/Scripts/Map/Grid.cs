@@ -35,7 +35,7 @@ public class Grid : MonoBehaviour
                 var position = new Vector3(x * (cellSize.x + CellSize), 0, y * (cellSize.z + CellSize));
 
                 var cell = Instantiate(CellPrefab, position, Quaternion.identity, Parent);
-                cell.Initialize(x, y, Interactor, true, UnitOn.No); // тут передается Grid
+                cell.Initialize(x, y, Interactor, true, false); // тут передается Grid
 
 
                 Cells[x, y] = cell;
@@ -57,9 +57,9 @@ public class Grid : MonoBehaviour
     {
         foreach (var cell in Cells)
         {
-            if (cell.IsWalkable())
+            if (cell.IsAwailable())
             {
-                cell.SetIsWalkable(true);
+                cell.SetAwailable(true);
             }
         }
     }
@@ -70,11 +70,11 @@ public class Grid : MonoBehaviour
         foreach (var unit in Units)
         {
             Cell unitCell = unit.CurrentCell;
-            unitCell.IsWalkable();
+            unitCell.IsAwailable();
 
             foreach (var neighborCell in unitCell.Neighbours)
             {
-                neighborCell.SetIsWalkable(false); // либо другое isWalkable
+                neighborCell.SetAwailable(false); // либо другое isWalkable
             }
         }
     }
@@ -108,7 +108,7 @@ public class Grid : MonoBehaviour
     {
         if (unit == null) return;
 
-        unit.CurrentCell.CellStatus = UnitOn.No;
+        unit.CurrentCell.UnitOn = false;
         AllUnits.Remove(unit);
         Destroy(unit.gameObject);
     }

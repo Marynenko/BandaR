@@ -3,8 +3,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
+public enum UnitActionTypeMovement
+{
+    Move,
+    Attack,
+    SpecialAbility
+}
 public class Unit : MonoBehaviour, IUnit
 {
     #region Variables
@@ -56,7 +60,7 @@ public class Unit : MonoBehaviour, IUnit
         if (Vector3.Distance(unit.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
         if (unit.Status == UnitStatus.Moved) return false;
         if (!AvailableMoves.Contains(cell)) return false;
-        if (cell.CellStatus != UnitOn.No) return false;
+        if (cell.UnitOn == true) return false;
         if (unit.Stats.MovementPoints < cell.MovementCost) return false;
         return true;
     }
@@ -97,7 +101,6 @@ public class Unit : MonoBehaviour, IUnit
         return distance <= AttackRange;
     }
 
-
     public void Attack(IUnit target)
     {
         var unit = target.GetUnitType();
@@ -106,8 +109,6 @@ public class Unit : MonoBehaviour, IUnit
             target.TakeDamage(AttackDamage);
         }
     }
-
-
 
     public void TakeDamage(int damage)
     {
@@ -126,7 +127,6 @@ public class Unit : MonoBehaviour, IUnit
         return delegate { };
     }
 
-
     public void UpdateVisuals()
     {
         //healthBar.fillAmount = (float)Health / MaxHealth;
@@ -135,6 +135,27 @@ public class Unit : MonoBehaviour, IUnit
     public void OnUnitMoved(Unit movedUnit)
     {
         // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
+    }
+
+    public bool IsActionAvailableForUnit(Unit unit, UnitActionTypeMovement actionType)
+    {
+        switch (actionType)
+        {
+            case UnitActionTypeMovement.Move:
+                // Check if the unit can move in the current situation
+                break;
+            case UnitActionTypeMovement.Attack:
+                // Check if the unit can attack in the current situation
+                break;
+            case UnitActionTypeMovement.SpecialAbility:
+                // Check if the unit can use its special ability in the current situation
+                break;
+            default:
+                // Handle invalid action type
+                break;
+        }
+
+        return false;
     }
     #endregion
 }
