@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static TMPro.Examples.ObjectSpin;
-using static UnityEditor.Experimental.GraphView.GraphView;
+﻿using UnityEngine;
 
 public class GameModel : MonoBehaviour, IGameModel
 {
-    [SerializeField] private Grid _grid;
     [SerializeField] private GameController _controller;
+    [SerializeField] private Grid _grid;
+    [SerializeField] private GridSelector _selector;
     [SerializeField] private GridInteractor _interactor;
 
     private Unit _activePlayer;
@@ -91,7 +88,7 @@ public class GameModel : MonoBehaviour, IGameModel
         return false;
     }
 
-    public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
+    public bool IsActionAvailableForUnit(Unit unit, ActionType unitActionType)
     {
         // Check if the unit can perform the action in the current situation
         // For example, a unit cannot attack if there are no enemy units nearby
@@ -133,7 +130,7 @@ public class GameModel : MonoBehaviour, IGameModel
     private void UnselectUnit()
     {
         // Unselect the current unit and reset cell availability
-        _interactor.UnselectUnit(_activePlayer);
+        _selector.UnselectUnit(_activePlayer);
     }
 
     private void UpdateScore()

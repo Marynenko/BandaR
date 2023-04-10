@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum UnitActionTypeMovement
+public enum ActionType
 {
     Move,
     Attack,
     SpecialAbility
 }
+
 public class Unit : MonoBehaviour, IUnit
 {
     #region Variables
@@ -54,38 +55,31 @@ public class Unit : MonoBehaviour, IUnit
         
     }
 
-    public bool CanMoveToCell(Cell cell, Unit unit, List<Cell> AvailableMoves)
+    public bool CanMoveToCell(Cell cell)
     {
-        if (unit.CurrentCell == cell) return false;
-        if (Vector3.Distance(unit.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
-        if (unit.Status == UnitStatus.Moved) return false;
-        if (!AvailableMoves.Contains(cell)) return false;
+        if (CurrentCell == cell) return false;
+        if (Vector3.Distance(transform.position, cell.transform.position) > MAX_DISTANCE) return false;
+        if (Status == UnitStatus.Moved) return false;
         if (cell.UnitOn == true) return false;
-        if (unit.Stats.MovementPoints < cell.MovementCost) return false;
+        if (Stats.MovementPoints < cell.MovementCost) return false;
         return true;
     }
 
     public void MoveToCell(Cell targetCell)
     {
-        if (CurrentCell == targetCell) return;
-        if (Vector3.Distance(transform.position, targetCell.transform.position) > MAX_DISTANCE) return;
+        Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
+        CurrentCell = targetCell;
 
-        if (Status != UnitStatus.Moved) // Можно поставить UnistStatus.Unselected.
-        {
-            Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
-            CurrentCell = targetCell;
+        //OnUnitAction?.Invoke(ActionType.Move, this, targetCell);
 
-            //OnUnitAction?.Invoke(UnitActionType.Move, this, targetCell);
+        // Вычисляем позицию для перемещения с учетом высоты юнита
+        Vector3 newPosition = new(targetCell.transform.position.x, transform.position.y, targetCell.transform.position.z);
 
-            // Вычисляем позицию для перемещения с учетом высоты юнита
-            Vector3 newPosition = new(targetCell.transform.position.x, transform.position.y, targetCell.transform.position.z);
-
-            // Запускаем анимацию перемещения
-            var pos = transform.position;
-            transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
-                     .SetEase(Ease.Linear)
-                     .OnComplete(() => pos = newPosition);
-        }
+        // Запускаем анимацию перемещения
+        var pos = transform.position;
+        transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
+                 .SetEase(Ease.Linear)
+                 .OnComplete(() => pos = newPosition);
     }
 
 
@@ -137,17 +131,17 @@ public class Unit : MonoBehaviour, IUnit
         // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
     }
 
-    public bool IsActionAvailableForUnit(Unit unit, UnitActionTypeMovement actionType)
+    public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
     {
         switch (actionType)
         {
-            case UnitActionTypeMovement.Move:
+            case ActionType.Move:
                 // Check if the unit can move in the current situation
                 break;
-            case UnitActionTypeMovement.Attack:
+            case ActionType.Attack:
                 // Check if the unit can attack in the current situation
                 break;
-            case UnitActionTypeMovement.SpecialAbility:
+            case ActionType.SpecialAbility:
                 // Check if the unit can use its special ability in the current situation
                 break;
             default:

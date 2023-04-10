@@ -5,22 +5,12 @@ using UnityEngine;
 public class GameController : MonoBehaviour, IGameController
 {
     [SerializeField] private Grid _grid;
+    [SerializeField] private GridSelector _selector;
     [SerializeField] private GridInteractor _interactor;
     [SerializeField] private GridGenerator _generator;
 
     private Unit lastSelectedUnit;
     private Cell lastSelectedCell;
-
-    public void UnhighlightUnavailableCells()
-    {
-        // Идем по всем клеткам на игровом поле
-        foreach (var cell in _grid.Cells)
-        {
-            //// Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
-            if (cell.CurrentState == State.Reachable && cell != _interactor.SelectedUnit.CurrentCell)
-                UnselectCell(cell);
-        }
-    }
 
     public void HandleUnitClick(Unit unit)
     {
@@ -28,16 +18,16 @@ public class GameController : MonoBehaviour, IGameController
 
         if (selectedUnit == null)
             if (unit.Type == UnitType.Player)
-                _interactor.SelectUnit(unit);
+                _selector.SelectUnit(unit);
 
             else if (selectedUnit.Equals(unit))
                 return;
             else if (unit.Type == UnitType.Player)
-                _interactor.SelectUnit(unit);
+                _selector.SelectUnit(unit);
             else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
                 HandleUnitAttack(selectedUnit, unit);
             else
-                _interactor.HandleUnitDeselection(selectedUnit, unit);
+                _interactor.HandleUnitDeselection(selectedUnit, unit, _selector);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -61,18 +51,18 @@ public class GameController : MonoBehaviour, IGameController
             }
 
             selectedUnit.CurrentCell.UnselectCell();
-            _interactor.UnselectUnit(selectedUnit);
+            _selector.UnselectUnit(selectedUnit);
 
 
             // Update available moves after attack
-            var availableMoves = _interactor.GridSelector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
-            _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell);
+            var availableMoves = _selector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
+            _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, _selector);
         }
     }
 
     public void HandleCellClick(Cell cell)
     {
-        var selectedUnit = _interactor.SelectedUnit;
+        var selectedUnit = _selector.SelectedUnit;
 
         if (!IsPlayerUnitSelected(selectedUnit))
             return;
@@ -132,11 +122,20 @@ public class GameController : MonoBehaviour, IGameController
     }    
     
 
-    private void UnselectUnit(Unit unit) => _interactor?.UnselectUnit(unit);
+    private void UnselectUnit(Unit unit) => _selector?.UnselectUnit(unit);
     private void UnselectCell(Cell cell) => cell.UnselectCell();
-    private void MoveUnit(Unit unit, List<Cell> path) => _interactor.MoveUnitAlongPath(unit, path);
+    private void MoveUnit(Unit unit, List<Cell> path) => MoveUnitAlongPath(unit, path);
+    public void MoveUnitAlongPath(Unit unit, List<Cell> path)
+    {
+        // Двигаем юнита поочередно на каждую ячейку из списка
+        foreach (var cell in path)
+        {
+            if (unit.CanMoveToCell(cell))
+                unit.MoveToCell(cell); // изменен вызов метода
+        }
+    }
     private void SelectCell(Cell cell) => cell.SelectCell();
-    private void SelectUnit(Unit unit) => _interactor?.SelectUnit(unit);
+    private void SelectUnit(Unit unit) => _selector?.SelectUnit(unit);
 
     #region Вторая ветка проверкми клеток
     private void CheckAdjacentUnits(Unit unit, List<IUnit> units) // Сюда в Neighbours

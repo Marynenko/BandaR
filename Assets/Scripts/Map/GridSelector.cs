@@ -6,12 +6,45 @@ using UnityEngine;
 public class GridSelector : MonoBehaviour
 {
     private Grid _grid;
+    private GridInteractor _interactor;
     private List<Cell> _availableMoves;
+
+    public delegate void UnitSelectedEventHandler(Unit unit, GridSelector selector);
+    public static event UnitSelectedEventHandler OnUnitSelected;
+
+    public Unit SelectedUnit { get; set; }    
 
     private void OnEnable()
     {
         _grid = GetComponentInParent<Grid>();
+        _interactor = GetComponent<GridInteractor>();
+        OnUnitSelected += _interactor.HandleUnitSelected;
     }
+
+    private void OnDestroy()
+    {
+        OnUnitSelected -= _interactor.HandleUnitSelected;
+    }
+
+    public void SelectUnit(Unit unit)
+    {
+        if (SelectedUnit != null)
+        {
+            SelectedUnit.CurrentCell.UnselectCell();
+            UnselectUnit(SelectedUnit);
+        }
+
+        OnUnitSelected?.Invoke(unit, this);
+    }
+
+    public void UnselectUnit(Unit unit)
+    {
+        //unit.Status = UnitStatus.Unselected;
+        SelectedUnit = null;
+        _interactor.SelectedUnit = null;
+        unit.CurrentCell.ClearUnit();
+    }
+
 
     public void UnselectCells()
     {

@@ -25,13 +25,6 @@ public class InputPlayer : MonoBehaviour, IInputHandler
             }
         }
 
-        //_gameController.UnhighlightUnavailableCells();
+        //_gameController.UnhighlightUnavailableMoves();
     }
-
-
-}
-
-public enum UnitActionType
-{
-    Move
 }
