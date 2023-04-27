@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour, IGameController
 {
-    [SerializeField] private Grid _grid;
-    [SerializeField] private GridSelector _selector;
+    [SerializeField] public Grid Grid;
+    [SerializeField] public GridSelector Selector;
     [SerializeField] private GridInteractor _interactor;
     [SerializeField] private GridGenerator _generator;
 
@@ -17,22 +17,29 @@ public class GameController : MonoBehaviour, IGameController
         var selectedUnit = _interactor.SelectedUnit;
 
         if (selectedUnit == null)
-            if (unit.Type == UnitType.Player)
-                _selector.SelectUnit(unit);
+        {
+            if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
+                Selector.SelectUnit(unit);
+        }
 
-            else if (selectedUnit.Equals(unit))
-                return;
-            else if (unit.Type == UnitType.Player)
-                _selector.SelectUnit(unit);
-            else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
-                HandleUnitAttack(selectedUnit, unit);
-            else
-                _interactor.HandleUnitDeselection(selectedUnit, unit, _selector);
+        else if (selectedUnit.Equals(unit))
+            return;
+        else if (unit.Type == UnitType.Player)
+            Selector.SelectUnit(unit);
+        else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
+            HandleUnitAttack(selectedUnit, unit);
+        else
+            _interactor.HandleUnitDeselection(selectedUnit, unit, Selector);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
     {
         if (selectedUnit.Status != UnitStatus.Selected)
+        {
+            return;
+        }
+
+        if (selectedUnit.Status == UnitStatus.Unavailable)
         {
             return;
         }
@@ -43,7 +50,7 @@ public class GameController : MonoBehaviour, IGameController
 
             if (targetUnit.Health <= 0)
             {
-                _grid.RemoveUnit(targetUnit);
+                Grid.RemoveUnit(targetUnit);
             }
             else
             {
@@ -51,23 +58,29 @@ public class GameController : MonoBehaviour, IGameController
             }
 
             selectedUnit.CurrentCell.UnselectCell();
-            _selector.UnselectUnit(selectedUnit);
+            Selector.UnselectUnit(selectedUnit);
 
 
-            // Update available moves after attack
-            var availableMoves = _selector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
-            _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, _selector);
+            if (selectedUnit.IsAlive())
+            {
+                // Update available moves after attack
+                var availableMoves = Selector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
+                _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, Selector);
+            }
         }
     }
 
     public void HandleCellClick(Cell cell)
     {
-        var selectedUnit = _selector.SelectedUnit;
+        var selectedUnit = Selector.SelectedUnit;
 
         if (!IsPlayerUnitSelected(selectedUnit))
             return;
 
         if (cell == selectedUnit.CurrentCell)
+            return;
+
+        if (selectedUnit.Status == UnitStatus.Moved)
             return;
 
         // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
@@ -77,7 +90,7 @@ public class GameController : MonoBehaviour, IGameController
             SelectCell(lastSelectedCell);
         }
 
-        UnselectCell(selectedUnit.CurrentCell);
+        UnselectCell(selectedUnit.CurrentCell); // Убрать выделение из клетки на которой игрок.
 
         if (!IsCellAvailableForMove(selectedUnit, cell, out List<Cell> Path))
             return;
@@ -89,13 +102,14 @@ public class GameController : MonoBehaviour, IGameController
 
         MoveUnit(selectedUnit, Path);
 
-        SelectUnit(selectedUnit);
+        //SelectUnit(selectedUnit);
 
-        //CheckAdjacentUnits(selectedUnit, _grid.AllUnits, selectedUnit.Team.EnemyTeam);
-        CheckAdjacentUnits(selectedUnit, _grid.AllUnits);
+        //CheckAdjacentUnits(selectedUnit, Grid.AllUnits, selectedUnit.Team.EnemyTeam);
+        CheckAdjacentUnits(selectedUnit, Grid.AllUnits);
+        
 
         // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
-        if (IsUnitAdjacentToEnemy(selectedUnit, _grid.AllUnits))
+        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
         {
             // Если юнит находится рядом с вражескими юнитами, выделяем его ячейку красным цветом
             SelectCell(selectedUnit.CurrentCell); // Red
@@ -105,11 +119,9 @@ public class GameController : MonoBehaviour, IGameController
         lastSelectedUnit = selectedUnit;
         lastSelectedCell = selectedUnit.CurrentCell;
 
-        UnselectUnit(selectedUnit);
+        UnselectUnit(selectedUnit); // Можно убрать наверное
         UnselectCell(selectedUnit.CurrentCell);
-    }
-
-
+    }   
 
     private bool IsPlayerUnitSelected(Unit unit)
     => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Selected;
@@ -118,11 +130,11 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     {
         Path = new List<Cell>();
-        return cell.IsAwailable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, _grid).Count;
+        return cell.IsAwailable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
     }    
     
 
-    private void UnselectUnit(Unit unit) => _selector?.UnselectUnit(unit);
+    private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
     private void UnselectCell(Cell cell) => cell.UnselectCell();
     private void MoveUnit(Unit unit, List<Cell> path) => MoveUnitAlongPath(unit, path);
     public void MoveUnitAlongPath(Unit unit, List<Cell> path)
@@ -131,18 +143,21 @@ public class GameController : MonoBehaviour, IGameController
         foreach (var cell in path)
         {
             if (unit.CanMoveToCell(cell))
+            {
                 unit.MoveToCell(cell); // изменен вызов метода
+                unit.Status = UnitStatus.Moved;
+            }
         }
     }
     private void SelectCell(Cell cell) => cell.SelectCell();
-    private void SelectUnit(Unit unit) => _selector?.SelectUnit(unit);
+    private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);
 
     #region Вторая ветка проверкми клеток
-    private void CheckAdjacentUnits(Unit unit, List<IUnit> units) // Сюда в Neighbours
+    private void CheckAdjacentUnits(Unit unit, List<Unit> units) // Сюда в Neighbours
     {
         foreach (var neighbourCell in unit.CurrentCell.Neighbours)
         {
-            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.CurrentCell == neighbourCell);
+            var neighborUnit = units.FirstOrDefault(u => u.CurrentCell == neighbourCell);
             if (neighborUnit != null && neighborUnit.Type == unit.Type)
                 neighborUnit.OnUnitMoved(unit);
 
@@ -161,8 +176,11 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
     {
         foreach (var neighborCell in unit1.CurrentCell.Neighbours)
-            if (unit2.CurrentCell == neighborCell)
-                return true;
+        {
+            if (neighborCell == unit2.CurrentCell) return true;
+            if (neighborCell.CurrentState == State.OccupiedByPlayer) return true;
+        }
+
         return false;
     }
 
@@ -173,14 +191,14 @@ public class GameController : MonoBehaviour, IGameController
             unit.Attack(enemy);
 
             if (enemy.Health <= 0)
-                _grid.RemoveUnit(enemy);
+                Grid.RemoveUnit(enemy);
         }
     }
 
 
     
     // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
-    private bool IsUnitAdjacentToEnemy(Unit unit, List<IUnit> units)
+    private bool IsUnitAdjacentToEnemy(Unit unit, List<Unit> units)
     {
         foreach (var neighborCell in unit.CurrentCell.Neighbours)
         {

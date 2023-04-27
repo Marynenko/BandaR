@@ -3,8 +3,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum UnitStatus
+{
+    Selected,
+    Unselected,
+    Moved,
+    Available,
+    Unavailable
+}
+
+public enum UnitType
+{
+    Player,
+    Enemy
+}
+
 public enum ActionType
 {
+    Select,
     Move,
     Attack,
     SpecialAbility
@@ -16,7 +32,7 @@ public class Unit : MonoBehaviour, IUnit
     [SerializeField] private UnitStats _stats;
     private const float MAX_DISTANCE = 3f;
     
-    public UnitStatus Status = UnitStatus.Unselected;
+    public UnitStatus Status = UnitStatus.Available;
 
     public Grid Grid { get; private set; }
     public Cell CurrentCell { get; private set; }
@@ -32,7 +48,7 @@ public class Unit : MonoBehaviour, IUnit
     #endregion
 
     #region Public Methods    
-    public virtual IUnit GetUnitType() => this;
+    public virtual Unit GetUnitType() => this;
 
     public void InitializeUnit(Grid grid, Cell cell)
     {
@@ -78,7 +94,7 @@ public class Unit : MonoBehaviour, IUnit
     }
 
 
-    public bool CanAttack(IUnit targetUnit)
+    public bool CanAttack(Unit targetUnit)
     {
         var unit = targetUnit.GetUnitType();
         if (targetUnit == null || (unit as Unit).Type != UnitType.Enemy)
@@ -90,7 +106,7 @@ public class Unit : MonoBehaviour, IUnit
         return distance <= AttackRange;
     }
 
-    public void Attack(IUnit target)
+    public void Attack(Unit target)
     {
         var unit = target.GetUnitType();
         if (Vector3.Distance(transform.position, (unit as Unit).transform.position) <= AttackRange)
@@ -110,7 +126,7 @@ public class Unit : MonoBehaviour, IUnit
         }
     }
 
-    public Action Die(IUnit unit)
+    public Action Die(Unit unit)
     {
         // Доработать        
         return delegate { };
@@ -126,6 +142,10 @@ public class Unit : MonoBehaviour, IUnit
         // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
     }
 
+    public bool IsAlive()
+    {
+        return Health > 0;
+    }
     public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
     {
         switch (actionType)

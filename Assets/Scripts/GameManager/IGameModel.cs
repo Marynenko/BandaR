@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface IGameModel
 {
-    void StartGame();
-    void StartTurn(Unit activePlayer);
-    void EndTurn(Unit activePlayer, Unit _nextPlayer);
+    void StartTurn();
+    void EndTurn();
+    void EndGame();
 
 }

@@ -1,14 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class InputPlayer : MonoBehaviour, IInputHandler
 {
     [SerializeField] private GameController _gameController;
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-            HandleLeftClick(Input.mousePosition);
-    }
+    [SerializeField] private GameModel _gameModel;
 
     public void HandleLeftClick(Vector3 mousePosition)
     {
@@ -24,7 +22,35 @@ public class InputPlayer : MonoBehaviour, IInputHandler
                 _gameController.HandleCellClick(cell);
             }
         }
+        //_gameController.UnhighlightAvailableMoves();
+    }
 
-        //_gameController.UnhighlightUnavailableMoves();
+    public void HandleEndTurnButtonClicked()
+    {
+        // Проверяем, выбран ли игрок
+        var selectedUnit = _gameController.Selector.SelectedUnit;
+        if (selectedUnit != null)
+        {
+            Debug.Log("You must unselect the current unit before ending the turn.");
+            return;
+        }
+
+        // Проверяем, был ли игрок перемещен в этом ходе
+        var movedUnits = _gameController.Grid.AllUnits.Where(u => u.Status == UnitStatus.Moved).ToList();
+        if (movedUnits.Count > 0)
+        {
+            Debug.Log("You can't end the turn until all units have moved.");
+            return;
+        }
+
+        // Проверяем, не закончилась ли игра
+        if (_gameModel.IsGameOver())
+        {
+            _gameModel.EndGame();
+            return;
+        }
+
+        // Передаем ход следующему игроку
+        _gameModel.EndTurn();
     }
 }

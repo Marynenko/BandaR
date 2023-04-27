@@ -17,11 +17,12 @@ public enum State
 
 public class Cell : MonoBehaviour
 {
-    private IUnit _currentUnit;
+    private Unit _currentUnit;
     private bool _awailable;
     private int _distance;
 
     public GridInteractor Interactor;
+
     public List<Cell> Neighbours { get; set; }
     public int Row { get; private set; }
     public int Column { get; private set; }
@@ -50,7 +51,7 @@ public class Cell : MonoBehaviour
         UnitOn = unitOn;
         CurrentState = State.Standard;
         Coordinates = new Vector2(row, column);
-        Neighbours = new List<Cell>(4);
+        Neighbours = new List<Cell>(4);        
     }
 
     public bool IsAwailable()
@@ -89,13 +90,13 @@ public class Cell : MonoBehaviour
 
     public void SelectCell()
     {
-        var unit = _currentUnit as Unit; // Тут где-то ошибка завтра првоерить 02.04
-        var unitColor = unit.Type == UnitType.Player ? unit.CurrentCell.ColorSelectedCell : unit.CurrentCell.ColorEnemyOnCell; // получение цвета юнита в зависимости от его типа
-        ChangeColor(unitColor);
+        ChangeColor(ColorSelectedCell);
         UnitOn = true;
-        CurrentState = State.Impassable;
+        //CurrentState = State.Impassable; // Тут неизвестно.
         SetAwailable(false);
     }
+
+
 
     public void UnselectCell()
     {
@@ -103,8 +104,31 @@ public class Cell : MonoBehaviour
         UnitOn = false;
         CurrentState = State.Reachable;
         SetAwailable(true);
+        UnhighlightAvailableMoves(this);
     }
 
-    public void SetUnit(IUnit unit) => _currentUnit = unit;
+    public void UnhighlightAvailableMoves(Cell currentCell)
+    {
+        // Идем по всем клеткам на игровом поле
+        foreach (var cell in currentCell.Neighbours)
+        {
+            cell.UnhighlightCell();
+        }
+    }
+
+    public void UnhighlightCell()
+    {
+        ChangeColor(ColorStandardCell);
+        UnitOn = false;
+        CurrentState = State.Reachable;
+        SetAwailable(true);
+    }
+
+    public void SetUnit(Unit unit)
+    {
+        _currentUnit = unit;
+        CurrentState = State.OccupiedByPlayer;
+    }
     public void ClearUnit() => _currentUnit = null;
+
 }

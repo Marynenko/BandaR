@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Player : Unit
 {
-    public override IUnit GetUnitType() => this;
+    public override Unit GetUnitType() => this;
 
     public new UnitStats Stats { get; private set; }
 

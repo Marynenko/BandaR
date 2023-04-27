@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -46,7 +45,7 @@ public class GridSelector : MonoBehaviour
     }
 
 
-    public void UnselectCells()
+    public void ChangeAvailableCellsColor()
     {
         var Cells = _grid.Cells;
         foreach (var cell in Cells)
@@ -59,7 +58,7 @@ public class GridSelector : MonoBehaviour
     {
         if (clearSelectedCells)
         {
-            UnselectCells();
+            ChangeAvailableCellsColor();
         }
 
         List<Cell> availableMovesCopy;

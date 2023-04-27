@@ -3,17 +3,14 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private GridInitializer Initializer;
-    public GameController GameController;
+    [SerializeField] private GridInitializer _initializer;
+    [SerializeField] private GameController _gameController;
+    [SerializeField] private GameModel _gameModel;
 
     private void Start()
     {
-        Initializer.InitializationGrid();
-        GameController.enabled = true;
+        _initializer.InitializationGrid();
+        _gameController.enabled = true;
     }
-
-
-
-
 }
 

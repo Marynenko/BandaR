@@ -1,28 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-public enum UnitStatus
-{
-    Selected,
-    Unselected,
-    Moved
-}
-
-public enum UnitType
-{
-    Player,
-    Enemy
-}
-
 public interface IUnit
 {
     UnitStats Stats { get; }
 
-    bool CanAttack(IUnit unit);
-    void Attack(IUnit targetUnit);
+    bool CanAttack(Unit unit);
+    void Attack(Unit targetUnit);
     void TakeDamage(int damage);
-    Action Die(IUnit unit);
+    bool IsAlive();
+    Action Die(Unit unit);
 
-    IUnit GetUnitType();
+    Unit GetUnitType();
 }
 

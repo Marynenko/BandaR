@@ -4,7 +4,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : Unit, IUnit
 {
-    public override IUnit GetUnitType() => this;
+    public override Unit GetUnitType() => this;
     //public override void Initialize(Cell cell)
     //{
     //    base.Initialize(cell);

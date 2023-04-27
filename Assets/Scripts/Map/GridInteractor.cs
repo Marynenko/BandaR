@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class GridInteractor : MonoBehaviour
 {
@@ -63,19 +64,19 @@ public class GridInteractor : MonoBehaviour
     {
         selector.UnselectUnit(selectedUnit);
         unit.CurrentCell.UnselectCell();
-        selector.UnselectCells();
+        selector.ChangeAvailableCellsColor();
         selector.SelectUnit(unit);
         HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell, selector);
     }
 
     public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color, GridSelector selector)
     {
-        selector.UnselectCells();
+        selector.ChangeAvailableCellsColor();
         HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
         availableMoves.Skip(1).ToList().ForEach(cell => HighlightCell(cell, color));
     }
 
-    public void UnhighlightUnavailableMoves(GridSelector selector)
+    public void UnhighlightAllCells(GridSelector selector)
     {
         // Идем по всем клеткам на игровом поле
         foreach (var cell in _grid.Cells)
@@ -86,10 +87,20 @@ public class GridInteractor : MonoBehaviour
         }
     }
 
+    public void UnhighlightAvailableMoves(Cell currentCell)
+    {
+        // Идем по всем клеткам на игровом поле
+        foreach (var cell in currentCell.Neighbours)
+        {
+            cell.UnhighlightCell();
+        }
+    }
+
     public void HighlightCell(Cell cell, Color color)
     {
         cell.ChangeColor(color);
-    }   
+    }
+
 }
 
 public class Direction

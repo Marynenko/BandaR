@@ -11,13 +11,13 @@ public class Grid : MonoBehaviour
 
     public GridInteractor Interactor { get; private set; }
     public GridInitializer Initializer { get; private set; }
-    public List<IUnit> AllUnits { get; private set; }
+    public List<Unit> AllUnits { get; private set; }
     public Cell[,] Cells { get; private set; }
 
     private void Awake()
     {
         Cells = new Cell[GridSize.x, GridSize.y];
-        AllUnits = new List<IUnit>();
+        AllUnits = new List<Unit>();
         Initializer = GetComponent<GridInitializer>();
         Interactor = GetComponentInChildren<GridInteractor>();
         Interactor.enabled = true; // Включаем интерактор после инициализации сетки
@@ -37,7 +37,6 @@ public class Grid : MonoBehaviour
                 var cell = Instantiate(CellPrefab, position, Quaternion.identity, Parent);
                 cell.Initialize(x, y, Interactor, true, false); // тут передается Grid
 
-
                 Cells[x, y] = cell;
             }
         }
@@ -47,9 +46,7 @@ public class Grid : MonoBehaviour
     {
         foreach (var cell in Cells)
         {
-            Interactor.PathConstructor.GetNeighbourCells(cell, this);
-
-
+            cell.Neighbours = Interactor.PathConstructor.GetNeighbourCells(cell, this); // Добавли левую часть.
         }
     }
 
@@ -64,25 +61,9 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public void SetImpassableCells()
-    {
-        var Units = AllUnits.OfType<Unit>().ToList();
-        foreach (var unit in Units)
-        {
-            Cell unitCell = unit.CurrentCell;
-            unitCell.IsAwailable();
-
-            foreach (var neighborCell in unitCell.Neighbours)
-            {
-                neighborCell.SetAwailable(false); // либо другое isWalkable
-            }
-        }
-    }
-
     public void SetReachableCells()
     {
-        var Units = AllUnits.OfType<Unit>().ToList();
-        foreach (var unit in Units)
+        foreach (var unit in AllUnits)
         {
             unit.CurrentCell.SetReachable(unit.Stats.MovementPoints, true);
         }
@@ -103,17 +84,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-
     public void RemoveUnit(Unit unit)
-    {
-        if (unit == null) return;
-
-        unit.CurrentCell.UnitOn = false;
-        AllUnits.Remove(unit);
-        Destroy(unit.gameObject);
-    }
-
-    private void RemoveUnit(IUnit unit)
     {
         var unitToRemove = unit as Unit;
         Cell currentCell = unitToRemove.CurrentCell;

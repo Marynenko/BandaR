@@ -22,6 +22,7 @@ public class PathConstructor : MonoBehaviour
             [startCell] = 0
         };
 
+
         Dictionary<Cell, float> fScore = new()
         {
             [startCell] = Heuristic(startCell, endCell)
@@ -44,6 +45,7 @@ public class PathConstructor : MonoBehaviour
 
             openList.Remove(currentCell);
             closedList.Add(currentCell);
+
 
             foreach (var neighborCell in GetNeighbourCells(currentCell, grid))
             {
