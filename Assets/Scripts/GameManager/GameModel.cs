@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameModel : MonoBehaviour, IGameModel
 {
+    [SerializeField] private AI _AI;
     [SerializeField] private Grid _grid;
     [SerializeField] private InputPlayer _input;
     [SerializeField] private GameController _gameController;
@@ -12,28 +13,25 @@ public class GameModel : MonoBehaviour, IGameModel
     [SerializeField] private GridInteractor _interactor;
     [SerializeField] private Button _endTurnButton;
 
-    private ActionType _actionType;
+    [HideInInspector] public Unit ActivePlayer;
 
-    private Unit _activePlayer;
+    private ActionType _actionType;
     private List<Unit> _players = new();
 
     private void Start()
     {
         _endTurnButton.onClick.AddListener(_input.HandleEndTurnButtonClicked);
-
-
     }
+
     public void StartTheGame()
     {
         _players = _grid.AllUnits;
-        _activePlayer = _players[0]; // Назначаем первого игрока активным
+        ActivePlayer = _players[0]; // Назначаем первого игрока активным
         StartTurn();
     }
 
     private void Update()
-    {
-        UpdateUI();
-
+    {       
         if (Input.GetMouseButtonDown(0))
         {
             var mousePosition = Input.mousePosition;
@@ -46,60 +44,7 @@ public class GameModel : MonoBehaviour, IGameModel
             }
         }
     }
-
-
-
-
-    private void UpdateUI()
-    {
-        // Тут проблема оно не светится
-        if (_selector.SelectedUnit == null || _selector.SelectedUnit.Status == UnitStatus.Moved)
-        {
-            var movedUnits = _grid.AllUnits.Where(u => u.Status == UnitStatus.Moved).ToList();
-            if (movedUnits.Count == 0)
-            {
-                _endTurnButton.interactable = true;
-            }
-            else
-            {
-                _endTurnButton.interactable = false;
-            }
-        }
-        else
-        {
-            _endTurnButton.interactable = false;
-        }
-    }
-    private void MoveAI(Unit unit)
-    {
-        var availableMoves = _selector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
-        if (availableMoves.Count == 0)
-        {
-            unit.Status = UnitStatus.Moved;
-            return;
-        }
-
-        // Выбираем случайную доступную клетку для перемещения
-        var randomIndex = Random.Range(0, availableMoves.Count);
-        var targetCell = availableMoves[randomIndex];
-
-        // Выполняем перемещение на выбранную клетку
-
-        _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _grid);
-        
-        _gameController.MoveUnitAlongPath(unit, Path);
-
-        // Обновляем состояние юнита
-        unit.Status = UnitStatus.Moved;
-        _interactor.UpdateUnit(unit);
-
-        // Обновляем доступность ячеек после перемещения
-        ResetCellsAvailability();
-        var units = _grid.AllUnits.Where(u => u == _activePlayer).ToList();
-    }
-
-
-
+    
 
     public void StartTurn()
     {
@@ -129,19 +74,58 @@ public class GameModel : MonoBehaviour, IGameModel
         }
         else
         {
-            _activePlayer.Status = UnitStatus.Moved;
-            _activePlayer = GetNextPlayer(_activePlayer);
+            ActivePlayer.Status = UnitStatus.Moved;
+            ActivePlayer = GetNextPlayer(ActivePlayer);
 
             // Если следующий игрок - AI, то делаем ход
 
-            if (_activePlayer.Type == UnitType.Player)
+            if (ActivePlayer.Type == UnitType.Player)
             {
                 SetUnitsAvailability();
                 StartTurn();
             }
-            else if (_activePlayer.Type == UnitType.Enemy)
+            else if (ActivePlayer.Type == UnitType.Enemy)
             {
-                MoveAI(_activePlayer);              
+                _AI.Move(ActivePlayer);              
+            }
+        }
+    }
+
+    private void UnselectUnit()
+    {
+        // Unselect the current unit and reset cell availability
+        if (_selector.SelectedUnit != null)
+        {
+            //_selector.SelectedUnit.Status = UnitStatus.Unselected;
+            _selector.SelectedUnit = null;
+            _interactor.SelectedUnit = null; // Добавил
+
+            ResetCellsAvailability();
+        }
+    }
+
+    public void ResetCellsAvailability()
+    {
+        ActivePlayer.CurrentCell.UnselectCell();
+        // Set all cells to be available for selection
+        var highlightedMoves = _interactor.AvailableMoves;
+        foreach (var move in highlightedMoves)
+        {
+            move.UnselectCell();
+        }
+    }
+
+    private void ResetUnitsAvailability()
+    {
+        foreach (var unit in _grid.AllUnits.OfType<Unit>())
+        {
+            if (unit == ActivePlayer)
+            {
+                unit.Status = UnitStatus.Available;
+            }
+            else
+            {
+                unit.Status = UnitStatus.Unavailable;
             }
         }
     }
@@ -187,6 +171,11 @@ public class GameModel : MonoBehaviour, IGameModel
         // Дополнительный функционал завершения игры
     }
 
+    private void UpdateScore()
+    {
+        // Update the score of both players
+    }
+    #region Не использую пока что
     public bool IsCellWithinBoardBounds(Cell cell)
     {
         return cell.Row >= 0 && cell.Row < _grid.GridSize.x && cell.Column >= 0 && cell.Column < _grid.GridSize.y;
@@ -194,7 +183,7 @@ public class GameModel : MonoBehaviour, IGameModel
 
     public bool IsUnitOwnedByCurrentPlayer(Unit unit)
     {
-        return unit.Type == _activePlayer.Type; // Может быть
+        return unit.Type == ActivePlayer.Type; // Может быть
     }
 
     public bool IsUnitAvailableForAction(Unit unit)
@@ -209,52 +198,6 @@ public class GameModel : MonoBehaviour, IGameModel
         // Check if the unit can perform the action in the current situation
         // For example, a unit cannot attack if there are no enemy units nearby
         return false;
-    }
-
-    private void ResetUnitsAvailability()
-    {
-        foreach (var unit in _grid.AllUnits.OfType<Unit>())
-        {
-            if (unit == _activePlayer)
-            {
-                unit.Status = UnitStatus.Available;
-            }
-            else
-            {
-                unit.Status = UnitStatus.Unavailable;
-            }
-        }
-    }
-
-    private void ResetCellsAvailability()
-    {
-        _activePlayer.CurrentCell.UnselectCell();
-        // Set all cells to be available for selection
-        var highlightedMoves = _interactor.AvailableMoves;
-        foreach (var move in highlightedMoves)
-        {
-            move.UnselectCell();
-        }
-    }
-
-    private void UnselectUnit()
-    {
-        // Unselect the current unit and reset cell availability
-        if (_selector.SelectedUnit != null)
-        {
-            _selector.SelectedUnit.Status = UnitStatus.Unselected;
-            _selector.SelectedUnit = null;
-            _interactor.SelectedUnit =  _selector.SelectedUnit; // Добавил
-            ResetCellsAvailability();
-        }
-    }
-
-    private void UpdateScore()
-    {
-        // Update the score of both players
-    }
-
-
-
-
+    } 
+    #endregion
 }

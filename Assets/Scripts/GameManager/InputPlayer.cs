@@ -53,4 +53,5 @@ public class InputPlayer : MonoBehaviour, IInputHandler
         // Передаем ход следующему игроку
         _gameModel.EndTurn();
     }
+
 }

@@ -26,7 +26,7 @@ public class Enemy : Unit, IUnit
 
     //private bool IsPlayerInSight()
     //{
-    //    foreach (Unit unit in _interactor.AllUnits)
+    //    foreach (Unit unit in Interactor.AllUnits)
     //    {
     //        if (unit.Type == UnitType.Player)
     //        {

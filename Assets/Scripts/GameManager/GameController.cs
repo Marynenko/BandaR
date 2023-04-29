@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour, IGameController
 {
-    [SerializeField] public Grid Grid;
-    [SerializeField] public GridSelector Selector;
-    [SerializeField] private GridInteractor _interactor;
     [SerializeField] private GridGenerator _generator;
 
     private Unit lastSelectedUnit;
     private Cell lastSelectedCell;
 
+    public Grid Grid;
+    public GridSelector Selector;
+    public GridInteractor Interactor;
+
     public void HandleUnitClick(Unit unit)
     {
-        var selectedUnit = _interactor.SelectedUnit;
+        var selectedUnit = Interactor.SelectedUnit;
 
         if (selectedUnit == null)
         {
@@ -29,7 +30,7 @@ public class GameController : MonoBehaviour, IGameController
         else if (unit.Type == UnitType.Enemy && selectedUnit.Type == UnitType.Player)
             HandleUnitAttack(selectedUnit, unit);
         else
-            _interactor.HandleUnitDeselection(selectedUnit, unit, Selector);
+            Interactor.HandleUnitDeselection(selectedUnit, unit, Selector);
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -54,7 +55,7 @@ public class GameController : MonoBehaviour, IGameController
             }
             else
             {
-                _interactor.UpdateUnit(targetUnit);
+                Interactor.UpdateUnit(targetUnit);
             }
 
             selectedUnit.CurrentCell.UnselectCell();
@@ -65,7 +66,7 @@ public class GameController : MonoBehaviour, IGameController
             {
                 // Update available moves after attack
                 var availableMoves = Selector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
-                _interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, Selector);
+                Interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, Selector);
             }
         }
     }
@@ -95,7 +96,7 @@ public class GameController : MonoBehaviour, IGameController
         if (!IsCellAvailableForMove(selectedUnit, cell, out List<Cell> Path))
             return;
 
-        //var path = _interactor.FindPathToTarget(selectedUnit.CurrentCell, cell, out Path);
+        //var path = Interactor.FindPathToTarget(selectedUnit.CurrentCell, cell, out Path);
 
         if (Path.Count == 0)
             return;
@@ -130,7 +131,7 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     {
         Path = new List<Cell>();
-        return cell.IsAwailable() && unit.MovementPoints >= _interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
+        return cell.IsAwailable() && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
     }    
     
 

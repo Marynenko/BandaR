@@ -100,6 +100,7 @@ public class Cell : MonoBehaviour
 
     public void UnselectCell()
     {
+        // На момент когда я нажимаю на это, тогда у меня все выделения уже исчезли.
         ChangeColor(ColorStandardCell);
         UnitOn = false;
         CurrentState = State.Reachable;
