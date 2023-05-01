@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ public class PathConstructor : MonoBehaviour
                     continue;
                 }
 
-                float tentativeScore = gScore[currentCell] + GetDistanceBetweenCells(currentCell, neighborCell);
+                float tentativeScore = gScore[currentCell] + GetDistance(currentCell, neighborCell);
 
                 if (!openList.Contains(neighborCell))
                 {
@@ -101,8 +102,8 @@ public class PathConstructor : MonoBehaviour
 
         foreach (Direction direction in directions)
         {
-            int neighbourX = cell.Row + direction.XOffset;
-            int neighbourY = cell.Column + direction.YOffset;
+            int neighbourX = Convert.ToInt32(cell.Coordinates.x + direction.XOffset);
+            int neighbourY = Convert.ToInt32(cell.Coordinates.y + direction.YOffset);
 
             if (neighbourX >= 0 && neighbourX < grid.GridSize.x && neighbourY >= 0 && neighbourY < grid.GridSize.y)
             {
@@ -114,10 +115,11 @@ public class PathConstructor : MonoBehaviour
             }
         }
 
+        cell.Neighbours = neighbours;
         return neighbours;
     }
 
-    private float GetDistanceBetweenCells(Cell cell1, Cell cell2)
+    public float GetDistance(Cell cell1, Cell cell2)
     {
         // Если ячейки равны, то расстояние между ними равно 0
         if (cell1 == cell2)

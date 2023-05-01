@@ -41,7 +41,7 @@ public class GridSelector : MonoBehaviour
         //unit.Status = UnitStatus.Unselected;
         SelectedUnit = null;
         _interactor.SelectedUnit = null;
-        unit.CurrentCell.ClearUnit();
+        //unit.CurrentCell.ClearUnit();
     }
 
 
@@ -123,7 +123,7 @@ public class GridSelector : MonoBehaviour
             }
         }
 
-        cell.Neighbours = AvailableMoves;
+        AvailableMoves.RemoveAt(0);
         return AvailableMoves;
     }
 

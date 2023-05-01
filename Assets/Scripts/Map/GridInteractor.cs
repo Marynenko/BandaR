@@ -43,7 +43,7 @@ public class GridInteractor : MonoBehaviour
         player.CurrentCell.SetUnit(player);
         SelectedUnit = player;
         selector.SelectedUnit = player;
-        player.Status = UnitStatus.Selected;
+        player.Status = UnitStatus.Unavailable;
         player.CurrentCell.SelectCell();
         selector.SelectCellToMove(player.CurrentCell, UnitType.Player, true);
         player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMove?
@@ -54,7 +54,7 @@ public class GridInteractor : MonoBehaviour
         enemy.CurrentCell.SetUnit(enemy);
         SelectedUnit = enemy;
         selector.SelectedUnit = enemy;
-        enemy.Status = UnitStatus.Selected;
+        enemy.Status = UnitStatus.Unavailable;
         enemy.CurrentCell.SelectCell();
         selector.SelectCellToMove(enemy.CurrentCell, UnitType.Enemy, true);
         enemy.CurrentCell.UnitOn = true;

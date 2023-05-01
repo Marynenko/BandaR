@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public enum State
 {
     Standard, // Стандартное состояние
-    Selected, // Выбран пользователем
+    //Selected, // Выбран пользователем
     Movement, // Пользователь выбрал этот тайл для движения юнита
     Impassable, // Непроходимый тайл (например, стена или вода)
     Reachable, // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
@@ -17,17 +14,12 @@ public enum State
 
 public class Cell : MonoBehaviour
 {
-    private Unit _currentUnit;
     private bool _awailable;
     private int _distance;
 
     public GridInteractor Interactor;
-
     public List<Cell> Neighbours { get; set; }
-    public int Row { get; private set; }
-    public int Column { get; private set; }
 
-    [SerializeField] private MeshRenderer MeshRenderer;
     [HideInInspector] public State CurrentState; // Состояние клетки.
     [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
 
@@ -44,8 +36,6 @@ public class Cell : MonoBehaviour
     public void Initialize(int row, int column, GridInteractor gridInteractor, bool isAwailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
-        Row = row;
-        Column = column;
         Interactor = gridInteractor;
         _awailable = isAwailable;
         UnitOn = unitOn;
@@ -62,10 +52,10 @@ public class Cell : MonoBehaviour
     public bool SetAwailable(bool atribute) => _awailable = atribute;
 
     public void ChangeColor(Color color)    {
-        MeshRenderer.material.color = color;
+        GetComponent<MeshRenderer>().material.color = color;
     }
 
-    public Vector3 GetCellSize() => MeshRenderer.bounds.size;
+    public Vector3 GetCellSize() => GetComponent<MeshRenderer>().bounds.size;
 
     public void SetReachable(int movementPoints, bool isReachable)
     {
@@ -82,21 +72,12 @@ public class Cell : MonoBehaviour
         }
     }
 
-    public void SetState(State state, int distance = 0)
-    {
-        CurrentState = state;
-        _distance = distance;
-    }
-
     public void SelectCell()
     {
         ChangeColor(ColorSelectedCell);
         UnitOn = true;
-        //CurrentState = State.Impassable; // Тут неизвестно.
         SetAwailable(false);
     }
-
-
 
     public void UnselectCell()
     {
@@ -105,13 +86,13 @@ public class Cell : MonoBehaviour
         UnitOn = false;
         CurrentState = State.Reachable;
         SetAwailable(true);
-        UnhighlightAvailableMoves(this);
+        UnhighlightAvailableMoves();
     }
 
-    public void UnhighlightAvailableMoves(Cell currentCell)
+    public void UnhighlightAvailableMoves()
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var cell in currentCell.Neighbours)
+        foreach (var cell in Neighbours)
         {
             cell.UnhighlightCell();
         }
@@ -121,15 +102,18 @@ public class Cell : MonoBehaviour
     {
         ChangeColor(ColorStandardCell);
         UnitOn = false;
-        CurrentState = State.Reachable;
+        SetState(State.Reachable);
         SetAwailable(true);
     }
 
     public void SetUnit(Unit unit)
     {
-        _currentUnit = unit;
-        CurrentState = State.OccupiedByPlayer;
+        //_currentUnit = unit;
+        var color = CurrentState == State.OccupiedByPlayer ? ColorUnitOnCell : ColorEnemyOnCell;
+        ChangeColor(color);
+        //SetState()
     }
-    public void ClearUnit() => _currentUnit = null;
+
+    public void SetState(State state) => CurrentState = state;
 
 }

@@ -53,8 +53,7 @@ public class GameModel : MonoBehaviour, IGameModel
             return;
         }
 
-        UnselectUnit();
-        ResetCellsAvailability();
+        //ResetCellsAvailability();
         ResetUnitsAvailability();
         Update();
     }
@@ -63,8 +62,7 @@ public class GameModel : MonoBehaviour, IGameModel
     public void EndTurn()
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
-        UnselectUnit();
-        ResetCellsAvailability();
+        //ResetCellsAvailability();
         ResetUnitsAvailability();
         UpdateScore();
 
@@ -74,7 +72,7 @@ public class GameModel : MonoBehaviour, IGameModel
         }
         else
         {
-            ActivePlayer.Status = UnitStatus.Moved;
+            //ActivePlayer.Status = UnitStatus.Moved;
             ActivePlayer = GetNextPlayer(ActivePlayer);
 
             // Если следующий игрок - AI, то делаем ход
@@ -86,7 +84,7 @@ public class GameModel : MonoBehaviour, IGameModel
             }
             else if (ActivePlayer.Type == UnitType.Enemy)
             {
-                _AI.Move(ActivePlayer);              
+                _AI.Move(ActivePlayer);
             }
         }
     }
@@ -106,7 +104,9 @@ public class GameModel : MonoBehaviour, IGameModel
 
     public void ResetCellsAvailability()
     {
-        ActivePlayer.CurrentCell.UnselectCell();
+        var currentCell = ActivePlayer.CurrentCell;
+        currentCell.UnselectCell();
+
         // Set all cells to be available for selection
         var highlightedMoves = _interactor.AvailableMoves;
         foreach (var move in highlightedMoves)
@@ -125,7 +125,7 @@ public class GameModel : MonoBehaviour, IGameModel
             }
             else
             {
-                unit.Status = UnitStatus.Unavailable;
+                unit.Status = UnitStatus.Moved;
             }
         }
     }
@@ -178,7 +178,7 @@ public class GameModel : MonoBehaviour, IGameModel
     #region Не использую пока что
     public bool IsCellWithinBoardBounds(Cell cell)
     {
-        return cell.Row >= 0 && cell.Row < _grid.GridSize.x && cell.Column >= 0 && cell.Column < _grid.GridSize.y;
+        return cell.Coordinates.x >= 0 && cell.Coordinates.x < _grid.GridSize.x && cell.Coordinates.y >= 0 && cell.Coordinates.y < _grid.GridSize.y;
     }
 
     public bool IsUnitOwnedByCurrentPlayer(Unit unit)
@@ -188,7 +188,7 @@ public class GameModel : MonoBehaviour, IGameModel
 
     public bool IsUnitAvailableForAction(Unit unit)
     {
-        if (unit.Status == UnitStatus.Unselected || unit.Status == UnitStatus.Selected) // Тяп ляп
+        if (unit.Status == UnitStatus.Available || unit.Status == UnitStatus.Unavailable) // Тяп ляп
             return true;
         return false;
     }

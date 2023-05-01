@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -91,7 +92,7 @@ public class Grid : MonoBehaviour
 
         if (currentCell != null)
         {
-            currentCell.ClearUnit();
+            //currentCell.ClearUnit();
             AllUnits.Remove(unitToRemove);
             Destroy(unitToRemove.gameObject);
         }
@@ -105,14 +106,4 @@ public class Grid : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
-
-    public Cell GetCell(int x, int y)
-    {
-        if (x < 0 || x >= GridSize.x || y < 0 || y >= GridSize.y)
-        {
-            return null;
-        }
-
-        return Cells[x, y];
-    }
 }

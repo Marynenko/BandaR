@@ -5,8 +5,8 @@ using UnityEngine;
 
 public enum UnitStatus
 {
-    Selected,
-    Unselected,
+    //Selected,
+    //Unselected,
     Moved,
     Available,
     Unavailable
@@ -32,7 +32,7 @@ public class Unit : MonoBehaviour, IUnit
     [SerializeField] private UnitStats _stats;
     private const float MAX_DISTANCE = 3f;
     
-    public UnitStatus Status = UnitStatus.Available;
+    public UnitStatus Status;
 
     public Grid Grid { get; private set; }
     public Cell CurrentCell { get; private set; }
@@ -61,8 +61,13 @@ public class Unit : MonoBehaviour, IUnit
         
         // Установка текущей ячейки для юнита
         CurrentCell = cell;
-        CurrentCell.SetUnit(this);
+        var state = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
+
+        Status = UnitStatus.Unavailable;
+
+        CurrentCell.SetState(state);
         CurrentCell.SelectCell();
+        CurrentCell.SetUnit(this);
         
     }
 

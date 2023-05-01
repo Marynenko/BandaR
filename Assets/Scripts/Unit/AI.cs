@@ -6,9 +6,15 @@ using UnityEngine.UI;
 
 public class AI : MonoBehaviour
 {
-    [SerializeField] private GameController _gameController;
-    [SerializeField] private GameModel _gameModel;
     [SerializeField] private Button _endTurnButton;
+    private GameController _gameController;
+    private GameModel _gameModel;
+
+    private void OnEnable()
+    {
+        _gameController = gameObject.GetComponentInParent<GameController>();
+        _gameModel = gameObject.GetComponentInParent<GameModel>();
+    }
 
     private void Update()
     {
@@ -40,34 +46,50 @@ public class AI : MonoBehaviour
         button.interactable = canEndTurn;
     }
 
-
     public void Move(Unit unit)
     {
-        _gameModel.ActivePlayer = unit;
-        var availableMoves = _gameController.Selector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
+        //_gameModel.ActivePlayer = unit;
+        var localController = _gameController;
+        var localGrid = localController.Grid;
+        var localInteractor = localController.Interactor;
+        var localSelector = localController.Selector;
+
+        var availableMoves = localSelector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
         if (availableMoves.Count == 0)
         {
             unit.Status = UnitStatus.Moved;
             return;
         }
 
-        // Выбираем случайную доступную клетку для перемещения
-        var randomIndex = Random.Range(0, availableMoves.Count);
-        var targetCell = availableMoves[randomIndex];
+        // Находим всех враждебных юнитов
+        var enemies = localGrid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
 
-        // Выполняем перемещение на выбранную клетку
-        _gameController.Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _gameController.Grid);
+        // Выбираем ближайшего врага
+        var targetEnemy = enemies.OrderBy(e => localInteractor.PathConstructor.GetDistance(unit.CurrentCell, e.CurrentCell)).FirstOrDefault();
 
-        _gameController.MoveUnitAlongPath(unit, Path);
+        // Если нашли врага, движемся к нему
+        if (targetEnemy != null)
+        {
+            var targetCell = targetEnemy.CurrentCell;
+            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _gameController.Grid);
+            _gameController.MoveUnitAlongPath(unit, Path);
+        }
+        else
+        {
+            // Если врагов нет, движемся к случайной доступной клетке
+            var randomIndex = Random.Range(0, availableMoves.Count);
+            var targetCell = availableMoves[randomIndex];
+            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _gameController.Grid);
+            _gameController.MoveUnitAlongPath(unit, Path);
+        }
 
         // Обновляем состояние юнита
         unit.Status = UnitStatus.Moved;
-        _gameController.Interactor.UpdateUnit(unit);
+        localInteractor.UpdateUnit(unit);
 
         // Обновляем доступность ячеек после перемещения
         _gameModel.ResetCellsAvailability();
-        var units = _gameController.Grid.AllUnits.Where(u => u == _gameModel.ActivePlayer).ToList();
+        var units = localGrid.AllUnits.Where(u => u == _gameModel.ActivePlayer).ToArray();
         _gameModel.EndTurn();
     }
-
 }

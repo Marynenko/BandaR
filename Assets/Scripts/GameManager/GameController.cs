@@ -35,10 +35,10 @@ public class GameController : MonoBehaviour, IGameController
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
     {
-        if (selectedUnit.Status != UnitStatus.Selected)
-        {
-            return;
-        }
+        //if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
+        //{
+        //    return;
+        //}
 
         if (selectedUnit.Status == UnitStatus.Unavailable)
         {
@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour, IGameController
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (!IsPlayerUnitSelected(selectedUnit))
+        if (!IsPlayerUnitAvailable(selectedUnit))
             return;
 
         if (cell == selectedUnit.CurrentCell)
@@ -122,10 +122,11 @@ public class GameController : MonoBehaviour, IGameController
 
         UnselectUnit(selectedUnit); // Можно убрать наверное
         UnselectCell(selectedUnit.CurrentCell);
+
     }   
 
-    private bool IsPlayerUnitSelected(Unit unit)
-    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Selected;
+    private bool IsPlayerUnitAvailable(Unit unit)
+    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Unavailable;
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
@@ -146,7 +147,7 @@ public class GameController : MonoBehaviour, IGameController
             if (unit.CanMoveToCell(cell))
             {
                 unit.MoveToCell(cell); // изменен вызов метода
-                unit.Status = UnitStatus.Moved;
+                //unit.Status = UnitStatus.Moved;
             }
         }
     }
