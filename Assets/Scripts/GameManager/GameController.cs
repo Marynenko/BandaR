@@ -35,10 +35,10 @@ public class GameController : MonoBehaviour, IGameController
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
     {
-        //if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
-        //{
-        //    return;
-        //}
+        if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
+        {
+            return;
+        }
 
         if (selectedUnit.Status == UnitStatus.Unavailable)
         {

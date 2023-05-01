@@ -74,8 +74,9 @@ public class Unit : MonoBehaviour, IUnit
     public bool CanMoveToCell(Cell cell)
     {
         if (CurrentCell == cell) return false;
-        if (Vector3.Distance(transform.position, cell.transform.position) > MAX_DISTANCE) return false;
+        if (Vector3.Distance(CurrentCell.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
         if (Status == UnitStatus.Moved) return false;
+        if (MovementPoints <= 0) return false;
         if (cell.UnitOn == true) return false;
         if (Stats.MovementPoints < cell.MovementCost) return false;
         return true;
@@ -83,9 +84,9 @@ public class Unit : MonoBehaviour, IUnit
 
     public void MoveToCell(Cell targetCell)
     {
-        Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
+        //Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
         CurrentCell = targetCell;
-
+        Stats.MovementPoints -= 1;
         //OnUnitAction?.Invoke(ActionType.Move, this, targetCell);
 
         // Вычисляем позицию для перемещения с учетом высоты юнита

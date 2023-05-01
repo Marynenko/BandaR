@@ -17,6 +17,8 @@ public class GameModel : MonoBehaviour, IGameModel
 
     private ActionType _actionType;
     private List<Unit> _players = new();
+    private bool _isNextPlayerActive = false;
+
 
     private void Start()
     {
@@ -27,6 +29,7 @@ public class GameModel : MonoBehaviour, IGameModel
     {
         _players = _grid.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
+        _isNextPlayerActive = true;
         StartTurn();
     }
 
@@ -37,11 +40,14 @@ public class GameModel : MonoBehaviour, IGameModel
             var mousePosition = Input.mousePosition;
             _input.HandleLeftClick(mousePosition);
 
+            _AI.UpdateUI(ActivePlayer, _endTurnButton);
             // Проверяем, был ли клик на кнопку
-            if (_endTurnButton.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_endTurnButton.GetComponent<RectTransform>(), mousePosition))
-            {
-                EndTurn();
-            }
+
+            //if (_endTurnButton.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_endTurnButton.GetComponent<RectTransform>(), mousePosition))
+            //{
+            //    EndTurn();
+            //}
+
         }
     }
     
@@ -53,8 +59,9 @@ public class GameModel : MonoBehaviour, IGameModel
             return;
         }
 
-        //ResetCellsAvailability();
-        ResetUnitsAvailability();
+        ResetCellsAvailability();
+        SetUnitsAvailability();
+
         Update();
     }
 
@@ -62,7 +69,7 @@ public class GameModel : MonoBehaviour, IGameModel
     public void EndTurn()
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
-        //ResetCellsAvailability();
+        ResetCellsAvailability();
         ResetUnitsAvailability();
         UpdateScore();
 
@@ -79,11 +86,11 @@ public class GameModel : MonoBehaviour, IGameModel
 
             if (ActivePlayer.Type == UnitType.Player)
             {
-                SetUnitsAvailability();
                 StartTurn();
             }
             else if (ActivePlayer.Type == UnitType.Enemy)
             {
+                ActivePlayer.Status = UnitStatus.Available;
                 _AI.Move(ActivePlayer);
             }
         }
@@ -119,7 +126,7 @@ public class GameModel : MonoBehaviour, IGameModel
     {
         foreach (var unit in _grid.AllUnits.OfType<Unit>())
         {
-            if (unit == ActivePlayer)
+            if (_isNextPlayerActive)
             {
                 unit.Status = UnitStatus.Available;
             }
@@ -128,7 +135,10 @@ public class GameModel : MonoBehaviour, IGameModel
                 unit.Status = UnitStatus.Moved;
             }
         }
+
+        _isNextPlayerActive = !_isNextPlayerActive;
     }
+
 
     private Unit GetNextPlayer(Unit player)
     {

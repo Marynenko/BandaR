@@ -16,11 +16,6 @@ public class AI : MonoBehaviour
         _gameModel = gameObject.GetComponentInParent<GameModel>();
     }
 
-    private void Update()
-    {
-        UpdateUI(_gameModel.ActivePlayer, _endTurnButton);
-    }
-
     public void UpdateUI<T>(T _activePlayer, Button button) where T : Unit
     {
         var currentPlayer = _activePlayer;
@@ -84,11 +79,10 @@ public class AI : MonoBehaviour
         }
 
         // ќбновл€ем состо€ние юнита
-        unit.Status = UnitStatus.Moved;
+        //unit.Status = UnitStatus.Moved;
         localInteractor.UpdateUnit(unit);
 
         // ќбновл€ем доступность €чеек после перемещени€
-        _gameModel.ResetCellsAvailability();
         var units = localGrid.AllUnits.Where(u => u == _gameModel.ActivePlayer).ToArray();
         _gameModel.EndTurn();
     }
