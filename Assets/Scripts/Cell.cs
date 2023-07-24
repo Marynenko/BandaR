@@ -1,26 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public enum State
-{
-    Standard, // Стандартное состояние
-    //Selected, // Выбран пользователем
-    Movement, // Пользователь выбрал этот тайл для движения юнита
-    Impassable, // Непроходимый тайл (например, стена или вода)
-    Reachable, // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
-    OccupiedByPlayer, // Занят игроком
-    OccupiedByEnemy, // Занят врагом
-}
-
 public class Cell : MonoBehaviour
 {
-    private bool _awailable;
+    [SerializeField] private State _currentState; // Состояние клетки.
+    private bool _available;
     private int _distance;
 
     public GridInteractor Interactor;
     public List<Cell> Neighbours { get; set; }
+    public State CurrentState { get => _currentState; set => _currentState = value; }
+    public bool Available { get => _available; set => SetAvailable(value); }
 
-    [HideInInspector] public State CurrentState; // Состояние клетки.
     [HideInInspector] public Vector2 Coordinates; // Позиция Клетки.
 
     public bool UnitOn; // Юнит на клетке или нет.    
@@ -37,19 +28,37 @@ public class Cell : MonoBehaviour
     {
         name = $"X: {row} Y: {column}";
         Interactor = gridInteractor;
-        _awailable = isAwailable;
+        Available = isAwailable;
         UnitOn = unitOn;
         CurrentState = State.Standard;
         Coordinates = new Vector2(row, column);
-        Neighbours = new List<Cell>(4);        
+        Neighbours = new List<Cell>(4);  
     }
 
-    public bool IsAwailable()
+    public void SetAvailable(bool isAvailable)
     {
-        return _awailable && !UnitOn;
-    }
+        _available = isAvailable;
 
-    public bool SetAwailable(bool atribute) => _awailable = atribute;
+        if (_available && !UnitOn)
+        {
+            _available = true;
+            ChangeColor(ColorStandardCell);
+        }
+        else
+        {
+            _available = false;
+            if (UnitOn)
+            {
+                if (CurrentState == State.OccupiedByPlayer)
+                    ChangeColor(ColorUnitOnCell);
+                else if (CurrentState == State.OccupiedByEnemy)
+                    ChangeColor(ColorEnemyOnCell);
+            }
+
+            else
+                ChangeColor(ColorMovementCell);
+        }
+    }
 
     public void ChangeColor(Color color)    {
         GetComponent<MeshRenderer>().material.color = color;
@@ -64,7 +73,7 @@ public class Cell : MonoBehaviour
             CurrentState = isReachable ? State.Reachable : State.Impassable;
             foreach (Cell neighbor in Neighbours)
             {
-                if (neighbor._awailable && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
+                if (neighbor.Available && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
                 {
                     neighbor.SetReachable(movementPoints - neighbor.MovementCost, isReachable);
                 }
@@ -74,18 +83,18 @@ public class Cell : MonoBehaviour
 
     public void SelectCell()
     {
-        ChangeColor(ColorSelectedCell);
+        //ChangeColor(ColorSelectedCell);
         UnitOn = true;
-        SetAwailable(false);
+        Available = false; //true
     }
 
     public void UnselectCell()
     {
         // На момент когда я нажимаю на это, тогда у меня все выделения уже исчезли.
-        ChangeColor(ColorStandardCell);
-        UnitOn = false;
-        CurrentState = State.Reachable;
-        SetAwailable(true);
+        ChangeColor(ColorStandardCell); // Меняю цвет
+        UnitOn = false; // Игрока нет
+        CurrentState = State.Reachable; // Состояние доступное
+        Available = true;
         UnhighlightAvailableMoves();
     }
 
@@ -102,18 +111,46 @@ public class Cell : MonoBehaviour
     {
         ChangeColor(ColorStandardCell);
         UnitOn = false;
-        SetState(State.Reachable);
-        SetAwailable(true);
+        CurrentState = State.Reachable;
+        Available = true;
     }
 
-    public void SetUnit(Unit unit)
+    public bool IsAvailableForUnit(Unit unit)
     {
-        //_currentUnit = unit;
-        var color = CurrentState == State.OccupiedByPlayer ? ColorUnitOnCell : ColorEnemyOnCell;
-        ChangeColor(color);
-        //SetState()
+        if (IsOccupied())
+        {
+            return false;
+        }
+
+        var distance = Vector3.Distance(unit.transform.position, transform.position);
+        if (distance > unit.MovementPoints)
+        {
+            return false;
+        }
+
+        return true;
     }
 
-    public void SetState(State state) => CurrentState = state;
 
+
+    public bool IsOccupied()
+    {
+        if (CurrentState == State.OccupiedByEnemy || CurrentState == State.OccupiedByPlayer)
+            return true;
+        if (UnitOn == true || Available == true)
+            return true;
+        else
+            return false;
+    }
+}
+
+public enum State
+{
+    Standard, // Стандартное состояние
+    //Selected, // Выбран пользователем
+    Movement, // Пользователь выбрал этот тайл для движения юнита
+    Impassable, // Непроходимый тайл (например, стена или вода)
+    Reachable, // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
+    OccupiedByPlayer, // Занят игроком
+    OccupiedByEnemy, // Занят врагом
 }

@@ -38,11 +38,18 @@ public class GridSelector : MonoBehaviour
 
     public void UnselectUnit(Unit unit)
     {
-        //unit.Status = UnitStatus.Unselected;
-        SelectedUnit = null;
-        _interactor.SelectedUnit = null;
-        //unit.CurrentCell.ClearUnit();
+        // Unselect the current unit and reset cell availability
+
+        if (unit != null)
+        {
+            //unit.Status = UnitStatus.Unselected;
+            unit = null;
+            SelectedUnit = unit;
+            _interactor.SelectedUnit = unit;
+            //unit.CurrentCell.ClearUnit();
+        }
     }
+
 
 
     public void ChangeAvailableCellsColor()
@@ -57,43 +64,41 @@ public class GridSelector : MonoBehaviour
     public void SelectCellToMove(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
     {
         if (clearSelectedCells)
+        {
             ChangeAvailableCellsColor();
-
-        //List<Cell> availableMovesCopy;
+        }
 
         if (unitType == UnitType.Player || unitType == UnitType.Enemy)
         {
             _availableMoves = GetAvailableMoves(cell, SelectedUnit.MovementPoints);
-            //availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         }
         else
+        {
             return;
+        }
 
         if (selectedUnitColor.HasValue)
         {
-            //availableMovesCopy.ElementAt(0).ChangeColor(selectedUnitColor.Value);
             SelectedUnit.CurrentCell.ChangeColor(selectedUnitColor.Value);
         }
         else
         {
             if (unitType == UnitType.Player)
             {
-                //availableMovesCopy.ElementAt(0).ChangeColor(cell.ColorUnitOnCell);
                 SelectedUnit.CurrentCell.ChangeColor(cell.ColorUnitOnCell);
-
             }
             else if (unitType == UnitType.Enemy)
             {
-                //availableMovesCopy.ElementAt(0).ChangeColor(cell.ColorEnemyOnCell);
                 SelectedUnit.CurrentCell.ChangeColor(cell.ColorEnemyOnCell);
-
             }
         }
 
-        //availableMovesCopy.Remove(cell);
-        //foreach (var moveCell in availableMovesCopy)
-        foreach (var moveCell in _availableMoves)
+        List<Cell> availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
+        availableMovesCopy.Remove(cell);
+        foreach (var moveCell in availableMovesCopy)
+        {
             moveCell.ChangeColor(moveCell.ColorMovementCell);
+        }
     }
 
     public List<Cell> GetAvailableMoves(Cell cell, int maxMoves)
@@ -115,16 +120,21 @@ public class GridSelector : MonoBehaviour
             {
                 foreach (var neighbour in _grid.Interactor.PathConstructor.GetNeighbourCells(currentCell, _grid))
                 {
-                    if (!visitedCells.Contains(neighbour) && neighbour.IsAwailable() && neighbour.UnitOn == false)
+                    if (!visitedCells.Contains(neighbour) && neighbour.IsOccupied() && neighbour.UnitOn == false)
                     {
-                        queue.Enqueue((neighbour, remainingMoves - 1));
+                        // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки
+                        var cost = neighbour.MovementCost;
+                        if (cost <= remainingMoves)
+                        {
+                            queue.Enqueue((neighbour, remainingMoves - cost));
+                        }
                     }
                 }
             }
         }
 
-        AvailableMoves.RemoveAt(0);
         return AvailableMoves;
     }
+
 
 }

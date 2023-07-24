@@ -17,7 +17,7 @@ public class GridInitializer : MonoBehaviour
         Grid.SetWalkableCells();
         Grid.SetReachableCells();
 
-        _gameModel.StartTheGame();
+        _gameModel.StartGame();
     }
 }
 

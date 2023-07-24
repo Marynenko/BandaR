@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,46 +26,48 @@ public class GameModel : MonoBehaviour, IGameModel
         _endTurnButton.onClick.AddListener(_input.HandleEndTurnButtonClicked);
     }
 
-    public void StartTheGame()
+    public void StartGame()
     {
         _players = _grid.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
-        _isNextPlayerActive = true;
+        _isNextPlayerActive = false;
+        ActivePlayer.Status = UnitStatus.Available;
         StartTurn();
     }
 
+
     private void Update()
-    {       
+    {
+        if (ActivePlayer == null)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             var mousePosition = Input.mousePosition;
             _input.HandleLeftClick(mousePosition);
 
             _AI.UpdateUI(ActivePlayer, _endTurnButton);
-            // Проверяем, был ли клик на кнопку
-
-            //if (_endTurnButton.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_endTurnButton.GetComponent<RectTransform>(), mousePosition))
-            //{
-            //    EndTurn();
-            //}
-
         }
     }
-    
+
 
     public void StartTurn()
     {
         if (IsGameOver())
+            return;
+
+        ResetCellsAvailability();
+
+        if (!SetUnitAvailability(ActivePlayer))
         {
+            EndTurn();
             return;
         }
 
-        ResetCellsAvailability();
-        SetUnitsAvailability();
-
         Update();
     }
-
 
     public void EndTurn()
     {
@@ -79,11 +82,9 @@ public class GameModel : MonoBehaviour, IGameModel
         }
         else
         {
-            //ActivePlayer.Status = UnitStatus.Moved;
             ActivePlayer = GetNextPlayer(ActivePlayer);
 
             // Если следующий игрок - AI, то делаем ход
-
             if (ActivePlayer.Type == UnitType.Player)
             {
                 StartTurn();
@@ -91,22 +92,50 @@ public class GameModel : MonoBehaviour, IGameModel
             else if (ActivePlayer.Type == UnitType.Enemy)
             {
                 ActivePlayer.Status = UnitStatus.Available;
+
+                if (!SetUnitAvailability(ActivePlayer))
+                {
+                    EndTurn();
+                    return;
+                }
+
                 _AI.Move(ActivePlayer);
             }
         }
     }
 
+    private bool SetUnitAvailability(Unit unit)
+    {
+        if (unit.Status != UnitStatus.Available)
+        {
+            return false;
+        }
+
+        var availableMoves = _selector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
+        if (availableMoves.Count > 0)
+        {
+            unit.SetAvailability(availableMoves);
+            return true;
+        }
+
+        return false;
+    }
+
+
+
     private void UnselectUnit()
     {
-        // Unselect the current unit and reset cell availability
-        if (_selector.SelectedUnit != null)
-        {
-            //_selector.SelectedUnit.Status = UnitStatus.Unselected;
-            _selector.SelectedUnit = null;
-            _interactor.SelectedUnit = null; // Добавил
+        _selector.UnselectUnit(ActivePlayer);
+        ResetCellsAvailability();
+        //// Unselect the current unit and reset cell availability
+        //if (_selector.SelectedUnit != null)
+        //{
+        //    //_selector.SelectedUnit.Status = UnitStatus.Unselected;
+        //    _selector.SelectedUnit = null;
+        //    _interactor.SelectedUnit = null; // Добавил
 
-            ResetCellsAvailability();
-        }
+        //    ResetCellsAvailability();
+        //}
     }
 
     public void ResetCellsAvailability()
@@ -115,29 +144,20 @@ public class GameModel : MonoBehaviour, IGameModel
         currentCell.UnselectCell();
 
         // Set all cells to be available for selection
-        var highlightedMoves = _interactor.AvailableMoves;
-        foreach (var move in highlightedMoves)
-        {
-            move.UnselectCell();
-        }
+        _interactor.AvailableMoves.ForEach(move => move.UnselectCell());
     }
+
 
     private void ResetUnitsAvailability()
     {
         foreach (var unit in _grid.AllUnits.OfType<Unit>())
         {
-            if (_isNextPlayerActive)
-            {
-                unit.Status = UnitStatus.Available;
-            }
-            else
-            {
-                unit.Status = UnitStatus.Moved;
-            }
+            unit.Status = _isNextPlayerActive ? UnitStatus.Available : UnitStatus.Moved;
         }
 
         _isNextPlayerActive = !_isNextPlayerActive;
     }
+
 
 
     private Unit GetNextPlayer(Unit player)
@@ -147,15 +167,6 @@ public class GameModel : MonoBehaviour, IGameModel
         var nextIndex = (index + 1) % listOfUnits.Count;
         return listOfUnits[nextIndex];
     }
-
-    private void SetUnitsAvailability()
-    {
-        foreach (var unit in _grid.AllUnits)
-        {
-            unit.Status = UnitStatus.Available;
-        }
-    }
-
 
     public bool IsGameOver()
     {

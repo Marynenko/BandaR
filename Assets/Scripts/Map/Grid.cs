@@ -55,9 +55,9 @@ public class Grid : MonoBehaviour
     {
         foreach (var cell in Cells)
         {
-            if (cell.IsAwailable())
+            if (cell.IsOccupied())
             {
-                cell.SetAwailable(true);
+                cell.SetAvailable(true);
             }
         }
     }

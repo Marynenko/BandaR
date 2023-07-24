@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour, IGameController
             if (selectedUnit.IsAlive())
             {
                 // Update available moves after attack
-                var availableMoves = Selector.GetAvailableMoves(selectedUnit.CurrentCell, 1);
+                var availableMoves = Selector.GetAvailableMoves(selectedUnit.CurrentCell, selectedUnit.MovementPoints);
                 Interactor.HighlightAvailableMoves(availableMoves, selectedUnit.CurrentCell.ColorMovementCell, Selector);
             }
         }
@@ -132,7 +132,7 @@ public class GameController : MonoBehaviour, IGameController
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     {
         Path = new List<Cell>();
-        return cell.IsAwailable() && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
+        return cell.IsOccupied() && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
     }    
     
 
@@ -146,7 +146,7 @@ public class GameController : MonoBehaviour, IGameController
         {
             if (unit.CanMoveToCell(cell))
             {
-                unit.MoveToCell(cell); // изменен вызов метода
+                unit.MoveToCell(cell); // изменен вызов метода?
                 //unit.Status = UnitStatus.Moved;
             }
         }

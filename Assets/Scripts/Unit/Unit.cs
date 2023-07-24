@@ -65,9 +65,9 @@ public class Unit : MonoBehaviour, IUnit
 
         Status = UnitStatus.Unavailable;
 
-        CurrentCell.SetState(state);
+        CurrentCell.CurrentState = state;
         CurrentCell.SelectCell();
-        CurrentCell.SetUnit(this);
+        //CurrentCell.SetUnit(this);
         
     }
 
@@ -152,6 +152,15 @@ public class Unit : MonoBehaviour, IUnit
     {
         return Health > 0;
     }
+
+    public void SetAvailability(List<Cell> availableCells)
+    {
+        foreach (Cell cell in availableCells)
+        {
+            cell.SetAvailable(true);
+        }
+    }
+
     public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
     {
         switch (actionType)
@@ -172,5 +181,6 @@ public class Unit : MonoBehaviour, IUnit
 
         return false;
     }
+
     #endregion
 }

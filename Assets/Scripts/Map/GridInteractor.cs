@@ -10,7 +10,7 @@ public class GridInteractor : MonoBehaviour
 
     public PathConstructor PathConstructor;
     public Unit SelectedUnit { get; set; }
-    public IReadOnlyList<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
+    public List<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
 
 
     public void OnEnable()
@@ -40,7 +40,8 @@ public class GridInteractor : MonoBehaviour
 
     private void HandlePlayerSelected(Unit player, GridSelector selector)
     {
-        player.CurrentCell.SetUnit(player);
+        player.CurrentCell.Available = true;
+        //player.CurrentCell.SetUnit(player);
         SelectedUnit = player;
         selector.SelectedUnit = player;
         player.Status = UnitStatus.Unavailable;
@@ -51,7 +52,8 @@ public class GridInteractor : MonoBehaviour
 
     private void HandleEnemySelected(Unit enemy, GridSelector selector)
     {
-        enemy.CurrentCell.SetUnit(enemy);
+        enemy.CurrentCell.Available = true;
+        //enemy.CurrentCell.SetUnit(enemy);
         SelectedUnit = enemy;
         selector.SelectedUnit = enemy;
         enemy.Status = UnitStatus.Unavailable;
@@ -101,6 +103,20 @@ public class GridInteractor : MonoBehaviour
         cell.ChangeColor(color);
     }
 
+    public List<Cell> GetAvailableCells(Unit unit)
+    {
+        var availableCells = new List<Cell>();
+
+        foreach (var cell in _grid.Cells)
+        {
+            if (cell.IsAvailableForUnit(unit))
+            {
+                availableCells.Add(cell);
+            }
+        }
+
+        return availableCells;
+    }
 }
 
 public class Direction
