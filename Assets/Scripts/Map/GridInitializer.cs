@@ -12,10 +12,9 @@ public class GridInitializer : MonoBehaviour
     public void InitializationGrid()
     {
         Grid.CreateGrid();
-        Grid.SetNeighborsToAllCells();
+        Grid.LocateNeighboursCells();
         Grid.AddUnitsToCells(AllExistedUnits); // передаем список AllExistedUnits вместо использования Grid.AllUnits
-        Grid.SetWalkableCells();
-        Grid.SetReachableCells();
+        Grid.SetAvaialableCells();
 
         _gameModel.StartGame();
     }

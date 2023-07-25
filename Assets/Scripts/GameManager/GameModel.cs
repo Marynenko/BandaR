@@ -58,7 +58,9 @@ public class GameModel : MonoBehaviour, IGameModel
         if (IsGameOver())
             return;
 
-        ResetCellsAvailability();
+        _grid.SetAvaialableCells();
+
+        //ResetCellsAvailability();
 
         if (!SetUnitAvailability(ActivePlayer))
         {
@@ -75,6 +77,7 @@ public class GameModel : MonoBehaviour, IGameModel
         ResetCellsAvailability();
         ResetUnitsAvailability();
         UpdateScore();
+        //SetAvaialableCells();
 
         if (IsGameOver())
         {

@@ -137,7 +137,7 @@ public class Cell : MonoBehaviour
     {
         if (CurrentState == State.OccupiedByEnemy || CurrentState == State.OccupiedByPlayer)
             return true;
-        if (UnitOn == true || Available == true)
+        if (UnitOn == true || Available == false)
             return true;
         else
             return false;

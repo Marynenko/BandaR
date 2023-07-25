@@ -43,7 +43,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public void SetNeighborsToAllCells()
+    public void LocateNeighboursCells()
     {
         foreach (var cell in Cells)
         {
@@ -51,22 +51,14 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public void SetWalkableCells()
+    public void SetAvaialableCells()
     {
         foreach (var cell in Cells)
         {
-            if (cell.IsOccupied())
+            if (!cell.IsOccupied())
             {
                 cell.SetAvailable(true);
             }
-        }
-    }
-
-    public void SetReachableCells()
-    {
-        foreach (var unit in AllUnits)
-        {
-            unit.CurrentCell.SetReachable(unit.Stats.MovementPoints, true);
         }
     }
 
