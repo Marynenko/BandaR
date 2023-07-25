@@ -35,9 +35,11 @@ public class InputPlayer : MonoBehaviour, IInputHandler
             return;
         }
 
+        
+
         // Проверяем, был ли игрок перемещен в этом ходе
         var movedUnits = _gameController.Grid.AllUnits.Where(u => u.Status == UnitStatus.Moved).ToList();
-        if (movedUnits.Count > 0)
+        if (movedUnits.Count == 0)
         {
             Debug.Log("You can't end the turn until all units have moved.");
             return;

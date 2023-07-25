@@ -47,6 +47,29 @@ public class AI : MonoBehaviour
         //}
     }
 
+    //public void UpdateUI<T>(T _activePlayer, Button button) where T : Unit
+    //{
+    //    var currentPlayer = _activePlayer;
+
+    //    if (currentPlayer == null)
+    //    {
+    //        // если ActivePlayer == null, то делаем кнопку недоступной
+    //        button.interactable = false;
+    //        return;
+    //    }
+
+    //    var canEndTurn = currentPlayer.Status == UnitStatus.Moved;
+
+    //    if (!canEndTurn && currentPlayer.Type == UnitType.Enemy) // ƒобавл€ем проверку на тип игрока (AI)
+    //    {
+    //        // ≈сли это AI и у него нет доступных ходов, то он пропускает ход
+    //        canEndTurn = true;
+    //    }
+
+    //    button.interactable = canEndTurn;
+    //}
+
+
     public void Move(Unit unit)
     {
         //_gameModel.ActivePlayer = unit;

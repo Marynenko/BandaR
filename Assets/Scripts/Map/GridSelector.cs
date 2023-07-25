@@ -50,18 +50,7 @@ public class GridSelector : MonoBehaviour
         }
     }
 
-
-
-    public void ChangeAvailableCellsColor()
-    {
-        var Cells = _grid.Cells;
-        foreach (var cell in Cells)
-        {
-            cell.ChangeColor(cell.ColorStandardCell);
-        }
-    }
-
-    public void SelectCellToMove(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
+    public void SelectCellToMoveFrom(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
     {
         if (clearSelectedCells)
         {
@@ -69,36 +58,31 @@ public class GridSelector : MonoBehaviour
         }
 
         if (unitType == UnitType.Player || unitType == UnitType.Enemy)
-        {
             _availableMoves = GetAvailableMoves(cell, SelectedUnit.MovementPoints);
-        }
         else
-        {
             return;
-        }
 
         if (selectedUnitColor.HasValue)
-        {
             SelectedUnit.CurrentCell.ChangeColor(selectedUnitColor.Value);
-        }
         else
         {
             if (unitType == UnitType.Player)
-            {
                 SelectedUnit.CurrentCell.ChangeColor(cell.ColorUnitOnCell);
-            }
             else if (unitType == UnitType.Enemy)
-            {
                 SelectedUnit.CurrentCell.ChangeColor(cell.ColorEnemyOnCell);
-            }
         }
 
         List<Cell> availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         availableMovesCopy.Remove(cell);
         foreach (var moveCell in availableMovesCopy)
-        {
             moveCell.ChangeColor(moveCell.ColorMovementCell);
-        }
+    }
+
+    public void ChangeAvailableCellsColor()
+    {
+        var Cells = _grid.Cells;
+        foreach (var cell in Cells)
+            cell.ChangeColor(cell.ColorStandardCell);
     }
 
     public List<Cell> GetAvailableMoves(Cell cell, int maxMoves)
@@ -116,21 +100,15 @@ public class GridSelector : MonoBehaviour
             visitedCells.Add(currentCell);
             AvailableMoves.Add(currentCell);
 
-            if (remainingMoves > 0)
-            {
+            if (remainingMoves > 1)
                 foreach (var neighbour in _grid.Interactor.PathConstructor.GetNeighbourCells(currentCell, _grid))
-                {
-                    if (!visitedCells.Contains(neighbour) && neighbour.IsOccupied() && neighbour.UnitOn == false)
+                    if (!(visitedCells.Contains(neighbour) && neighbour.IsOccupied()))
                     {
                         // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки
                         var cost = neighbour.MovementCost;
                         if (cost <= remainingMoves)
-                        {
                             queue.Enqueue((neighbour, remainingMoves - cost));
-                        }
                     }
-                }
-            }
         }
 
         return AvailableMoves;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameModel : MonoBehaviour, IGameModel
 {
@@ -18,8 +19,7 @@ public class GameModel : MonoBehaviour, IGameModel
 
     private ActionType _actionType;
     private List<Unit> _players = new();
-    private bool _isNextPlayerActive = false;
-
+    private int _currentPlayerIndex;
 
     private void Start()
     {
@@ -30,8 +30,8 @@ public class GameModel : MonoBehaviour, IGameModel
     {
         _players = _grid.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
-        _isNextPlayerActive = false;
         ActivePlayer.Status = UnitStatus.Available;
+        _currentPlayerIndex = 0;
         StartTurn();
     }
 
@@ -62,11 +62,11 @@ public class GameModel : MonoBehaviour, IGameModel
 
         //ResetCellsAvailability();
 
-        if (!SetUnitAvailability(ActivePlayer))
-        {
-            EndTurn();
-            return;
-        }
+        //if (!SetUnitAvailability(ActivePlayer))
+        //{
+        //    EndTurn();
+        //    return;
+        //}
 
         Update();
     }
@@ -74,8 +74,17 @@ public class GameModel : MonoBehaviour, IGameModel
     public void EndTurn()
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
-        ResetCellsAvailability();
-        ResetUnitsAvailability();
+        //ResetCellsAvailability();
+        //ActivePlayer.CurrentCell.UnselectCell();
+        ActivePlayer = GetNextPlayer(ActivePlayer);
+        _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+
+        // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
+        if (_players.All(p => p.Status == UnitStatus.Moved))
+        {
+            ResetUnitsAvailability();
+        }
+
         UpdateScore();
         //SetAvaialableCells();
 
@@ -83,29 +92,43 @@ public class GameModel : MonoBehaviour, IGameModel
         {
             EndGame();
         }
-        else
+        // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
+        if (ActivePlayer.Type == UnitType.Player)
         {
-            ActivePlayer = GetNextPlayer(ActivePlayer);
-
-            // Если следующий игрок - AI, то делаем ход
-            if (ActivePlayer.Type == UnitType.Player)
-            {
-                StartTurn();
-            }
-            else if (ActivePlayer.Type == UnitType.Enemy)
-            {
-                ActivePlayer.Status = UnitStatus.Available;
-
-                if (!SetUnitAvailability(ActivePlayer))
-                {
-                    EndTurn();
-                    return;
-                }
-
-                _AI.Move(ActivePlayer);
-            }
+            ActivePlayer.Status = UnitStatus.Available;
+            SetUnitAvailability(ActivePlayer); // ----------------Здесь проблема
         }
+        else if (ActivePlayer.Type == UnitType.Enemy)
+        {
+            // Если следующий игрок - AI, то делаем ход AI
+            //ActivePlayer.Status = UnitStatus.Available;
+            ActivePlayer.Status = UnitStatus.AIMove;
+
+            if (!SetUnitAvailability(ActivePlayer)) // ----------------Здесь проблема
+            {
+                EndTurn(); 
+                return;
+            }
+
+            _AI.Move(ActivePlayer);
+        }
+
+        // Дополнительные действия, если необходимо, после окончания хода
+        // ...
+
+        // Обновляем UI или выполняем другие действия, связанные с окончанием хода
+        // ...
     }
+
+    //private bool SetUnitAvailability(Unit unit)
+    //{
+    //    if (unit.Status != UnitStatus.Available)
+    //    {
+    //        return false;
+    //    }
+
+
+    //}
 
     private bool SetUnitAvailability(Unit unit)
     {
@@ -114,10 +137,9 @@ public class GameModel : MonoBehaviour, IGameModel
             return false;
         }
 
-        var availableMoves = _selector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
-        if (availableMoves.Count > 0)
+        if (unit.MovementPoints == 0 || unit.MovementPoints == 1)
         {
-            unit.SetAvailability(availableMoves);
+            unit.SetAvailability();
             return true;
         }
 
@@ -150,17 +172,13 @@ public class GameModel : MonoBehaviour, IGameModel
         _interactor.AvailableMoves.ForEach(move => move.UnselectCell());
     }
 
-
-    private void ResetUnitsAvailability()
+    public void ResetUnitsAvailability()
     {
         foreach (var unit in _grid.AllUnits.OfType<Unit>())
         {
-            unit.Status = _isNextPlayerActive ? UnitStatus.Available : UnitStatus.Moved;
+            unit.Status = UnitStatus.Unavailable;
         }
-
-        _isNextPlayerActive = !_isNextPlayerActive;
     }
-
 
 
     private Unit GetNextPlayer(Unit player)

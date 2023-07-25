@@ -75,13 +75,13 @@ public class GameController : MonoBehaviour, IGameController
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (!IsPlayerUnitAvailable(selectedUnit))
-            return;
+        //if (!IsPlayerUnitAvailable(selectedUnit))
+        //    return;
 
         if (cell == selectedUnit.CurrentCell)
             return;
 
-        if (selectedUnit.Status == UnitStatus.Moved)
+        if (selectedUnit.Status == UnitStatus.Moved) // Тут посмотреть
             return;
 
         // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
@@ -117,24 +117,35 @@ public class GameController : MonoBehaviour, IGameController
         }
 
         // Сохраняем текущий юнит и ячейку как последние выбранные
+        selectedUnit.Status = UnitStatus.Moved;
+
         lastSelectedUnit = selectedUnit;
         lastSelectedCell = selectedUnit.CurrentCell;
 
         UnselectUnit(selectedUnit); // Можно убрать наверное
-        UnselectCell(selectedUnit.CurrentCell);
+        //UnselectCell(selectedUnit.CurrentCell);
 
     }   
 
     private bool IsPlayerUnitAvailable(Unit unit)
     => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Unavailable;
 
+    //private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
+    //{
+    //    Path = new List<Cell>();
+    //    //return cell.UnitOn == false && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
+    //    return cell.UnitOn == false && unit.MovementPoints >= cell.MovementCost;
+    //}
+
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
+    private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> path)
     {
-        Path = new List<Cell>();
-        return cell.IsOccupied() && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
-    }    
-    
+        path = Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out _, Grid);
+        return cell.UnitOn == false && unit.MovementPoints >= path.Count;
+    }
+
+
+
 
     private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
     private void UnselectCell(Cell cell) => cell.UnselectCell();

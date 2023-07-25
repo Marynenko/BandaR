@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public enum UnitStatus
 {
@@ -9,7 +10,8 @@ public enum UnitStatus
     //Unselected,
     Moved,
     Available,
-    Unavailable
+    Unavailable,
+    AIMove
 }
 
 public enum UnitType
@@ -43,7 +45,9 @@ public class Unit : MonoBehaviour, IUnit
     public float AttackRange { get { return Stats.AttackRange; } }
     public int Health { get { return Stats.Health; } }
     public int AttackDamage { get { return Stats.AttackDamage; } }
-    public int MovementPoints { get { return Stats.MovementPoints; } }
+    public int MovementPoints { get { return Stats.MovementPoints; } 
+        private set { MovementPoints = value; } }
+    public int MovementRange { get { return Stats.MovementRange; } }
 
     #endregion
 
@@ -66,9 +70,10 @@ public class Unit : MonoBehaviour, IUnit
         Status = UnitStatus.Unavailable;
 
         CurrentCell.CurrentState = state;
-        CurrentCell.SelectCell();
+        CurrentCell.UnitOn = true;
+        //CurrentCell.SelectCell();
         //CurrentCell.SetUnit(this);
-        
+
     }
 
     public bool CanMoveToCell(Cell cell)
@@ -153,13 +158,12 @@ public class Unit : MonoBehaviour, IUnit
         return Health > 0;
     }
 
-    public void SetAvailability(List<Cell> availableCells)
+    public void SetAvailability()
     {
-        foreach (Cell cell in availableCells)
-        {
-            cell.SetAvailable(true);
-        }
+        MovementPoints = MovementRange;
+        Status = UnitStatus.Moved;
     }
+
 
     public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
     {

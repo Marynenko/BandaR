@@ -14,7 +14,6 @@ public class GridInitializer : MonoBehaviour
         Grid.CreateGrid();
         Grid.LocateNeighboursCells();
         Grid.AddUnitsToCells(AllExistedUnits); // передаем список AllExistedUnits вместо использования Grid.AllUnits
-        Grid.SetAvaialableCells();
 
         _gameModel.StartGame();
     }

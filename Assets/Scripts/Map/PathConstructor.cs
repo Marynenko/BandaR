@@ -102,12 +102,12 @@ public class PathConstructor : MonoBehaviour
 
         foreach (Direction direction in directions)
         {
-            int neighbourX = Convert.ToInt32(cell.Coordinates.x + direction.XOffset);
-            int neighbourY = Convert.ToInt32(cell.Coordinates.y + direction.YOffset);
+            int coordinateX = Convert.ToInt32(cell.Coordinates.x + direction.XOffset);
+            int coordinateY = Convert.ToInt32(cell.Coordinates.y + direction.YOffset);
 
-            if (neighbourX >= 0 && neighbourX < grid.GridSize.x && neighbourY >= 0 && neighbourY < grid.GridSize.y)
+            if (coordinateX >= 0 && coordinateX < grid.GridSize.x && coordinateY >= 0 && coordinateY < grid.GridSize.y)
             {
-                var neighbour = grid.Cells[neighbourX, neighbourY];
+                var neighbour = grid.Cells[coordinateX, coordinateY];
                 if (neighbour != null && neighbour != cell)
                 {
                     neighbours.Add(neighbour);

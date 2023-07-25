@@ -40,14 +40,13 @@ public class GridInteractor : MonoBehaviour
 
     private void HandlePlayerSelected(Unit player, GridSelector selector)
     {
-        player.CurrentCell.Available = true;
         //player.CurrentCell.SetUnit(player);
         SelectedUnit = player;
         selector.SelectedUnit = player;
-        player.Status = UnitStatus.Unavailable;
+        //player.Status = UnitStatus.Moved;
         player.CurrentCell.SelectCell();
-        selector.SelectCellToMove(player.CurrentCell, UnitType.Player, true);
-        player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMove?
+        selector.SelectCellToMoveFrom(player.CurrentCell, UnitType.Player /*true*/);
+        player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMoveFrom?
     }
 
     private void HandleEnemySelected(Unit enemy, GridSelector selector)
@@ -58,7 +57,7 @@ public class GridInteractor : MonoBehaviour
         selector.SelectedUnit = enemy;
         enemy.Status = UnitStatus.Unavailable;
         enemy.CurrentCell.SelectCell();
-        selector.SelectCellToMove(enemy.CurrentCell, UnitType.Enemy, true);
+        selector.SelectCellToMoveFrom(enemy.CurrentCell, UnitType.Enemy, true);
         enemy.CurrentCell.UnitOn = true;
     }
 
