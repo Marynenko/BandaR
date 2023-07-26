@@ -81,7 +81,7 @@ public class Unit : MonoBehaviour, IUnit
         if (CurrentCell == cell) return false;
         if (Vector3.Distance(CurrentCell.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
         if (Status == UnitStatus.Moved) return false;
-        if (MovementPoints <= 0) return false;
+        if (MovementPoints <= 1) return false;
         if (cell.UnitOn == true) return false;
         if (Stats.MovementPoints < cell.MovementCost) return false;
         return true;

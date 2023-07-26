@@ -96,7 +96,8 @@ public class GameModel : MonoBehaviour, IGameModel
         if (ActivePlayer.Type == UnitType.Player)
         {
             ActivePlayer.Status = UnitStatus.Available;
-            SetUnitAvailability(ActivePlayer); // ----------------Здесь проблема
+            //SetUnitAvailability(ActivePlayer); 
+            ActivePlayer.Stats.MovementPoints = ActivePlayer.Stats.MovementRange;
         }
         else if (ActivePlayer.Type == UnitType.Enemy)
         {
@@ -104,13 +105,14 @@ public class GameModel : MonoBehaviour, IGameModel
             //ActivePlayer.Status = UnitStatus.Available;
             ActivePlayer.Status = UnitStatus.AIMove;
 
-            if (!SetUnitAvailability(ActivePlayer)) // ----------------Здесь проблема
+            if (SetUnitAvailability(ActivePlayer))
             {
                 EndTurn(); 
                 return;
             }
 
             _AI.Move(ActivePlayer);
+            ActivePlayer.Stats.MovementPoints = ActivePlayer.Stats.MovementRange;
         }
 
         // Дополнительные действия, если необходимо, после окончания хода
@@ -120,19 +122,9 @@ public class GameModel : MonoBehaviour, IGameModel
         // ...
     }
 
-    //private bool SetUnitAvailability(Unit unit)
-    //{
-    //    if (unit.Status != UnitStatus.Available)
-    //    {
-    //        return false;
-    //    }
-
-
-    //}
-
     private bool SetUnitAvailability(Unit unit)
     {
-        if (unit.Status != UnitStatus.Available)
+        if (unit.Status != UnitStatus.Available && unit.Status != UnitStatus.AIMove)
         {
             return false;
         }
@@ -186,6 +178,14 @@ public class GameModel : MonoBehaviour, IGameModel
         var listOfUnits = _grid.AllUnits.OfType<Unit>().ToList();
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
+        // Проверяем, является ли следующий индекс последним игроком
+        if (nextIndex == listOfUnits.Count)
+        {
+            // Если да, то возвращаем первого игрока из списка
+            return listOfUnits[0];
+        }
+
+        // Если не последний игрок, возвращаем следующего игрока по индексу
         return listOfUnits[nextIndex];
     }
 

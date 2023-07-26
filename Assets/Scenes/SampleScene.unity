@@ -1194,12 +1194,12 @@ PrefabInstance:
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementRange
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementPoints
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5099475863235921304, guid: d00151081c233334e90c56236c0be649,
         type: 3}
@@ -1333,6 +1333,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2578142731543985585, guid: 825b9ef269e36ec4a895ede59648dd37,
+        type: 3}
+      propertyPath: MovementRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2578142731543985585, guid: 825b9ef269e36ec4a895ede59648dd37,
+        type: 3}
+      propertyPath: MovementPoints
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8613169456036177319, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}

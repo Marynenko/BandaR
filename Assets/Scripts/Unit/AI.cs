@@ -115,7 +115,8 @@ public class AI : MonoBehaviour
         localSelector.UnselectUnit(unit); // Можно убрать наверное
         unit.CurrentCell.UnselectCell();
         // Обновляем доступность ячеек после перемещения
-        var units = localGrid.AllUnits.Where(u => u == _gameModel.ActivePlayer).ToArray();
+        var units = localGrid.AllUnits.Where(u => u == _gameModel.ActivePlayer).ToArray(); // Вообще к чему это?
+        unit.Status = UnitStatus.Moved;
         _gameModel.EndTurn();
     }
 }
