@@ -45,13 +45,6 @@ public class InputPlayer : MonoBehaviour, IInputHandler
             return;
         }
 
-        // Проверяем, не закончилась ли игра
-        if (_gameModel.IsGameOver())
-        {
-            _gameModel.EndGame();
-            return;
-        }
-
         // Передаем ход следующему игроку
         _gameModel.EndTurn();
     }

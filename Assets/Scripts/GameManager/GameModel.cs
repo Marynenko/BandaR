@@ -19,7 +19,6 @@ public class GameModel : MonoBehaviour, IGameModel
 
     private ActionType _actionType;
     private List<Unit> _players = new();
-    private int _currentPlayerIndex;
 
     private void Start()
     {
@@ -31,7 +30,6 @@ public class GameModel : MonoBehaviour, IGameModel
         _players = _grid.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
-        _currentPlayerIndex = 0;
         StartTurn();
     }
 
@@ -77,7 +75,6 @@ public class GameModel : MonoBehaviour, IGameModel
         //ResetCellsAvailability();
         //ActivePlayer.CurrentCell.UnselectCell();
         ActivePlayer = GetNextPlayer(ActivePlayer);
-        _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
         if (_players.All(p => p.Status == UnitStatus.Moved))
@@ -98,6 +95,12 @@ public class GameModel : MonoBehaviour, IGameModel
             ActivePlayer.Status = UnitStatus.Available;
             //SetUnitAvailability(ActivePlayer); 
             ActivePlayer.Stats.MovementPoints = ActivePlayer.Stats.MovementRange;
+
+            if (SetUnitAvailability(ActivePlayer))
+            {
+                EndTurn();
+                return;
+            }
         }
         else if (ActivePlayer.Type == UnitType.Enemy)
         {
@@ -111,8 +114,7 @@ public class GameModel : MonoBehaviour, IGameModel
                 return;
             }
 
-            _AI.Move(ActivePlayer);
-            ActivePlayer.Stats.MovementPoints = ActivePlayer.Stats.MovementRange;
+            _AI.Move(ActivePlayer);            
         }
 
         // Дополнительные действия, если необходимо, после окончания хода

@@ -75,8 +75,8 @@ public class GameController : MonoBehaviour, IGameController
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        //if (!IsPlayerUnitAvailable(selectedUnit))
-        //    return;
+        if (!IsPlayerUnitAvailable(selectedUnit))
+            return;
 
         if (cell == selectedUnit.CurrentCell)
             return;
@@ -128,7 +128,7 @@ public class GameController : MonoBehaviour, IGameController
     }   
 
     private bool IsPlayerUnitAvailable(Unit unit)
-    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Unavailable;
+    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
 
     //private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
     //{

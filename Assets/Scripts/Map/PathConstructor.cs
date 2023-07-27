@@ -18,20 +18,22 @@ public class PathConstructor : MonoBehaviour
     {
         Path = new List<Cell>();
 
-        Dictionary<Cell, float> gScore = new()
+        // хранит стоимость пути от начальной €чейки до текущей €чейки.
+        Dictionary<Cell, float> gScore = new() 
         {
             [startCell] = 0
         };
 
-
-        Dictionary<Cell, float> fScore = new()
+        // хранит оценку стоимости пути от начальной €чейки через текущую €чейку до конечной €чейки (эвристическа€ оценка).
+        Dictionary<Cell, float> fScore = new() 
         {
             [startCell] = Heuristic(startCell, endCell)
         };
 
         List<Cell> closedList = new(); // список €чеек, которые уже были проверены.
-        List<Cell> openList = new() { startCell }; // список €чеек, которые еще не были проверены.
+        List<Cell> openList = new() { startCell }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
 
+        // список €чеек, откуда пришли в текущую €чейку. Ёто позволит потом восстановить путь от начальной €чейки до конечной.
         Dictionary<Cell, Cell> cameFrom = new();
 
         while (openList.Count > 0)
@@ -97,7 +99,7 @@ public class PathConstructor : MonoBehaviour
     }
 
     public List<Cell> GetNeighbourCells(Cell cell, Grid grid)
-    {
+        {
         List<Cell> neighbours = new();
 
         foreach (Direction direction in directions)
