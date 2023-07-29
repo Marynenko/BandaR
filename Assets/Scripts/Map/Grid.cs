@@ -29,7 +29,6 @@ public class Grid : MonoBehaviour
         var cellSize = CellPrefab.GetComponent<MeshRenderer>().bounds.size;
 
         for (int x = 0; x < GridSize.x; x++)
-        {
             for (int y = 0; y < GridSize.y; y++)
             {
                 // Чтобы сгенерировать клетку, нужно знать ее позицию.
@@ -40,26 +39,19 @@ public class Grid : MonoBehaviour
 
                 Cells[x, y] = cell;
             }
-        }
     }
 
     public void LocateNeighboursCells()
     {
         foreach (var cell in Cells)
-        {
             cell.Neighbours = Interactor.PathConstructor.GetNeighbourCells(cell, this); // Добавли левую часть.
-        }
     }
 
     public void SetAvaialableCells()
     {
         foreach (var cell in Cells)
-        {
             if (!cell.IsOccupied())
-            {
                 cell.SetAvailable(true);
-            }
-        }
     }
 
     public void AddUnitsToCells(List<Unit> units)

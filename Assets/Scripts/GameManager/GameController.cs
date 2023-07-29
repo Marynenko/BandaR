@@ -91,10 +91,10 @@ public class GameController : MonoBehaviour, IGameController
             SelectCell(lastSelectedCell);
         }
 
+        if (!IsCellAvailableForMove(selectedUnit, cell, out List<Cell> Path)) return;
+
         UnselectCell(selectedUnit.CurrentCell); // Убрать выделение из клетки на которой игрок.
 
-        if (!IsCellAvailableForMove(selectedUnit, cell, out List<Cell> Path))
-            return;
 
         //var path = Interactor.FindPathToTarget(selectedUnit.CurrentCell, cell, out Path);
 
@@ -102,8 +102,6 @@ public class GameController : MonoBehaviour, IGameController
             return;
 
         MoveUnit(selectedUnit, Path);
-
-        //SelectUnit(selectedUnit);
 
         //CheckAdjacentUnits(selectedUnit, Grid.AllUnits, selectedUnit.Team.EnemyTeam);
         CheckAdjacentUnits(selectedUnit, Grid.AllUnits);
@@ -116,26 +114,17 @@ public class GameController : MonoBehaviour, IGameController
             SelectCell(selectedUnit.CurrentCell); // Red
         }
 
-        // Сохраняем текущий юнит и ячейку как последние выбранные
-        selectedUnit.Status = UnitStatus.Moved;
-
         lastSelectedUnit = selectedUnit;
         lastSelectedCell = selectedUnit.CurrentCell;
 
-        UnselectUnit(selectedUnit); // Можно убрать наверное
-        //UnselectCell(selectedUnit.CurrentCell);
+        // Сохраняем текущий юнит и ячейку как последние выбранные
+        selectedUnit.Status = UnitStatus.Moved;
 
+        UnselectUnit(selectedUnit); // Можно убрать наверное
     }   
 
     private bool IsPlayerUnitAvailable(Unit unit)
     => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
-
-    //private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> Path)
-    //{
-    //    Path = new List<Cell>();
-    //    //return cell.UnitOn == false && unit.MovementPoints >= Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out Path, Grid).Count;
-    //    return cell.UnitOn == false && unit.MovementPoints >= cell.MovementCost;
-    //}
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
     private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> path)
@@ -154,13 +143,8 @@ public class GameController : MonoBehaviour, IGameController
     {
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
-        {
             if (unit.CanMoveToCell(cell))
-            {
                 unit.MoveToCell(cell); // изменен вызов метода?
-                //unit.Status = UnitStatus.Moved;
-            }
-        }
     }
     private void SelectCell(Cell cell) => cell.SelectCell();
     private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);

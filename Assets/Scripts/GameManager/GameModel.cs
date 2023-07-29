@@ -78,17 +78,14 @@ public class GameModel : MonoBehaviour, IGameModel
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
         if (_players.All(p => p.Status == UnitStatus.Moved))
-        {
             ResetUnitsAvailability();
-        }
 
         UpdateScore();
         //SetAvaialableCells();
 
         if (IsGameOver())
-        {
             EndGame();
-        }
+
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
         if (ActivePlayer.Type == UnitType.Player)
         {
@@ -169,9 +166,7 @@ public class GameModel : MonoBehaviour, IGameModel
     public void ResetUnitsAvailability()
     {
         foreach (var unit in _grid.AllUnits.OfType<Unit>())
-        {
             unit.Status = UnitStatus.Unavailable;
-        }
     }
 
 

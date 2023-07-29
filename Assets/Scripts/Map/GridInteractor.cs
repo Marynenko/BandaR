@@ -29,13 +29,9 @@ public class GridInteractor : MonoBehaviour
     public void HandleUnitSelected(Unit unit, GridSelector selector)
     {
         if (unit.Type == UnitType.Player)
-        {
             HandlePlayerSelected(unit, selector);
-        }
         else if (unit.Type == UnitType.Enemy)
-        {
             HandleEnemySelected(unit, selector);
-        }
     }
 
     private void HandlePlayerSelected(Unit player, GridSelector selector)
@@ -92,9 +88,7 @@ public class GridInteractor : MonoBehaviour
     {
         // Идем по всем клеткам на игровом поле
         foreach (var cell in currentCell.Neighbours)
-        {
             cell.UnhighlightCell();
-        }
     }
 
     public void HighlightCell(Cell cell, Color color)
@@ -107,13 +101,8 @@ public class GridInteractor : MonoBehaviour
         var availableCells = new List<Cell>();
 
         foreach (var cell in _grid.Cells)
-        {
             if (cell.IsAvailableForUnit(unit))
-            {
                 availableCells.Add(cell);
-            }
-        }
-
         return availableCells;
     }
 }

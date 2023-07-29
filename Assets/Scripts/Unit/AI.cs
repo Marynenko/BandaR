@@ -87,8 +87,6 @@ public class AI : MonoBehaviour
 
         // Находим всех враждебных юнитов
         var enemies = localGrid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
-        //_gameController.HandleUnitClick(unit);
-        //_gameController.HandleCellClick(enemies[0].CurrentCell);
 
         // Выбираем ближайшего врага
         var targetEnemy = enemies.OrderBy(e => localInteractor.PathConstructor.GetDistance(unit.CurrentCell, e.CurrentCell)).FirstOrDefault();
@@ -110,13 +108,14 @@ public class AI : MonoBehaviour
         }
 
         // Обновляем состояние юнита
-        //unit.Status = UnitStatus.Moved;
         localInteractor.UpdateUnit(unit);
         localSelector.UnselectUnit(unit); // Можно убрать наверное
-        unit.CurrentCell.UnselectCell();
+
         // Обновляем доступность ячеек после перемещения
+        unit.CurrentCell.UnselectCell();
         unit.Status = UnitStatus.Moved;
         unit.Stats.MovementPoints = unit.Stats.MovementRange; // Добавил, должно работать
+
         _gameModel.EndTurn();
     }
 }

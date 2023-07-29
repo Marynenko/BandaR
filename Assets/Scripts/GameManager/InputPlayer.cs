@@ -14,13 +14,9 @@ public class InputPlayer : MonoBehaviour, IInputHandler
         if (Physics.Raycast(ray, out var hit))
         {
             if (hit.collider.TryGetComponent(out Unit unit))
-            {
                 _gameController.HandleUnitClick(unit);
-            }
             else if (hit.collider.TryGetComponent(out Cell cell))
-            {
                 _gameController.HandleCellClick(cell);
-            }
         }
         //_gameController.UnhighlightAvailableMoves();
     }

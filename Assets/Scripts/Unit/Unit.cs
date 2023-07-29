@@ -109,9 +109,7 @@ public class Unit : MonoBehaviour, IUnit
     {
         var unit = targetUnit.GetUnitType();
         if (targetUnit == null || (unit as Unit).Type != UnitType.Enemy)
-        {
             return false;
-        }
 
         var distance = Vector3.Distance(transform.position, (targetUnit as Unit).transform.position);
         return distance <= AttackRange;
@@ -121,9 +119,7 @@ public class Unit : MonoBehaviour, IUnit
     {
         var unit = target.GetUnitType();
         if (Vector3.Distance(transform.position, (unit as Unit).transform.position) <= AttackRange)
-        {
             target.TakeDamage(AttackDamage);
-        }
     }
 
     public void TakeDamage(int damage)

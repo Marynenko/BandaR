@@ -39,35 +39,23 @@ public class PathConstructor : MonoBehaviour
         while (openList.Count > 0)
         {
             var currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
-
-
             if (currentCell == endCell)
-            {
                 return ReconstructPath(cameFrom, endCell, out Path);
-            }
 
             openList.Remove(currentCell);
             closedList.Add(currentCell);
 
-
             foreach (var neighborCell in GetNeighbourCells(currentCell, grid))
             {
                 if (closedList.Contains(neighborCell))
-                {
                     continue;
-                }
 
                 float tentativeScore = gScore[currentCell] + GetDistance(currentCell, neighborCell);
 
                 if (!openList.Contains(neighborCell))
-                {
                     openList.Add(neighborCell);
-                }
                 else if (tentativeScore >= (gScore.TryGetValue(neighborCell, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-
-                {
                     continue;
-                }
 
                 cameFrom[neighborCell] = currentCell;
                 gScore[neighborCell] = tentativeScore;
@@ -111,9 +99,7 @@ public class PathConstructor : MonoBehaviour
             {
                 var neighbour = grid.Cells[coordinateX, coordinateY];
                 if (neighbour != null && neighbour != cell)
-                {
                     neighbours.Add(neighbour);
-                }
             }
         }
 

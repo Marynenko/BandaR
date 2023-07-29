@@ -54,7 +54,6 @@ public class Cell : MonoBehaviour
                 else if (CurrentState == State.OccupiedByEnemy)
                     ChangeColor(ColorEnemyOnCell);
             }
-
             else
                 ChangeColor(ColorMovementCell);
         }
@@ -72,12 +71,8 @@ public class Cell : MonoBehaviour
         {
             CurrentState = isReachable ? State.Reachable : State.Impassable;
             foreach (Cell neighbor in Neighbours)
-            {
                 if (neighbor.Available && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
-                {
                     neighbor.SetReachable(movementPoints - neighbor.MovementCost, isReachable);
-                }
-            }
         }
     }
 
@@ -101,9 +96,7 @@ public class Cell : MonoBehaviour
     {
         // Идем по всем клеткам на игровом поле
         foreach (var cell in Neighbours)
-        {
             cell.UnhighlightCell();
-        }
     }
 
     public void UnhighlightCell()
@@ -117,16 +110,11 @@ public class Cell : MonoBehaviour
     public bool IsAvailableForUnit(Unit unit)
     {
         if (IsOccupied())
-        {
             return false;
-        }
 
         var distance = Vector3.Distance(unit.transform.position, transform.position);
         if (distance > unit.MovementPoints)
-        {
             return false;
-        }
-
         return true;
     }
 
