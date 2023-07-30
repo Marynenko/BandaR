@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameModel : MonoBehaviour, IGameModel
 {
@@ -37,9 +36,7 @@ public class GameModel : MonoBehaviour, IGameModel
     private void Update()
     {
         if (ActivePlayer == null)
-        {
             return;
-        }
 
         if (Input.GetMouseButtonDown(0))
         {

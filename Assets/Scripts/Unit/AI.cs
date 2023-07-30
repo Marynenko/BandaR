@@ -40,34 +40,13 @@ public class AI : MonoBehaviour
 
         button.interactable = canEndTurn;
 
-        // Проверяем, был ли клик на кнопк
-        //if (_endTurnButton.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_endTurnButton.GetComponent<RectTransform>(), mousePosition))
-        //{
-        //    EndTurn();
-        //}
+        // Дополнение: проверяем, выбран ли юнит и сделан ли уже ход
+        var isUnitSelected = currentPlayer != null;
+        if (isUnitSelected && !(currentPlayer.Status == UnitStatus.Moved))
+        {
+            canEndTurn = false;
+        }
     }
-
-    //public void UpdateUI<T>(T _activePlayer, Button button) where T : Unit
-    //{
-    //    var currentPlayer = _activePlayer;
-
-    //    if (currentPlayer == null)
-    //    {
-    //        // если ActivePlayer == null, то делаем кнопку недоступной
-    //        button.interactable = false;
-    //        return;
-    //    }
-
-    //    var canEndTurn = currentPlayer.Status == UnitStatus.Moved;
-
-    //    if (!canEndTurn && currentPlayer.Type == UnitType.Enemy) // Добавляем проверку на тип игрока (AI)
-    //    {
-    //        // Если это AI и у него нет доступных ходов, то он пропускает ход
-    //        canEndTurn = true;
-    //    }
-
-    //    button.interactable = canEndTurn;
-    //}
 
 
     public void Move(Unit unit)

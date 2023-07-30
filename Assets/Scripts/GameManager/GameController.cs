@@ -91,7 +91,7 @@ public class GameController : MonoBehaviour, IGameController
             SelectCell(lastSelectedCell);
         }
 
-        if (!IsCellAvailableForMove(selectedUnit, cell, out List<Cell> Path)) return;
+        if (!IsCellInPath(selectedUnit, cell, out List<Cell> Path)) return;
 
         UnselectCell(selectedUnit.CurrentCell); // Убрать выделение из клетки на которой игрок.
 
@@ -127,9 +127,9 @@ public class GameController : MonoBehaviour, IGameController
     => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    private bool IsCellAvailableForMove(Unit unit, Cell cell, out List<Cell> path)
+    private bool IsCellInPath(Unit unit, Cell cell, out List<Cell> path)
     {
-        path = Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out _, Grid);
+        path = Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out _, Grid);        
         return cell.UnitOn == false && unit.MovementPoints >= path.Count;
     }
 
