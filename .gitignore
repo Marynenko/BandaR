@@ -33,6 +33,10 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+[Mm]emoryCaptures/
+
+# Asset meta data should only be ingored when the corresponding asset is also ignored
+![Aa]ssets/**/*.meta
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -112,6 +116,18 @@ ipch/
 *.cachefile
 *.VC.db
 *.VC.VC.opendb
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D generated file on crash reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.unitypackage
 
 # Visual Studio profiler
 *.psess
