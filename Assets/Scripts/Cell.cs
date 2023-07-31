@@ -78,7 +78,6 @@ public class Cell : MonoBehaviour
 
     public void SelectCell()
     {
-        //ChangeColor(ColorSelectedCell);
         UnitOn = true;
         Available = false; //true
     }

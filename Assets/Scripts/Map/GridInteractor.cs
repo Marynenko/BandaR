@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using static UnityEngine.UI.CanvasScaler;
 
 public class GridInteractor : MonoBehaviour
@@ -36,10 +39,10 @@ public class GridInteractor : MonoBehaviour
 
     private void HandlePlayerSelected(Unit player, GridSelector selector)
     {
-        //player.CurrentCell.SetUnit(player);
+        UIManager.Instance.OpenMenuAction();
+
         SelectedUnit = player;
         selector.SelectedUnit = player;
-        //player.Status = UnitStatus.Moved;
         player.CurrentCell.SelectCell();
         selector.SelectCellToMoveFrom(player.CurrentCell, UnitType.Player /*true*/);
         player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMoveFrom?
@@ -78,7 +81,7 @@ public class GridInteractor : MonoBehaviour
         // Идем по всем клеткам на игровом поле
         foreach (var cell in _grid.Cells)
         {
-            //// Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
+            // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
             if (cell.CurrentState == State.Reachable && cell != SelectedUnit.CurrentCell)
                 cell.UnselectCell();
         }
