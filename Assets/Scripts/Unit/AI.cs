@@ -74,7 +74,7 @@ public class AI : MonoBehaviour
         if (targetEnemy != null)
         {
             var targetCell = targetEnemy.CurrentCell;
-            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _gameController.Grid);
+            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Tile> Path, _gameController.Grid);
             _gameController.MoveUnitAlongPath(unit, Path);
         }
         else
@@ -82,7 +82,7 @@ public class AI : MonoBehaviour
             // Если врагов нет, движемся к случайной доступной клетке
             var randomIndex = Random.Range(0, availableMoves.Count);
             var targetCell = availableMoves[randomIndex];
-            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Cell> Path, _gameController.Grid);
+            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Tile> Path, _gameController.Grid);
             _gameController.MoveUnitAlongPath(unit, Path);
         }
 

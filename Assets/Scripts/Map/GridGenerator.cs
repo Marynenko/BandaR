@@ -3,14 +3,20 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private GridInitializer _initializer;
     [SerializeField] private GameController _gameController;
     [SerializeField] private GameModel _gameModel;
+    [SerializeField] private List<Unit> AllExistedUnits;
+
+    public Grid Grid;
 
     private void Start()
     {
-        _initializer.InitializationGrid();
-        _gameController.enabled = true;
+        Grid.CreateGrid();
+        Grid.LocateNeighboursCells();
+        Grid.AddUnitsToCells(AllExistedUnits); // передаем список AllExistedUnits вместо использования Grid.AllUnits
+
+        _gameModel.StartGame();
     }
+
 }
 

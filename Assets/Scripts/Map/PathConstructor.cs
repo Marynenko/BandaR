@@ -14,27 +14,27 @@ public class PathConstructor : MonoBehaviour
         new Direction(1, 0)    // Right
     };
 
-    public List<Cell> FindPathToTarget(Cell startCell, Cell endCell, out List<Cell> Path, Grid grid)
+    public List<Tile> FindPathToTarget(Tile startCell, Tile endCell, out List<Tile> Path, Grid grid)
     {
-        Path = new List<Cell>();
+        Path = new List<Tile>();
 
         // хранит стоимость пути от начальной €чейки до текущей €чейки.
-        Dictionary<Cell, float> gScore = new() 
+        Dictionary<Tile, float> gScore = new() 
         {
             [startCell] = 0
         };
 
         // хранит оценку стоимости пути от начальной €чейки через текущую €чейку до конечной €чейки (эвристическа€ оценка).
-        Dictionary<Cell, float> fScore = new() 
+        Dictionary<Tile, float> fScore = new() 
         {
             [startCell] = Heuristic(startCell, endCell)
         };
 
-        List<Cell> closedList = new(); // список €чеек, которые уже были проверены.
-        List<Cell> openList = new() { startCell }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
+        List<Tile> closedList = new(); // список €чеек, которые уже были проверены.
+        List<Tile> openList = new() { startCell }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
 
         // список €чеек, откуда пришли в текущую €чейку. Ёто позволит потом восстановить путь от начальной €чейки до конечной.
-        Dictionary<Cell, Cell> cameFrom = new();
+        Dictionary<Tile, Tile> cameFrom = new();
 
         while (openList.Count > 0)
         {
@@ -63,18 +63,18 @@ public class PathConstructor : MonoBehaviour
             }
         }
 
-        return new List<Cell>();
+        return new List<Tile>();
     }
 
-    private float Heuristic(Cell a, Cell b)
+    private float Heuristic(Tile a, Tile b)
     {
         // »спользуем эвристику ћанхэттенского рассто€ни€ дл€ оценки стоимости пути
         return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
     }
 
-    private List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell currentCell, out List<Cell> Path)
+    private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile currentCell, out List<Tile> Path)
     {
-        List<Cell> path = new() { currentCell };
+        List<Tile> path = new() { currentCell };
 
         while (cameFrom.ContainsKey(currentCell))
         {
@@ -86,9 +86,9 @@ public class PathConstructor : MonoBehaviour
         return Path;
     }
 
-    public List<Cell> GetNeighbourCells(Cell cell, Grid grid)
+    public List<Tile> GetNeighbourCells(Tile cell, Grid grid)
         {
-        List<Cell> neighbours = new();
+        List<Tile> neighbours = new();
 
         foreach (Direction direction in directions)
         {
@@ -107,7 +107,7 @@ public class PathConstructor : MonoBehaviour
         return neighbours;
     }
 
-    public float GetDistance(Cell cell1, Cell cell2)
+    public float GetDistance(Tile cell1, Tile cell2)
     {
         // ≈сли €чейки равны, то рассто€ние между ними равно 0
         if (cell1 == cell2)

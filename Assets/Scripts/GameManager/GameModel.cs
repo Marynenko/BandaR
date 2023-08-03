@@ -212,7 +212,7 @@ public class GameModel : MonoBehaviour, IGameModel
         // Update the score of both players
     }
     #region Не использую пока что
-    public bool IsCellWithinBoardBounds(Cell cell)
+    public bool IsCellWithinBoardBounds(Tile cell)
     {
         return cell.Coordinates.x >= 0 && cell.Coordinates.x < _grid.GridSize.x && cell.Coordinates.y >= 0 && cell.Coordinates.y < _grid.GridSize.y;
     }

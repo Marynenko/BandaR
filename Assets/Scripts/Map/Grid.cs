@@ -6,20 +6,20 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     public Transform Parent;
-    public Cell CellPrefab; 
+    public Tile CellPrefab; 
+    public GridInteractor Interactor { get; private set; }
+    public GridGenerator Generator { get; private set; }
+    public List<Unit> AllUnits { get; private set; }
+    public Tile[,] Cells { get; private set; }
+
     public Vector2Int GridSize;
     public float Offset;
 
-    public GridInteractor Interactor { get; private set; }
-    public GridInitializer Initializer { get; private set; }
-    public List<Unit> AllUnits { get; private set; }
-    public Cell[,] Cells { get; private set; }
-
     private void Awake()
     {
-        Cells = new Cell[GridSize.x, GridSize.y];
+        Cells = new Tile[GridSize.x, GridSize.y];
         AllUnits = new List<Unit>();
-        Initializer = GetComponent<GridInitializer>();
+        Generator = GetComponent<GridGenerator>();
         Interactor = GetComponentInChildren<GridInteractor>();
         Interactor.enabled = true; // Включаем интерактор после инициализации сетки
 
@@ -59,11 +59,12 @@ public class Grid : MonoBehaviour
         foreach (var unit in units)
         {            
             Vector2Int unitCellCoordinates = GetCellCoordinatesFromPosition(unit.transform.position);
-            Cell cell = Cells[unitCellCoordinates.x, unitCellCoordinates.y];
+            Tile cell = Cells[unitCellCoordinates.x, unitCellCoordinates.y];
 
             if (unitCellCoordinates != Vector2Int.one * int.MaxValue)
             {
                 unit.InitializeUnit(this, cell);
+                // Добавить поиск ЮНИТОВ ПО КАРТЕ. ПРИДУМТЬ АЛГОРИТМ
                 AllUnits.Add(unit);
             }
         }
@@ -72,7 +73,7 @@ public class Grid : MonoBehaviour
     public void RemoveUnit(Unit unit)
     {
         var unitToRemove = unit as Unit;
-        Cell currentCell = unitToRemove.CurrentCell;
+        Tile currentCell = unitToRemove.CurrentCell;
 
         if (currentCell != null)
         {

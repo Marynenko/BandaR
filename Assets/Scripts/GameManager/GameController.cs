@@ -7,7 +7,7 @@ public class GameController : MonoBehaviour, IGameController
     [SerializeField] private GridGenerator _generator;
 
     private Unit lastSelectedUnit;
-    private Cell lastSelectedCell;
+    private Tile lastSelectedCell;
 
     public Grid Grid;
     public GridSelector Selector;
@@ -59,7 +59,7 @@ public class GameController : MonoBehaviour, IGameController
         }
     }
 
-    public void HandleCellClick(Cell cell)
+    public void HandleCellClick(Tile cell)
     {
         var selectedUnit = Selector.SelectedUnit;
 
@@ -79,7 +79,7 @@ public class GameController : MonoBehaviour, IGameController
             SelectCell(lastSelectedCell);
         }
 
-        if (!IsCellInPath(selectedUnit, cell, out List<Cell> Path)) return;
+        if (!IsCellInPath(selectedUnit, cell, out List<Tile> Path)) return;
 
         UnselectCell(selectedUnit.CurrentCell); // Убрать выделение из клетки на которой игрок.
 
@@ -114,23 +114,23 @@ public class GameController : MonoBehaviour, IGameController
     => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    private bool IsCellInPath(Unit unit, Cell cell, out List<Cell> path)
+    private bool IsCellInPath(Unit unit, Tile cell, out List<Tile> path)
     {
         path = Interactor.PathConstructor.FindPathToTarget(unit.CurrentCell, cell, out _, Grid);        
         return cell.UnitOn == false && unit.MovementPoints >= path.Count;
     }
 
     private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
-    private void UnselectCell(Cell cell) => cell.UnselectCell();
-    private void MoveUnit(Unit unit, List<Cell> path) => MoveUnitAlongPath(unit, path);
-    public void MoveUnitAlongPath(Unit unit, List<Cell> path)
+    private void UnselectCell(Tile cell) => cell.UnselectCell();
+    private void MoveUnit(Unit unit, List<Tile> path) => MoveUnitAlongPath(unit, path);
+    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
     {
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var cell in path)
             if (unit.CanMoveToCell(cell))
                 unit.MoveToCell(cell); //
     }
-    private void SelectCell(Cell cell) => cell.SelectCell();
+    private void SelectCell(Tile cell) => cell.SelectCell();
     private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ

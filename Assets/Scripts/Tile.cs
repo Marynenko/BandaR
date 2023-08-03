@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Cell : MonoBehaviour
+public class Tile : MonoBehaviour
 {
     [SerializeField] private State _currentState; // Состояние клетки.
     private bool _available;
     private int _distance;
 
     public GridInteractor Interactor;
-    public List<Cell> Neighbours { get; set; }
+    public List<Tile> Neighbours { get; set; }
     public State CurrentState { get => _currentState; set => _currentState = value; }
     public bool Available { get => _available; set => SetAvailable(value); }
 
@@ -32,7 +32,7 @@ public class Cell : MonoBehaviour
         UnitOn = unitOn;
         CurrentState = State.Standard;
         Coordinates = new Vector2(row, column);
-        Neighbours = new List<Cell>(4);  
+        Neighbours = new List<Tile>(4);  
     }
 
     public void SetAvailable(bool isAvailable)
@@ -70,7 +70,7 @@ public class Cell : MonoBehaviour
         if (movementPoints >= 0)
         {
             CurrentState = isReachable ? State.Reachable : State.Impassable;
-            foreach (Cell neighbor in Neighbours)
+            foreach (Tile neighbor in Neighbours)
                 if (neighbor.Available && neighbor.CurrentState != State.Impassable && neighbor.MovementCost <= movementPoints)
                     neighbor.SetReachable(movementPoints - neighbor.MovementCost, isReachable);
         }

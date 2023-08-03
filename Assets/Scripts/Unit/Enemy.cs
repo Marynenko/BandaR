@@ -5,7 +5,7 @@ using static UnityEngine.GraphicsBuffer;
 public class Enemy : Unit, IUnit
 {
     public override Unit GetUnitType() => this;
-    //public override void Initialize(Cell cell)
+    //public override void Initialize(Tile cell)
     //{
     //    base.Initialize(cell);
     //    _playersInRange = new List<Unit>();

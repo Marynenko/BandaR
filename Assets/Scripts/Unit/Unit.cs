@@ -37,7 +37,7 @@ public class Unit : MonoBehaviour, IUnit
     public UnitStatus Status;
 
     public Grid Grid { get; private set; }
-    public Cell CurrentCell { get; private set; }
+    public Tile CurrentCell { get; private set; }
     public UnitStats Stats { get { return _stats; } }
     public int ID { get { return Stats.ID; } }
     public UnitType Type { get { return Stats.Type; } }
@@ -54,7 +54,7 @@ public class Unit : MonoBehaviour, IUnit
     #region Public Methods    
     public virtual Unit GetUnitType() => this;
 
-    public void InitializeUnit(Grid grid, Cell cell)
+    public void InitializeUnit(Grid grid, Tile cell)
     {
         Grid = grid;
         
@@ -71,12 +71,9 @@ public class Unit : MonoBehaviour, IUnit
 
         CurrentCell.CurrentState = state;
         CurrentCell.UnitOn = true;
-        //CurrentCell.SelectCell();
-        //CurrentCell.SetUnit(this);
-
     }
 
-    public bool CanMoveToCell(Cell cell)
+    public bool CanMoveToCell(Tile cell)
     {
         if (CurrentCell == cell) return false;
         if (Vector3.Distance(CurrentCell.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
@@ -87,7 +84,7 @@ public class Unit : MonoBehaviour, IUnit
         return true;
     }
 
-    public void MoveToCell(Cell targetCell)
+    public void MoveToCell(Tile targetCell)
     {
         //Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
         CurrentCell = targetCell;

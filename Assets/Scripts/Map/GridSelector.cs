@@ -6,7 +6,7 @@ public class GridSelector : MonoBehaviour
 {
     private Grid _grid;
     private GridInteractor _interactor;
-    private List<Cell> _availableMoves;
+    private List<Tile> _availableMoves;
 
     public delegate void UnitSelectedEventHandler(Unit unit, GridSelector selector);
     public static event UnitSelectedEventHandler OnUnitSelected;
@@ -50,7 +50,7 @@ public class GridSelector : MonoBehaviour
         }
     }
 
-    public void SelectCellToMoveFrom(Cell cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
+    public void SelectCellToMoveFrom(Tile cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
     {
         if (clearSelectedCells)
         {
@@ -72,7 +72,7 @@ public class GridSelector : MonoBehaviour
                 SelectedUnit.CurrentCell.ChangeColor(cell.ColorEnemyOnCell);
         }
 
-        List<Cell> availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
+        List<Tile> availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         availableMovesCopy.Remove(cell);
         foreach (var moveCell in availableMovesCopy)
             moveCell.ChangeColor(moveCell.ColorMovementCell);
@@ -85,12 +85,12 @@ public class GridSelector : MonoBehaviour
             cell.ChangeColor(cell.ColorStandardCell);
     }
 
-    public List<Cell> GetAvailableMoves(Cell cell, int maxMoves)
+    public List<Tile> GetAvailableMoves(Tile cell, int maxMoves)
     {
-        var visitedCells = new HashSet<Cell>();
-        var AvailableMoves = new List<Cell>();
+        var visitedCells = new HashSet<Tile>();
+        var AvailableMoves = new List<Tile>();
 
-        var queue = new Queue<(Cell, int)>();
+        var queue = new Queue<(Tile, int)>();
         queue.Enqueue((cell, maxMoves));
 
         while (queue.Count > 0)

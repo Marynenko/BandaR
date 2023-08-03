@@ -9,18 +9,18 @@ using static UnityEngine.UI.CanvasScaler;
 public class GridInteractor : MonoBehaviour
 {
     private Grid _grid;
-    private List<Cell> _availableMoves;
+    private List<Tile> _availableMoves;
 
     public PathConstructor PathConstructor;
     public Unit SelectedUnit { get; set; }
-    public List<Cell> AvailableMoves => _availableMoves.AsReadOnly().ToList();
+    public List<Tile> AvailableMoves => _availableMoves.AsReadOnly().ToList();
 
 
     public void OnEnable()
     {
         //GameController.OnUnitAction += HandleUnitAction;
         _grid = GetComponentInParent<Grid>();
-        _availableMoves = new List<Cell>();
+        _availableMoves = new List<Tile>();
     }  
 
     public void UpdateUnit(Unit unit)
@@ -69,7 +69,7 @@ public class GridInteractor : MonoBehaviour
         HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell, selector);
     }
 
-    public void HighlightAvailableMoves(IReadOnlyList<Cell> availableMoves, Color color, GridSelector selector)
+    public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, Color color, GridSelector selector)
     {
         selector.ChangeAvailableCellsColor();
         HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
@@ -87,21 +87,21 @@ public class GridInteractor : MonoBehaviour
         }
     }
 
-    public void UnhighlightAvailableMoves(Cell currentCell)
+    public void UnhighlightAvailableMoves(Tile currentCell)
     {
         // Идем по всем клеткам на игровом поле
         foreach (var cell in currentCell.Neighbours)
             cell.UnhighlightCell();
     }
 
-    public void HighlightCell(Cell cell, Color color)
+    public void HighlightCell(Tile cell, Color color)
     {
         cell.ChangeColor(color);
     }
 
-    public List<Cell> GetAvailableCells(Unit unit)
+    public List<Tile> GetAvailableCells(Unit unit)
     {
-        var availableCells = new List<Cell>();
+        var availableCells = new List<Tile>();
 
         foreach (var cell in _grid.Cells)
             if (cell.IsAvailableForUnit(unit))
