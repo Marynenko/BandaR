@@ -1,24 +1,6 @@
 ﻿using DG.Tweening;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
-
-public enum UnitStatus
-{
-    //Selected,
-    //Unselected,
-    Moved,
-    Available,
-    Unavailable,
-    AIMove
-}
-
-public enum UnitType
-{
-    Player,
-    Enemy
-}
 
 public enum ActionType
 {
@@ -28,27 +10,24 @@ public enum ActionType
     SpecialAbility
 }
 
-public class Unit : MonoBehaviour, IUnit
+public class Unit : MonoBehaviour
 {
     #region Variables
     [SerializeField] private UnitStats _stats;
     private const float MAX_DISTANCE = 3f;
-    
-    public UnitStatus Status;
 
+    public UnitStatus Status;
     public Grid Grid { get; private set; }
     public Tile CurrentCell { get; private set; }
     public UnitStats Stats { get { return _stats; } }
-    public int ID { get { return Stats.ID; } }
-    public UnitType Type { get { return Stats.Type; } }
-    public float ViewRange { get { return Stats.ViewRange; } }
-    public float AttackRange { get { return Stats.AttackRange; } }
-    public int Health { get { return Stats.Health; } }
-    public int AttackDamage { get { return Stats.AttackDamage; } }
-    public int MovementPoints { get { return Stats.MovementPoints; } 
-        private set { MovementPoints = value; } }
-    public int MovementRange { get { return Stats.MovementRange; } }
+    public UnitType Type { get { return _stats.Type; } }
 
+    public int MovementPoints
+    {
+        get { return Stats.MovementPoints; }
+        private set { MovementPoints = value; }
+    }
+    public int MovementRange { get { return Stats.MovementRange; } }
     #endregion
 
     #region Public Methods    
@@ -57,82 +36,69 @@ public class Unit : MonoBehaviour, IUnit
     public void InitializeUnit(Grid grid, Tile cell)
     {
         Grid = grid;
-        
         // Установка позиции юнита на центр ячейки с учетом высоты модели
-        Vector3 unitPosition = cell.transform.position;
-        unitPosition.y += 0.8f;
-        transform.position = unitPosition;
-        
+        transform.position = cell.transform.position + Vector3.up * 0.8f;
         // Установка текущей ячейки для юнита
         CurrentCell = cell;
-        var state = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
 
-        Status = UnitStatus.Unavailable;
-
-        CurrentCell.CurrentState = state;
+        CurrentCell.CurrentState = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
         CurrentCell.UnitOn = true;
+        Status = UnitStatus.Unavailable;
     }
 
-    public bool CanMoveToCell(Tile cell)
-    {
-        if (CurrentCell == cell) return false;
-        if (Vector3.Distance(CurrentCell.transform.position, cell.transform.position) > MAX_DISTANCE) return false;
-        if (Status == UnitStatus.Moved) return false;
-        if (MovementPoints <= 1) return false;
-        if (cell.UnitOn == true) return false;
-        if (Stats.MovementPoints < cell.MovementCost) return false;
-        return true;
-    }
+    public bool CanMoveToCell(Tile cell) =>
+        CurrentCell != cell &&
+        Vector3.Distance(CurrentCell.transform.position, cell.transform.position) <= MAX_DISTANCE &&
+        Status != UnitStatus.Moved &&
+        _stats.MovementPoints > 1 &&
+        !cell.UnitOn &&
+        _stats.MovementPoints >= cell.MovementCost;
 
     public void MoveToCell(Tile targetCell)
     {
-        //Status = UnitStatus.Moved; // Сюда же так же можно поставить Unselected
         CurrentCell = targetCell;
-        Stats.MovementPoints -= 1;
+        _stats.MovementPoints -= 1;
         //OnUnitAction?.Invoke(ActionType.Move, this, targetCell);
 
         // Вычисляем позицию для перемещения с учетом высоты юнита
         Vector3 newPosition = new(targetCell.transform.position.x, transform.position.y, targetCell.transform.position.z);
 
-        // Запускаем анимацию перемещения
-        var pos = transform.position;
+        // Запускаем анимацию перемещения       
         transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
                  .SetEase(Ease.Linear)
-                 .OnComplete(() => pos = newPosition);
+                 .OnComplete(() => transform.position = newPosition);
     }
 
 
-    public bool CanAttack(Unit targetUnit)
-    {
-        var unit = targetUnit.GetUnitType();
-        if (targetUnit == null || (unit as Unit).Type != UnitType.Enemy)
-            return false;
-
-        var distance = Vector3.Distance(transform.position, (targetUnit as Unit).transform.position);
-        return distance <= AttackRange;
-    }
+    public bool CanAttack(Unit targetUnit) =>
+        targetUnit != null &&
+        targetUnit.Type == UnitType.Enemy &&
+        Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;
 
     public void Attack(Unit target)
     {
-        var unit = target.GetUnitType();
-        if (Vector3.Distance(transform.position, (unit as Unit).transform.position) <= AttackRange)
-            target.TakeDamage(AttackDamage);
+        if (CanAttack(target))
+        {
+            target.TakeDamage(_stats.AttackDamage);
+        }
     }
 
     public void TakeDamage(int damage)
     {
-        Stats.Health = Stats.Health - damage; // используем метод SetHealth() для изменения здоровья
-        if (Stats.Health <= 0)
+        _stats.Health =- damage; // используем метод SetHealth() для изменения здоровья
+        if (_stats.Health <= 0)
         {
-            Stats.Health = 0;
+            _stats.Health = 0;
             Die(this);
-            Destroy(gameObject);
         }
     }
 
+    public bool IsAlive() => _stats.Health > 0;
+
     public Action Die(Unit unit)
     {
-        // Доработать        
+        // Доработать
+        Destroy(gameObject);
         return delegate { };
     }
 
@@ -146,14 +112,9 @@ public class Unit : MonoBehaviour, IUnit
         // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
     }
 
-    public bool IsAlive()
-    {
-        return Health > 0;
-    }
-
     public void SetAvailability()
     {
-        MovementPoints = MovementRange;
+        _stats.MovementPoints = _stats.MovementRange;
         Status = UnitStatus.Moved;
     }
 

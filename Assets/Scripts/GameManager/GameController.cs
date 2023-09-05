@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour, IGameController
         {
             selectedUnit.Attack(targetUnit);
 
-            if (targetUnit.Health <= 0)
+            if (targetUnit.Stats.Health <= 0)
                 Grid.RemoveUnit(targetUnit);
             else
                 Interactor.UpdateUnit(targetUnit);
@@ -171,7 +171,7 @@ public class GameController : MonoBehaviour, IGameController
         {
             unit.Attack(enemy);
 
-            if (enemy.Health <= 0)
+            if (enemy.Stats.Health <= 0)
                 Grid.RemoveUnit(enemy);
         }
     }
