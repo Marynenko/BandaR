@@ -12,8 +12,8 @@ public class GridGenerator : MonoBehaviour
     private void Start()
     {
         Grid.CreateGrid();
-        Grid.LocateNeighboursCells();
-        Grid.AddUnitsToCells(AllExistedUnits); // передаем список AllExistedUnits вместо использования Grid.AllUnits
+        Grid.LocateNeighboursTiles();
+        Grid.AddUnitsToTiles(AllExistedUnits); // передаем список AllExistedUnits вместо использования Grid.AllUnits
 
         _gameModel.StartGame();
     }

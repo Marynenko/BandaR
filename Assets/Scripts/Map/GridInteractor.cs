@@ -43,70 +43,70 @@ public class GridInteractor : MonoBehaviour
 
         SelectedUnit = player;
         selector.SelectedUnit = player;
-        player.CurrentCell.SelectCell();
-        selector.SelectCellToMoveFrom(player.CurrentCell, UnitType.Player /*true*/);
-        player.CurrentCell.UnitOn = true; // тут или перед SelectCellToMoveFrom?
+        player.OccupiedTile.SelectTile();
+        selector.SelectTileToMoveFrom(player.OccupiedTile, UnitType.Player /*true*/);
+        player.OccupiedTile.UnitOn = true; // тут или перед SelectTileToMoveFrom?
     }
 
     private void HandleEnemySelected(Unit enemy, GridSelector selector)
     {
-        enemy.CurrentCell.Available = true;
-        //enemy.CurrentCell.SetUnit(enemy);
+        enemy.OccupiedTile.Available = true;
+        //enemy.OccupiedTile.SetUnit(enemy);
         SelectedUnit = enemy;
         selector.SelectedUnit = enemy;
         enemy.Status = UnitStatus.Unavailable;
-        enemy.CurrentCell.SelectCell();
-        selector.SelectCellToMoveFrom(enemy.CurrentCell, UnitType.Enemy, true);
-        enemy.CurrentCell.UnitOn = true;
+        enemy.OccupiedTile.SelectTile();
+        selector.SelectTileToMoveFrom(enemy.OccupiedTile, UnitType.Enemy, true);
+        enemy.OccupiedTile.UnitOn = true;
     }
 
     public void HandleUnitDeselection(Unit selectedUnit, Unit unit, GridSelector selector)
     {
         selector.UnselectUnit(selectedUnit);
-        unit.CurrentCell.UnselectCell();
-        selector.ChangeAvailableCellsColor();
+        unit.OccupiedTile.UnselectTile();
+        selector.ChangeAvailableTilesColor();
         selector.SelectUnit(unit);
-        HighlightAvailableMoves(AvailableMoves, unit.CurrentCell.ColorMovementCell, selector);
+        HighlightAvailableMoves(AvailableMoves, unit.OccupiedTile.ColorMovementTile, selector);
     }
 
     public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, Color color, GridSelector selector)
     {
-        selector.ChangeAvailableCellsColor();
-        HighlightCell(availableMoves.First(), availableMoves.First().ColorUnitOnCell);
-        availableMoves.Skip(1).ToList().ForEach(cell => HighlightCell(cell, color));
+        selector.ChangeAvailableTilesColor();
+        HighlightTile(availableMoves.First(), availableMoves.First().ColorUnitOnTile);
+        availableMoves.Skip(1).ToList().ForEach(tile => HighlightTile(tile, color));
     }
 
-    public void UnhighlightAllCells(GridSelector selector)
+    public void UnhighlightAllTiles(GridSelector selector)
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var cell in _grid.Cells)
+        foreach (var tile in _grid.Tiles)
         {
             // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
-            if (cell.CurrentState == State.Reachable && cell != SelectedUnit.CurrentCell)
-                cell.UnselectCell();
+            if (tile.CurrentState == State.Reachable && tile != SelectedUnit.OccupiedTile)
+                tile.UnselectTile();
         }
     }
 
-    public void UnhighlightAvailableMoves(Tile currentCell)
+    public void UnhighlightAvailableMoves(Tile currentTile)
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var cell in currentCell.Neighbours)
-            cell.UnhighlightCell();
+        foreach (var tile in currentTile.Neighbours)
+            tile.UnhighlightTile();
     }
 
-    public void HighlightCell(Tile cell, Color color)
+    public void HighlightTile(Tile tile, Color color)
     {
-        cell.ChangeColor(color);
+        tile.ChangeColor(color);
     }
 
-    public List<Tile> GetAvailableCells(Unit unit)
+    public List<Tile> GetAvailableTiles(Unit unit)
     {
-        var availableCells = new List<Tile>();
+        var availableTiles = new List<Tile>();
 
-        foreach (var cell in _grid.Cells)
-            if (cell.IsAvailableForUnit(unit))
-                availableCells.Add(cell);
-        return availableCells;
+        foreach (var tile in _grid.Tiles)
+            if (tile.IsAvailableForUnit(unit))
+                availableTiles.Add(tile);
+        return availableTiles;
     }
 }
 

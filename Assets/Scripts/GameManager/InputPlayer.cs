@@ -15,8 +15,8 @@ public class InputPlayer : MonoBehaviour, IInputHandler
         {
             if (hit.collider.TryGetComponent(out Unit unit))
                 _gameController.HandleUnitClick(unit);
-            else if (hit.collider.TryGetComponent(out Tile cell))
-                _gameController.HandleCellClick(cell);
+            else if (hit.collider.TryGetComponent(out Tile tile))
+                _gameController.HandleTileClick(tile);
         }
         //_gameController.UnhighlightAvailableMoves();
     }

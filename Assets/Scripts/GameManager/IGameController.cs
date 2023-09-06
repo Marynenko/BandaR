@@ -5,6 +5,6 @@ using UnityEngine;
 public interface IGameController
 {
     void HandleUnitClick(Unit unit);
-    void HandleCellClick(Tile cell);
+    void HandleTileClick(Tile tile);
 }
 

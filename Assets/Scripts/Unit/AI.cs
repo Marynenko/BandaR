@@ -57,7 +57,7 @@ public class AI : MonoBehaviour
         var localInteractor = localController.Interactor;
         var localSelector = localController.Selector;
 
-        var availableMoves = localSelector.GetAvailableMoves(unit.CurrentCell, unit.MovementPoints);
+        var availableMoves = localSelector.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints);
         if (availableMoves.Count == 0)
         {
             unit.Status = UnitStatus.Moved;
@@ -68,21 +68,21 @@ public class AI : MonoBehaviour
         var enemies = localGrid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
 
         // Выбираем ближайшего врага
-        var targetEnemy = enemies.OrderBy(e => localInteractor.PathConstructor.GetDistance(unit.CurrentCell, e.CurrentCell)).FirstOrDefault();
+        var targetEnemy = enemies.OrderBy(e => localInteractor.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
         // Если нашли врага, движемся к нему
         if (targetEnemy != null)
         {
-            var targetCell = targetEnemy.CurrentCell;
-            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Tile> Path, _gameController.Grid);
+            var targetTile = targetEnemy.OccupiedTile;
+            localInteractor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> Path, _gameController.Grid);
             _gameController.MoveUnitAlongPath(unit, Path);
         }
         else
         {
             // Если врагов нет, движемся к случайной доступной клетке
             var randomIndex = Random.Range(0, availableMoves.Count);
-            var targetCell = availableMoves[randomIndex];
-            localInteractor.PathConstructor.FindPathToTarget(unit.CurrentCell, targetCell, out List<Tile> Path, _gameController.Grid);
+            var targetTile = availableMoves[randomIndex];
+            localInteractor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> Path, _gameController.Grid);
             _gameController.MoveUnitAlongPath(unit, Path);
         }
 
@@ -91,7 +91,7 @@ public class AI : MonoBehaviour
         localSelector.UnselectUnit(unit); // Можно убрать наверное
 
         // Обновляем доступность ячеек после перемещения
-        unit.CurrentCell.UnselectCell();
+        unit.OccupiedTile.UnselectTile();
         unit.Status = UnitStatus.Moved;
         unit.Stats.MovementPoints = unit.Stats.MovementRange; // Добавил, должно работать
 

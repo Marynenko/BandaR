@@ -29,7 +29,7 @@ public class GridSelector : MonoBehaviour
     {
         if (SelectedUnit != null)
         {
-            SelectedUnit.CurrentCell.UnselectCell();
+            SelectedUnit.OccupiedTile.UnselectTile();
             UnselectUnit(SelectedUnit);
         }
 
@@ -38,7 +38,7 @@ public class GridSelector : MonoBehaviour
 
     public void UnselectUnit(Unit unit)
     {
-        // Unselect the current unit and reset cell availability
+        // Unselect the current unit and reset tile availability
 
         if (unit != null)
         {
@@ -46,63 +46,63 @@ public class GridSelector : MonoBehaviour
             unit = null;
             SelectedUnit = unit;
             _interactor.SelectedUnit = unit;
-            //unit.CurrentCell.ClearUnit();
+            //unit.OccupiedTile.ClearUnit();
         }
     }
 
-    public void SelectCellToMoveFrom(Tile cell, UnitType unitType, bool clearSelectedCells = false, Color? selectedUnitColor = null)
+    public void SelectTileToMoveFrom(Tile tile, UnitType unitType, bool clearSelectedTiles = false, Color? selectedUnitColor = null)
     {
-        if (clearSelectedCells)
+        if (clearSelectedTiles)
         {
-            ChangeAvailableCellsColor();
+            ChangeAvailableTilesColor();
         }
 
         if (unitType == UnitType.Player || unitType == UnitType.Enemy)
-            _availableMoves = GetAvailableMoves(cell, SelectedUnit.MovementPoints);
+            _availableMoves = GetAvailableMoves(tile, SelectedUnit.MovementPoints);
         else
             return;
 
         if (selectedUnitColor.HasValue)
-            SelectedUnit.CurrentCell.ChangeColor(selectedUnitColor.Value);
+            SelectedUnit.OccupiedTile.ChangeColor(selectedUnitColor.Value);
         else
         {
             if (unitType == UnitType.Player)
-                SelectedUnit.CurrentCell.ChangeColor(cell.ColorUnitOnCell);
+                SelectedUnit.OccupiedTile.ChangeColor(tile.ColorUnitOnTile);
             else if (unitType == UnitType.Enemy)
-                SelectedUnit.CurrentCell.ChangeColor(cell.ColorEnemyOnCell);
+                SelectedUnit.OccupiedTile.ChangeColor(tile.ColorEnemyOnTile);
         }
 
         List<Tile> availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
-        availableMovesCopy.Remove(cell);
-        foreach (var moveCell in availableMovesCopy)
-            moveCell.ChangeColor(moveCell.ColorMovementCell);
+        availableMovesCopy.Remove(tile);
+        foreach (var moveTile in availableMovesCopy)
+            moveTile.ChangeColor(moveTile.ColorMovementTile);
     }
 
-    public void ChangeAvailableCellsColor()
+    public void ChangeAvailableTilesColor()
     {
-        var Cells = _grid.Cells;
-        foreach (var cell in Cells)
-            cell.ChangeColor(cell.ColorStandardCell);
+        var Tiles = _grid.Tiles;
+        foreach (var tile in Tiles)
+            tile.ChangeColor(tile.ColorStandardTile);
     }
 
-    public List<Tile> GetAvailableMoves(Tile cell, int maxMoves)
+    public List<Tile> GetAvailableMoves(Tile tile, int maxMoves)
     {
-        var visitedCells = new HashSet<Tile>();
+        var visitedTiles = new HashSet<Tile>();
         var AvailableMoves = new List<Tile>();
 
         var queue = new Queue<(Tile, int)>();
-        queue.Enqueue((cell, maxMoves));
+        queue.Enqueue((tile, maxMoves));
 
         while (queue.Count > 0)
         {
-            var (currentCell, remainingMoves) = queue.Dequeue();
+            var (currentTile, remainingMoves) = queue.Dequeue();
 
-            visitedCells.Add(currentCell);
-            AvailableMoves.Add(currentCell);
+            visitedTiles.Add(currentTile);
+            AvailableMoves.Add(currentTile);
 
             if (remainingMoves > 1)
-                foreach (var neighbour in _grid.Interactor.PathConstructor.GetNeighbourCells(currentCell, _grid))
-                    if (!(visitedCells.Contains(neighbour) && neighbour.IsOccupied()))
+                foreach (var neighbour in _grid.Interactor.PathConstructor.GetNeighbourTiles(currentTile, _grid))
+                    if (!(visitedTiles.Contains(neighbour) && neighbour.IsOccupied()))
                     {
                         // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки
                         var cost = neighbour.MovementCost;

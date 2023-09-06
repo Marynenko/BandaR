@@ -13,55 +13,67 @@ public enum ActionType
 public class Unit : MonoBehaviour
 {
     #region Variables
+    
+    // Fields
     [SerializeField] private UnitStats _stats;
+
+    // Constants
     private const float MAX_DISTANCE = 3f;
 
-    public UnitStatus Status;
-    public Grid Grid { get; private set; }
-    public Tile CurrentCell { get; private set; }
+    // Private fields
+    private Tile _occupiedTile;
+
+    // Public properties
     public UnitStats Stats { get { return _stats; } }
     public UnitType Type { get { return _stats.Type; } }
-
     public int MovementPoints
     {
         get { return Stats.MovementPoints; }
         private set { MovementPoints = value; }
     }
-    public int MovementRange { get { return Stats.MovementRange; } }
+    public int MovementRange { get { return Stats.MovementRange; } }    
+    public Grid Grid { get; private set; }
+    public Tile OccupiedTile { get { return _occupiedTile; } } // Можно сослать на _occupiedTile
+
+    // Other variables
+    public UnitStatus Status;
+
     #endregion
 
-    #region Public Methods    
+    #region Initialization
     public virtual Unit GetUnitType() => this;
 
-    public void InitializeUnit(Grid grid, Tile cell)
+    public void InitializeUnit(Grid grid, Tile startTile)
     {
         Grid = grid;
         // Установка позиции юнита на центр ячейки с учетом высоты модели
-        transform.position = cell.transform.position + Vector3.up * 0.8f;
+        transform.position = startTile.transform.position + Vector3.up * 0.8f;
         // Установка текущей ячейки для юнита
-        CurrentCell = cell;
+        _occupiedTile = startTile;
 
-        CurrentCell.CurrentState = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
-        CurrentCell.UnitOn = true;
+        _occupiedTile.CurrentState = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
+        _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
     }
+    #endregion
 
-    public bool CanMoveToCell(Tile cell) =>
-        CurrentCell != cell &&
-        Vector3.Distance(CurrentCell.transform.position, cell.transform.position) <= MAX_DISTANCE &&
+    #region Action Checks
+    public bool CanMoveToTile(Tile tile) =>
+        OccupiedTile != tile &&
+        Vector3.Distance(OccupiedTile.transform.position, tile.transform.position) <= MAX_DISTANCE &&
         Status != UnitStatus.Moved &&
         _stats.MovementPoints > 1 &&
-        !cell.UnitOn &&
-        _stats.MovementPoints >= cell.MovementCost;
+        !tile.UnitOn &&
+        _stats.MovementPoints >= tile.MovementCost;
 
-    public void MoveToCell(Tile targetCell)
+    public void MoveToTile(Tile targetTile)
     {
-        CurrentCell = targetCell;
+        _occupiedTile = targetTile;
         _stats.MovementPoints -= 1;
-        //OnUnitAction?.Invoke(ActionType.Move, this, targetCell);
+        //OnUnitAction?.Invoke(ActionType.Move, this, targetTile);
 
         // Вычисляем позицию для перемещения с учетом высоты юнита
-        Vector3 newPosition = new(targetCell.transform.position.x, transform.position.y, targetCell.transform.position.z);
+        Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
 
         // Запускаем анимацию перемещения       
         transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
@@ -70,7 +82,7 @@ public class Unit : MonoBehaviour
     }
 
 
-    public bool CanAttack(Unit targetUnit) =>
+    public bool CanAttack(Unit targetUnit) =>   
         targetUnit != null &&
         targetUnit.Type == UnitType.Enemy &&
         Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;

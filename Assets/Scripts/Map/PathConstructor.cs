@@ -14,52 +14,52 @@ public class PathConstructor : MonoBehaviour
         new Direction(1, 0)    // Right
     };
 
-    public List<Tile> FindPathToTarget(Tile startCell, Tile endCell, out List<Tile> Path, Grid grid)
+    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> Path, Grid grid)
     {
         Path = new List<Tile>();
 
         // хранит стоимость пути от начальной €чейки до текущей €чейки.
         Dictionary<Tile, float> gScore = new() 
         {
-            [startCell] = 0
+            [startTile] = 0
         };
 
         // хранит оценку стоимости пути от начальной €чейки через текущую €чейку до конечной €чейки (эвристическа€ оценка).
         Dictionary<Tile, float> fScore = new() 
         {
-            [startCell] = Heuristic(startCell, endCell)
+            [startTile] = Heuristic(startTile, endTile)
         };
 
         List<Tile> closedList = new(); // список €чеек, которые уже были проверены.
-        List<Tile> openList = new() { startCell }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
+        List<Tile> openList = new() { startTile }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
 
         // список €чеек, откуда пришли в текущую €чейку. Ёто позволит потом восстановить путь от начальной €чейки до конечной.
         Dictionary<Tile, Tile> cameFrom = new();
 
         while (openList.Count > 0)
         {
-            var currentCell = openList.OrderBy(cell => fScore.TryGetValue(cell, out float value) ? value : float.MaxValue).FirstOrDefault();
-            if (currentCell == endCell)
-                return ReconstructPath(cameFrom, endCell, out Path);
+            var currentTile = openList.OrderBy(tile => fScore.TryGetValue(tile, out float value) ? value : float.MaxValue).FirstOrDefault();
+            if (currentTile == endTile)
+                return ReconstructPath(cameFrom, endTile, out Path);
 
-            openList.Remove(currentCell);
-            closedList.Add(currentCell);
+            openList.Remove(currentTile);
+            closedList.Add(currentTile);
 
-            foreach (var neighborCell in GetNeighbourCells(currentCell, grid))
+            foreach (var neighborTile in GetNeighbourTiles(currentTile, grid))
             {
-                if (closedList.Contains(neighborCell))
+                if (closedList.Contains(neighborTile))
                     continue;
 
-                float tentativeScore = gScore[currentCell] + GetDistance(currentCell, neighborCell);
+                float tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
 
-                if (!openList.Contains(neighborCell))
-                    openList.Add(neighborCell);
-                else if (tentativeScore >= (gScore.TryGetValue(neighborCell, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
+                if (!openList.Contains(neighborTile))
+                    openList.Add(neighborTile);
+                else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
                     continue;
 
-                cameFrom[neighborCell] = currentCell;
-                gScore[neighborCell] = tentativeScore;
-                fScore[neighborCell] = gScore[neighborCell] + Heuristic(neighborCell, endCell);
+                cameFrom[neighborTile] = currentTile;
+                gScore[neighborTile] = tentativeScore;
+                fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
             }
         }
 
@@ -72,51 +72,51 @@ public class PathConstructor : MonoBehaviour
         return Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
     }
 
-    private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile currentCell, out List<Tile> Path)
+    private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile currentTile, out List<Tile> Path)
     {
-        List<Tile> path = new() { currentCell };
+        List<Tile> path = new() { currentTile };
 
-        while (cameFrom.ContainsKey(currentCell))
+        while (cameFrom.ContainsKey(currentTile))
         {
-            currentCell = cameFrom[currentCell];
-            path.Insert(0, currentCell);
+            currentTile = cameFrom[currentTile];
+            path.Insert(0, currentTile);
         }
 
         Path = path;
         return Path;
     }
 
-    public List<Tile> GetNeighbourCells(Tile cell, Grid grid)
+    public List<Tile> GetNeighbourTiles(Tile tile, Grid grid)
         {
         List<Tile> neighbours = new();
 
         foreach (Direction direction in directions)
         {
-            int coordinateX = Convert.ToInt32(cell.Coordinates.x + direction.XOffset);
-            int coordinateY = Convert.ToInt32(cell.Coordinates.y + direction.YOffset);
+            int coordinateX = Convert.ToInt32(tile.Coordinates.x + direction.XOffset);
+            int coordinateY = Convert.ToInt32(tile.Coordinates.y + direction.YOffset);
 
             if (coordinateX >= 0 && coordinateX < grid.GridSize.x && coordinateY >= 0 && coordinateY < grid.GridSize.y)
             {
-                var neighbour = grid.Cells[coordinateX, coordinateY];
-                if (neighbour != null && neighbour != cell)
+                var neighbour = grid.Tiles[coordinateX, coordinateY];
+                if (neighbour != null && neighbour != tile)
                     neighbours.Add(neighbour);
             }
         }
 
-        cell.Neighbours = neighbours;
+        tile.Neighbours = neighbours;
         return neighbours;
     }
 
-    public float GetDistance(Tile cell1, Tile cell2)
+    public float GetDistance(Tile tileFrom, Tile tileTo)
     {
         // ≈сли €чейки равны, то рассто€ние между ними равно 0
-        if (cell1 == cell2)
+        if (tileFrom == tileTo)
             return 0;
 
         // «десь мы можем использовать любой алгоритм дл€ вычислени€ рассто€ни€ между €чейками.
         // Ќапример, можно использовать евклидово рассто€ние:
-        float dx = cell1.Coordinates.x - cell2.Coordinates.x;
-        float dy = cell1.Coordinates.y - cell2.Coordinates.y;
+        float dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
+        float dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 }

@@ -53,9 +53,9 @@ public class GameModel : MonoBehaviour, IGameModel
         if (IsGameOver())
             return;
 
-        _grid.SetAvaialableCells();
+        _grid.SetAvaialableTiles();
 
-        //ResetCellsAvailability();
+        //ResetTilesAvailability();
 
         //if (!SetUnitAvailability(ActivePlayer))
         //{
@@ -69,8 +69,8 @@ public class GameModel : MonoBehaviour, IGameModel
     public void EndTurn()
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
-        //ResetCellsAvailability();
-        //ActivePlayer.CurrentCell.UnselectCell();
+        //ResetTilesAvailability();
+        //ActivePlayer.OccupiedTile.UnselectTile();
         ActivePlayer = GetNextPlayer(ActivePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
@@ -78,7 +78,7 @@ public class GameModel : MonoBehaviour, IGameModel
             ResetUnitsAvailability();
 
         UpdateScore();
-        //SetAvaialableCells();
+        //SetAvaialableTiles();
 
         if (IsGameOver())
             EndGame();
@@ -139,25 +139,25 @@ public class GameModel : MonoBehaviour, IGameModel
     private void UnselectUnit()
     {
         _selector.UnselectUnit(ActivePlayer);
-        ResetCellsAvailability();
-        //// Unselect the current unit and reset cell availability
+        ResetTilesAvailability();
+        //// Unselect the current unit and reset tile availability
         //if (_selector.SelectedUnit != null)
         //{
         //    //_selector.SelectedUnit.Status = UnitStatus.Unselected;
         //    _selector.SelectedUnit = null;
         //    _interactor.SelectedUnit = null; // Добавил
 
-        //    ResetCellsAvailability();
+        //    ResetTilesAvailability();
         //}
     }
 
-    public void ResetCellsAvailability()
+    public void ResetTilesAvailability()
     {
-        var currentCell = ActivePlayer.CurrentCell;
-        currentCell.UnselectCell();
+        var currentTile = ActivePlayer.OccupiedTile;
+        currentTile.UnselectTile();
 
         // Set all cells to be available for selection
-        _interactor.AvailableMoves.ForEach(move => move.UnselectCell());
+        _interactor.AvailableMoves.ForEach(move => move.UnselectTile());
     }
 
     public void ResetUnitsAvailability()
@@ -212,9 +212,9 @@ public class GameModel : MonoBehaviour, IGameModel
         // Update the score of both players
     }
     #region Не использую пока что
-    public bool IsCellWithinBoardBounds(Tile cell)
+    public bool IsTileWithinBoardBounds(Tile tile)
     {
-        return cell.Coordinates.x >= 0 && cell.Coordinates.x < _grid.GridSize.x && cell.Coordinates.y >= 0 && cell.Coordinates.y < _grid.GridSize.y;
+        return tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.GridSize.x && tile.Coordinates.y >= 0 && tile.Coordinates.y < _grid.GridSize.y;
     }
 
     public bool IsUnitOwnedByCurrentPlayer(Unit unit)

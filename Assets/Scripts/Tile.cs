@@ -16,11 +16,11 @@ public class Tile : MonoBehaviour
 
     public bool UnitOn; // Юнит на клетке или нет.    
 
-    public Color ColorStandardCell; //Стандартный цвет клетки.
-    public Color ColorUnitOnCell; // Цвет клетки на которой стоит гл. герой.
-    public Color ColorEnemyOnCell; // Цвет клетки на которой стоит враг.
-    public Color ColorSelectedCell; // Цвет клетки - выбранной
-    public Color ColorMovementCell; // Цвет клетки - Для движения
+    public Color ColorStandardTile; //Стандартный цвет клетки.
+    public Color ColorUnitOnTile; // Цвет клетки на которой стоит гл. герой.
+    public Color ColorEnemyOnTile; // Цвет клетки на которой стоит враг.
+    public Color ColorSelectedTile; // Цвет клетки - выбранной
+    public Color ColorMovementTile; // Цвет клетки - Для движения
 
     internal readonly int MovementCost = 1;
 
@@ -42,7 +42,7 @@ public class Tile : MonoBehaviour
         if (_available && !UnitOn)
         {
             _available = true;
-            ChangeColor(ColorStandardCell);
+            ChangeColor(ColorStandardTile);
         }
         else
         {
@@ -50,12 +50,12 @@ public class Tile : MonoBehaviour
             if (UnitOn)
             {
                 if (CurrentState == State.OccupiedByPlayer)
-                    ChangeColor(ColorUnitOnCell);
+                    ChangeColor(ColorUnitOnTile);
                 else if (CurrentState == State.OccupiedByEnemy)
-                    ChangeColor(ColorEnemyOnCell);
+                    ChangeColor(ColorEnemyOnTile);
             }
             else
-                ChangeColor(ColorMovementCell);
+                ChangeColor(ColorMovementTile);
         }
     }
 
@@ -63,7 +63,7 @@ public class Tile : MonoBehaviour
         GetComponent<MeshRenderer>().material.color = color;
     }
 
-    public Vector3 GetCellSize() => GetComponent<MeshRenderer>().bounds.size;
+    public Vector3 GetTileSize() => GetComponent<MeshRenderer>().bounds.size;
 
     public void SetReachable(int movementPoints, bool isReachable)
     {
@@ -76,13 +76,13 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public void SelectCell()
+    public void SelectTile()
     {
         UnitOn = true;
         Available = false; //true
     }
 
-    public void UnselectCell()
+    public void UnselectTile()
     {
         // На момент когда я нажимаю на это, тогда у меня все выделения уже исчезли.
         UnitOn = false; // Игрока нет
@@ -94,13 +94,13 @@ public class Tile : MonoBehaviour
     public void UnhighlightAvailableMoves()
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var cell in Neighbours)
-            cell.UnhighlightCell();
+        foreach (var tile in Neighbours)
+            tile.UnhighlightTile();
     }
 
-    public void UnhighlightCell()
+    public void UnhighlightTile()
     {
-        ChangeColor(ColorStandardCell);
+        ChangeColor(ColorStandardTile);
         UnitOn = false;
         CurrentState = State.Reachable;
         Available = true;
