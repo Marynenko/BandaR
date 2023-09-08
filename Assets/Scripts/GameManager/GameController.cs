@@ -164,9 +164,6 @@ public class GameController : MonoBehaviour
         return false;
     }
 
-    // - Не ТЕСТИРОВАНО
-
-
     private bool IsPlayerUnitAvailable(Unit unit) =>
         unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
 
