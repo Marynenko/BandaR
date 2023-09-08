@@ -7,7 +7,9 @@ public enum ActionType
     Select,
     Move,
     Attack,
-    SpecialAbility
+    SpecialAbility,
+    Die
+
 }
 
 public class Unit : MonoBehaviour
@@ -24,20 +26,17 @@ public class Unit : MonoBehaviour
     private Tile _occupiedTile;
 
     // Public properties
+    public Grid Grid { get; private set; }
     public UnitStats Stats { get { return _stats; } }
     public UnitType Type { get { return _stats.Type; } }
-    public int MovementPoints
-    {
-        get { return Stats.MovementPoints; }
-        private set { MovementPoints = value; }
-    }
+    public int MovementPoints { get { return Stats.MovementPoints; } }
     public int MovementRange { get { return Stats.MovementRange; } }    
-    public Grid Grid { get; private set; }
     public Tile OccupiedTile { get { return _occupiedTile; } } // Можно сослать на _occupiedTile
+    public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
 
-    // Other variables
-    public UnitStatus Status;
-
+    // Events
+    public event Action<Unit> OnMoved; // Add event for unit movement
+    public event Action<Unit> OnDeath; // Add event for unit death
     #endregion
 
     #region Initialization
@@ -51,22 +50,26 @@ public class Unit : MonoBehaviour
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
 
-        _occupiedTile.CurrentState = Type == UnitType.Player ? State.OccupiedByPlayer : State.OccupiedByEnemy;
+        _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
+
     }
     #endregion
 
     #region Action Checks
-    public bool CanMoveToTile(Tile tile) =>
-        OccupiedTile != tile &&
-        Vector3.Distance(OccupiedTile.transform.position, tile.transform.position) <= MAX_DISTANCE &&
-        Status != UnitStatus.Moved &&
-        _stats.MovementPoints > 1 &&
-        !tile.UnitOn &&
-        _stats.MovementPoints >= tile.MovementCost;
-
-    public void MoveToTile(Tile targetTile)
+    public bool CanMoveToTile(Tile targetTile, out float distSq)
+    {
+        distSq = (OccupiedTile.transform.position - targetTile.transform.position).sqrMagnitude;
+        return OccupiedTile != targetTile &&
+               distSq <= MAX_DISTANCE &&
+               Status != UnitStatus.Moved &&
+               Stats.MovementPoints > 1 &&
+               !targetTile.UnitOn &&
+               Stats.MovementPoints >= targetTile.MovementCost;
+    }
+        
+    public void MoveToTile(Tile targetTile, float distSq)
     {
         _occupiedTile = targetTile;
         _stats.MovementPoints -= 1;
@@ -76,9 +79,16 @@ public class Unit : MonoBehaviour
         Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
 
         // Запускаем анимацию перемещения       
-        transform.DOMove(newPosition, Vector3.Distance(transform.position, newPosition) / MAX_DISTANCE)
+        transform.DOMove(newPosition, Mathf.Sqrt(distSq) / MAX_DISTANCE) // Use Mathf.Sqrt for distance
                  .SetEase(Ease.Linear)
-                 .OnComplete(() => transform.position = newPosition);
+                 .OnComplete(() =>
+                 {
+                     transform.position = newPosition;
+                     OnMoved?.Invoke(this); // Raise the OnMoved event after moving
+                 });
+
+        // Raise the event after moving
+        OnUnitMoved(this);
     }
 
 

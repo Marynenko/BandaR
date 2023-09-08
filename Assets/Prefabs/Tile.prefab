@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7393650558690336812
+--- !u!1 &6323556172772172985
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7806238223422965222}
-  - component: {fileID: 3000235267617039692}
-  - component: {fileID: 4528502720491522035}
-  - component: {fileID: 938342826330271485}
-  - component: {fileID: 5016756518378698790}
+  - component: {fileID: 2916652431571598795}
+  - component: {fileID: 5587094002608277018}
+  - component: {fileID: 1643657059690799357}
+  - component: {fileID: 3441336688773150074}
+  - component: {fileID: 8853379210137829916}
   m_Layer: 0
-  m_Name: Cell
+  m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7806238223422965222
+--- !u!4 &2916652431571598795
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393650558690336812}
+  m_GameObject: {fileID: 6323556172772172985}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.26416397, y: 0.21572304, z: 0.11827755}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3000235267617039692
+--- !u!33 &5587094002608277018
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393650558690336812}
+  m_GameObject: {fileID: 6323556172772172985}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4528502720491522035
+--- !u!23 &1643657059690799357
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393650558690336812}
+  m_GameObject: {fileID: 6323556172772172985}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -85,38 +85,47 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &938342826330271485
+--- !u!65 &3441336688773150074
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393650558690336812}
+  m_GameObject: {fileID: 6323556172772172985}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5016756518378698790
+--- !u!114 &8853379210137829916
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393650558690336812}
+  m_GameObject: {fileID: 6323556172772172985}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5176267a04f6b7949b9ea2e560d86d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Interactor: {fileID: 0}
-  MeshRenderer: {fileID: 4528502720491522035}
-  CurrentState: 0
+  _meshRenderer: {fileID: 1643657059690799357}
   Coordinates: {x: 0, y: 0}
+  Interactor: {fileID: 0}
+  State: 0
+  Passability: 0
   UnitOn: 0
-  ColorStandardCell: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 0}
-  ColorUnitOnCell: {r: 0, g: 0.2830189, b: 0.087562695, a: 0}
-  ColorEnemyOnCell: {r: 0.3773585, g: 0.0017799971, b: 0.0017799971, a: 0}
-  ColorSelectedCell: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 0}
-  ColorMovementCell: {r: 0, g: 1, b: 0.22807026, a: 0}
+  ColorStandardTile: {r: 0.4791269, g: 0.4811321, b: 0.4788626, a: 0}
+  ColorUnitOnTile: {r: 0.08094325, g: 0.31132078, b: 0, a: 0}
+  ColorEnemyOnTile: {r: 0.735849, g: 0, b: 0, a: 0}
+  ColorSelectedTile: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 0}
+  ColorMovementTile: {r: 0.38845193, g: 1, b: 0, a: 0}

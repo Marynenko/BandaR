@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InputPlayer : MonoBehaviour, IInputHandler
+public class InputPlayer : MonoBehaviour
 {
     [SerializeField] private GameController _gameController;
     [SerializeField] private GameModel _gameModel;

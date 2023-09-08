@@ -85,8 +85,8 @@ public class Grid : MonoBehaviour
 
     public Vector2Int GetTileCoordinatesFromPosition(Vector3 position)
     {
-        int x = Mathf.FloorToInt(position.x / TilePrefab.GetTileSize().x);
-        int y = Mathf.FloorToInt(position.z / TilePrefab.GetTileSize().z);
+        int x = Mathf.FloorToInt(position.x / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
+        int y = Mathf.FloorToInt(position.z / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
 
         return new Vector2Int(x, y);
     }

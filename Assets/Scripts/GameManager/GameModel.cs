@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameModel : MonoBehaviour, IGameModel
+public class GameModel : MonoBehaviour
 {
     [SerializeField] private AI _AI;
     [SerializeField] private Grid _grid;
@@ -70,7 +70,7 @@ public class GameModel : MonoBehaviour, IGameModel
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
         //ResetTilesAvailability();
-        //ActivePlayer.OccupiedTile.UnselectTile();
+        //ActivePlayer.OccupiedTile.DeselectTile();
         ActivePlayer = GetNextPlayer(ActivePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
@@ -154,10 +154,10 @@ public class GameModel : MonoBehaviour, IGameModel
     public void ResetTilesAvailability()
     {
         var currentTile = ActivePlayer.OccupiedTile;
-        currentTile.UnselectTile();
+        currentTile.DeselectTile();
 
         // Set all cells to be available for selection
-        _interactor.AvailableMoves.ForEach(move => move.UnselectTile());
+        _interactor.AvailableMoves.ForEach(move => move.DeselectTile());
     }
 
     public void ResetUnitsAvailability()

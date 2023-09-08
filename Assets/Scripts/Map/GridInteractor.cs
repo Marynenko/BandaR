@@ -21,7 +21,7 @@ public class GridInteractor : MonoBehaviour
         //GameController.OnUnitAction += HandleUnitAction;
         _grid = GetComponentInParent<Grid>();
         _availableMoves = new List<Tile>();
-    }  
+    }
 
     public void UpdateUnit(Unit unit)
     {
@@ -63,7 +63,7 @@ public class GridInteractor : MonoBehaviour
     public void HandleUnitDeselection(Unit selectedUnit, Unit unit, GridSelector selector)
     {
         selector.UnselectUnit(selectedUnit);
-        unit.OccupiedTile.UnselectTile();
+        unit.OccupiedTile.DeselectTile();
         selector.ChangeAvailableTilesColor();
         selector.SelectUnit(unit);
         HighlightAvailableMoves(AvailableMoves, unit.OccupiedTile.ColorMovementTile, selector);
@@ -82,8 +82,8 @@ public class GridInteractor : MonoBehaviour
         foreach (var tile in _grid.Tiles)
         {
             // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
-            if (tile.CurrentState == State.Reachable && tile != SelectedUnit.OccupiedTile)
-                tile.UnselectTile();
+            if (tile.State == TileState.Standard && tile != SelectedUnit.OccupiedTile)
+                tile.DeselectTile();
         }
     }
 
@@ -107,7 +107,7 @@ public class GridInteractor : MonoBehaviour
             if (tile.IsAvailableForUnit(unit))
                 availableTiles.Add(tile);
         return availableTiles;
-    }
+    }   
 }
 
 public class Direction
@@ -121,7 +121,3 @@ public class Direction
         YOffset = yOffset;
     }
 }
-
-
-
-

@@ -29,7 +29,7 @@ public class GridSelector : MonoBehaviour
     {
         if (SelectedUnit != null)
         {
-            SelectedUnit.OccupiedTile.UnselectTile();
+            SelectedUnit.OccupiedTile.DeselectTile();
             UnselectUnit(SelectedUnit);
         }
 
@@ -113,6 +113,4 @@ public class GridSelector : MonoBehaviour
 
         return AvailableMoves;
     }
-
-
 }

@@ -26,5 +26,6 @@ public enum UnitStatus
     Moved,
     Available,
     Unavailable,
+    Waiting,
     AIMove
 }

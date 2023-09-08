@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
-public class GameController : MonoBehaviour, IGameController
+public class GameController : MonoBehaviour
 {
     [SerializeField] private GridGenerator _generator;
 
@@ -46,7 +48,7 @@ public class GameController : MonoBehaviour, IGameController
             else
                 Interactor.UpdateUnit(targetUnit);
 
-            selectedUnit.OccupiedTile.UnselectTile();
+            selectedUnit.OccupiedTile.DeselectTile();
             Selector.UnselectUnit(selectedUnit);
 
 
@@ -63,116 +65,78 @@ public class GameController : MonoBehaviour, IGameController
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (!IsPlayerUnitAvailable(selectedUnit))
-            return;
-
-        if (tile == selectedUnit.OccupiedTile)
-            return;
-
-        if (selectedUnit.Status == UnitStatus.Moved) // Тут посмотреть
+        if (!IsClickValid(selectedUnit, tile))
             return;
 
         // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
+        HandleLastSelectedUnit(selectedUnit);
+
+        if (!IsTileInPath(selectedUnit, tile, out List<Tile> Path)) 
+            return;
+
+        HandleTileMovement(selectedUnit, Path);
+
+        lastSelectedUnit = selectedUnit;
+        lastSelectedTile = selectedUnit.OccupiedTile;
+        selectedUnit.Status = UnitStatus.Moved;
+        UnselectUnit(selectedUnit);
+    }
+
+    private bool IsClickValid(Unit selectedUnit, Tile tile) =>
+        IsPlayerUnitAvailable(selectedUnit) &&
+        tile != selectedUnit.OccupiedTile &&
+        selectedUnit.Status != UnitStatus.Moved;
+
+    private void HandleLastSelectedUnit(Unit selectedUnit)
+    {
         if (lastSelectedUnit != null && lastSelectedTile != null)
         {
             SelectUnit(lastSelectedUnit);
             SelectTile(lastSelectedTile);
         }
+    }
 
-        if (!IsTileInPath(selectedUnit, tile, out List<Tile> Path)) return;
-
+    private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
+    {
         UnselectTile(selectedUnit.OccupiedTile); // Убрать выделение из клетки на которой игрок.
 
-
-        //var path = Interactor.FindPathToTarget(selectedUnit.OccupiedTile, tile, out Path);
-
-        if (Path.Count == 0)
+        if (path.Count == 0)
             return;
 
-        MoveUnit(selectedUnit, Path);
+        MoveUnit(selectedUnit, path);
+        HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
-        //CheckAdjacentUnits(selectedUnit, Grid.AllUnits, selectedUnit.Team.EnemyTeam);
-        CheckAdjacentUnits(selectedUnit, Grid.AllUnits);
-
-        // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
         if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
         {
-            // Если юнит находится рядом с вражескими юнитами, выделяем его ячейку красным цветом
-            SelectTile(selectedUnit.OccupiedTile); // Red
-        }
-
-        lastSelectedUnit = selectedUnit;
-        lastSelectedTile = selectedUnit.OccupiedTile;
-
-        // Сохраняем текущий юнит и ячейку как последние выбранные
-        selectedUnit.Status = UnitStatus.Moved;
-
-        UnselectUnit(selectedUnit); // Можно убрать наверное
-    }   
-
-    private bool IsPlayerUnitAvailable(Unit unit)
-    => unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
-
-    // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
-    {
-        path = Interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _, Grid);        
-        return tile.UnitOn == false && unit.MovementPoints >= path.Count;
-    }
-
-    private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
-    private void UnselectTile(Tile tile) => tile.UnselectTile();
-    private void MoveUnit(Unit unit, List<Tile> path) => MoveUnitAlongPath(unit, path);
-    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
-    {
-        // Двигаем юнита поочередно на каждую ячейку из списка
-        foreach (var tile in path)
-            if (unit.CanMoveToTile(tile))
-                unit.MoveToTile(tile); //
-    }
-    private void SelectTile(Tile tile) => tile.SelectTile();
-    private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);
-
-    #region Ветка проверок клеток НЕ РАБОТАЕТ
-    private void CheckAdjacentUnits(Unit unit, List<Unit> units) // Сюда в Neighbours
-    {
-        foreach (var neighbourTile in unit.OccupiedTile.Neighbours)
-        {
-            var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighbourTile);
-            if (neighborUnit != null && neighborUnit.Type == unit.Type)
-                neighborUnit.OnUnitMoved(unit);
-
-            // Дополнение: проверяем, не находится ли выбранный юнит рядом с вражескими юнитами
-            if (IsUnitAdjacentToEnemy(unit, units))
-            {
-                // Находим всех вражеских юнитов, которые находятся рядом с выбранным юнитом
-                var adjacentEnemies = units.OfType<Unit>().Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
-
-                // Атакуем каждого из вражеских юнитов, которые находятся рядом с выбранным юнитом
-                AttackEnemies(unit, adjacentEnemies as List<Unit>);
-            }
+            SelectTile(selectedUnit.OccupiedTile);
         }
     }
 
-    private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
+    private void HandleAdjacentUnits(Unit selectedUnit, List<Unit> allUnits)
     {
-        foreach (var neighborTile in unit1.OccupiedTile.Neighbours)
+        foreach (var neighbourTile in selectedUnit.OccupiedTile.Neighbours)
         {
-            if (neighborTile == unit2.OccupiedTile) return true;
-            if (neighborTile.CurrentState == State.OccupiedByPlayer) return true;
+            UpdateNeighborUnits(selectedUnit, neighbourTile, allUnits);
+            CheckAdjacentEnemies(selectedUnit, allUnits);
         }
-
-        return false;
     }
 
-    private void AttackEnemies(Unit unit, List<Unit> enemies)
+    private void UpdateNeighborUnits(Unit unit, Tile neighbourTile, List<Unit> units)
     {
-        foreach (var enemy in enemies)
-        {
-            unit.Attack(enemy);
+        var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighbourTile);
 
-            if (enemy.Stats.Health <= 0)
-                Grid.RemoveUnit(enemy);
+        if (neighborUnit != null && neighborUnit.Type == unit.Type)
+        {
+            neighborUnit.OnUnitMoved(unit);
+        }
+    }
+
+    private void CheckAdjacentEnemies(Unit unit, List<Unit> units)
+    {
+        if (IsUnitAdjacentToEnemy(unit, units))
+        {
+            var adjacentEnemies = units.OfType<Unit>().Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
+            AttackEnemies(unit, adjacentEnemies.ToList());
         }
     }
 
@@ -187,6 +151,53 @@ public class GameController : MonoBehaviour, IGameController
         }
 
         return false;
+    }
+
+    private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
+    {
+        foreach (var neighborTile in unit1.OccupiedTile.Neighbours)
+        {
+            if (neighborTile == unit2.OccupiedTile) return true;
+            if (neighborTile.State == TileState.OccupiedByPlayer) return true;
+        }
+
+        return false;
+    }
+
+
+    private bool IsPlayerUnitAvailable(Unit unit) =>
+        unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
+
+    // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
+    private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
+    {
+        path = Interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _, Grid);        
+        return tile.UnitOn == false && unit.MovementPoints >= path.Count;
+    }
+
+    private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
+    private void UnselectTile(Tile tile) => tile.DeselectTile();
+    private void MoveUnit(Unit unit, List<Tile> path) => MoveUnitAlongPath(unit, path);
+    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
+    {
+        // Двигаем юнита поочередно на каждую ячейку из списка
+        foreach (var tile in path)
+            if (unit.CanMoveToTile(tile, out float distSq))
+                unit.MoveToTile(tile, distSq); //
+    }
+    private void SelectTile(Tile tile) => tile.SelectTile();
+    private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);
+
+    #region Ветка проверок клеток НЕ РАБОТАЕТ
+    private void AttackEnemies(Unit unit, List<Unit> enemies)
+    {
+        foreach (var enemy in enemies)
+        {
+            unit.Attack(enemy);
+
+            if (enemy.Stats.Health <= 0)
+                Grid.RemoveUnit(enemy);
+        }
     }
     #endregion
 }

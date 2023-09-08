@@ -1364,7 +1364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Parent: {fileID: 971218190}
-  CellPrefab: {fileID: 5016756518378698790, guid: 3924b4532fcf7fc4c9b4785688018ac4,
+  TilePrefab: {fileID: 7478806781856826363, guid: 3924b4532fcf7fc4c9b4785688018ac4,
     type: 3}
   GridSize: {x: 4, y: 4}
   Offset: 0.05
