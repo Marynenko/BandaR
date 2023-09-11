@@ -26,57 +26,51 @@ public class PathConstructor : MonoBehaviour
         new Direction(1, 0)   // ¬право
     };
 
-    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path, Grid grid)
+    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> Path, Grid grid)
     {
-        path = new List<Tile>();
+        Path = new List<Tile>();
 
-        // хранит стоимость пути от начальной €чейки до текущей €чейки.
-        Dictionary<Tile, float> gScore = new() // 
+        Dictionary<Tile, float> gScore = new()
         {
             [startTile] = 0
         };
 
-        // хранит оценку стоимости пути от начальной €чейки через текущую €чейку до конечной €чейки (эвристическа€ оценка).
-        Dictionary<Tile, float> fScore = new() 
+        
+        Dictionary<Tile, float> fScore = new()
         {
             [startTile] = Heuristic(startTile, endTile)
         };
 
-        HashSet<Tile> closedList = new(); // список €чеек, которые уже были проверены
-        SortedList<float, Tile> openList = new() { { fScore[startTile], startTile } }; // список €чеек, которые нужно проверить (соседние €чейки текущей €чейки).
+        List<Tile> closedList = new();
+        List<Tile> openList = new() { startTile }; 
 
-        // список €чеек, откуда пришли в текущую €чейку. Ёто позволит потом восстановить путь от начальной €чейки до конечной.
+        
         Dictionary<Tile, Tile> cameFrom = new();
 
         while (openList.Count > 0)
         {
-            var currentTile = openList.Values[0];
+            var currentTile = openList.OrderBy(tile => fScore.TryGetValue(tile, out var value) ? value : float.MaxValue).FirstOrDefault();
             if (currentTile == endTile)
-                return ReconstructPath(cameFrom, endTile, out path);
+                return ReconstructPath(cameFrom, endTile, out Path);
 
-            openList.RemoveAt(0);
+            openList.Remove(currentTile);
             closedList.Add(currentTile);
 
-
-            foreach(var neighborTile in GetNearbyTiles(currentTile, grid).Where(neighborTile => !closedList.Contains(neighborTile)))
+            foreach (var neighborTile in GetNearbyTiles(currentTile, grid))
             {
-                if (currentTile != null)
-                {
-                    var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
+                if (closedList.Contains(neighborTile))
+                    continue;
 
-                    if (!openList.ContainsValue(neighborTile))
-                        openList.Add(fScore[neighborTile], neighborTile);
-                    else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-                        continue;
+                var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
 
-                    cameFrom[neighborTile] = currentTile;
-                    gScore[neighborTile] = tentativeScore;
-                }
+                if (!openList.Contains(neighborTile))
+                    openList.Add(neighborTile);
+                else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
+                    continue;
 
+                cameFrom[neighborTile] = currentTile;
+                gScore[neighborTile] = tentativeScore;
                 fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
-                if (openList.ContainsValue(neighborTile))
-                    openList.Remove(openList.Keys[openList.IndexOfValue(neighborTile)]);
-                openList.Add(fScore[neighborTile], neighborTile);
             }
         }
 
