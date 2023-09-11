@@ -6,17 +6,17 @@ using UnityEngine.UI;
 
 public class GameModel : MonoBehaviour
 {
-    [SerializeField] private AI _AI;
+    [SerializeField] private AI _ai;
     [SerializeField] private Grid _grid;
     [SerializeField] private InputPlayer _input;
     [SerializeField] private GameController _gameController;
-    [SerializeField] private GridSelector _selector;
-    [SerializeField] private GridInteractor _interactor;
+    [SerializeField] private Selector _selector;
+    [SerializeField] private Interactor _interactor;
     [SerializeField] private Button _endTurnButton;
 
     [HideInInspector] public Unit ActivePlayer;
 
-    private ActionType _actionType;
+    private readonly ActionType _actionType;
     private List<Unit> _players = new();
 
     private void Start()
@@ -43,7 +43,7 @@ public class GameModel : MonoBehaviour
             var mousePosition = Input.mousePosition;
             _input.HandleLeftClick(mousePosition);
 
-            _AI.UpdateUI(ActivePlayer, _endTurnButton);
+            _ai.UpdateUi(ActivePlayer, _endTurnButton);
         }
     }
 
@@ -53,7 +53,7 @@ public class GameModel : MonoBehaviour
         if (IsGameOver())
             return;
 
-        _grid.SetAvaialableTiles();
+        _grid.SetAvailableTiles();
 
         //ResetTilesAvailability();
 
@@ -78,7 +78,7 @@ public class GameModel : MonoBehaviour
             ResetUnitsAvailability();
 
         UpdateScore();
-        //SetAvaialableTiles();
+        //SetAvailableTiles();
 
         if (IsGameOver())
             EndGame();
@@ -108,7 +108,7 @@ public class GameModel : MonoBehaviour
                 return;
             }
 
-            _AI.Move(ActivePlayer);            
+            _ai.Move(ActivePlayer);            
         }
 
         // Дополнительные действия, если необходимо, после окончания хода

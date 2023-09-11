@@ -69,7 +69,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Demigiant\DOTween\DOTween.XML" />
+    <None Include="Assets\Plugins\CodeAssist\THIRD-PARTY-NOTICES.TXT" />
+    <None Include="Assets\Plugins\CodeAssist\CHANGELOG.TXT" />
     <None Include="Assets\Plugins\Demigiant\DOTween\DOTween.dll" />
+    <None Include="Assets\Plugins\CodeAssist\README.TXT" />
+    <None Include="Assets\Plugins\CodeAssist\GPT-NOTICE.TXT" />
     <None Include="Assets\Plugins\Demigiant\DOTween\readme.txt" />
   </ItemGroup>
   <ItemGroup>

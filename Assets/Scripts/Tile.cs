@@ -13,7 +13,7 @@ public class Tile : MonoBehaviour
     private readonly int _distance;
 
     // Public Properties fields
-    public List<Tile> Neighbours { get; set; }
+    public List<Tile> Neighbors { get; set; }
 
     #region Variable -> Available
     public bool Available { get => _available; set => SetAvailable(value); }
@@ -48,7 +48,7 @@ public class Tile : MonoBehaviour
 
     // Public fields
     public Vector2 Coordinates; // Позиция Клетки.
-    public GridInteractor Interactor;
+    public Interactor Interactor;
     public TileState State; // Состояние клетки.
     public Passability Passability;
     public bool UnitOn; // Юнит на клетке или нет.
@@ -71,16 +71,16 @@ public class Tile : MonoBehaviour
 
     #endregion
 
-    public void Initialize(int row, int column, GridInteractor gridInteractor, bool isAwailable, bool unitOn)
+    public void Initialize(int row, int column, Interactor interactor, bool isAvailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
-        Interactor = gridInteractor;
-        _available = isAwailable;
+        Interactor = interactor;
+        _available = isAvailable;
         UnitOn = unitOn;
         State = TileState.Standard;
         Passability = Passability.Passable;
         Coordinates = new Vector2(row, column);
-        Neighbours = new List<Tile>(4);  
+        Neighbors = new List<Tile>(4);  
     }
 
     public void SelectTile()
@@ -101,7 +101,7 @@ public class Tile : MonoBehaviour
     public void UnhighlightAvailableMoves()
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var tile in Neighbours)
+        foreach (var tile in Neighbors)
             tile.UnhighlightTile();
     }
 

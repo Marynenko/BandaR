@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,9 +15,9 @@ public class AI : MonoBehaviour
         _gameModel = gameObject.GetComponentInParent<GameModel>();
     }
 
-    public void UpdateUI<T>(T _activePlayer, Button button) where T : Unit
+    public void UpdateUi<T>(T activePlayer, Button button) where T : Unit
     {
-        var currentPlayer = _activePlayer;
+        var currentPlayer = activePlayer;
 
         if (currentPlayer == null)
         {
@@ -31,7 +30,10 @@ public class AI : MonoBehaviour
 
         if (!canEndTurn)
         {
-            var movedUnits = _gameController.Grid.AllUnits.Where(u => u.Status == UnitStatus.Moved && u == currentPlayer).ToList();
+            var movedUnits = _gameController.Grid.AllUnits.Where
+                (u => u.Status == UnitStatus.Moved && u == currentPlayer).
+                ToList();
+
             if (movedUnits.Count == 0)
             {
                 canEndTurn = true;
@@ -41,8 +43,7 @@ public class AI : MonoBehaviour
         button.interactable = canEndTurn;
 
         // Дополнение: проверяем, выбран ли юнит и сделан ли уже ход
-        var isUnitSelected = currentPlayer != null;
-        if (isUnitSelected && !(currentPlayer.Status == UnitStatus.Moved))
+        if (currentPlayer.Status != UnitStatus.Moved)
         {
             canEndTurn = false;
         }
@@ -52,10 +53,10 @@ public class AI : MonoBehaviour
     public void Move(Unit unit)
     {
         //_gameModel.ActivePlayer = unit;
-        var localController = _gameController;
-        var localGrid = localController.Grid;
-        var localInteractor = localController.Interactor;
-        var localSelector = localController.Selector;
+        var ameController = _gameController;
+        var grid = _gameController.Grid;
+        var interactor = _gameController.Interactor;
+        var localSelector = _gameController.Selector;
 
         var availableMoves = localSelector.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints);
         if (availableMoves.Count == 0)
@@ -65,29 +66,29 @@ public class AI : MonoBehaviour
         }
 
         // Находим всех враждебных юнитов
-        var enemies = localGrid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
+        var enemies = grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
 
         // Выбираем ближайшего врага
-        var targetEnemy = enemies.OrderBy(e => localInteractor.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+        var targetEnemy = enemies.OrderBy(e => interactor.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
         // Если нашли врага, движемся к нему
         if (targetEnemy != null)
         {
             var targetTile = targetEnemy.OccupiedTile;
-            localInteractor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> Path, _gameController.Grid);
-            _gameController.MoveUnitAlongPath(unit, Path);
+            interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> path, _gameController.Grid);
+            _gameController.MoveUnitAlongPath(unit, path);
         }
         else
         {
             // Если врагов нет, движемся к случайной доступной клетке
             var randomIndex = Random.Range(0, availableMoves.Count);
             var targetTile = availableMoves[randomIndex];
-            localInteractor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> Path, _gameController.Grid);
-            _gameController.MoveUnitAlongPath(unit, Path);
+            interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> path, _gameController.Grid);
+            _gameController.MoveUnitAlongPath(unit, path);
         }
 
         // Обновляем состояние юнита
-        localInteractor.UpdateUnit(unit);
+        interactor.UpdateUnit(unit);
         localSelector.UnselectUnit(unit); // Можно убрать наверное
 
         // Обновляем доступность ячеек после перемещения

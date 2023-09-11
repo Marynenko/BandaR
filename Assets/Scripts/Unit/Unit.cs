@@ -12,7 +12,7 @@ public enum ActionType
 
 }
 
-public class Unit : MonoBehaviour
+public abstract class Unit : MonoBehaviour
 {
     #region Variables
     
@@ -57,19 +57,19 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-    #region Action Checks
-    public bool CanMoveToTile(Tile targetTile, out float distSq)
+    #region Action Movement
+    public bool CanMoveToTile(Tile targetTile, out float distanceSq)
     {
-        distSq = (OccupiedTile.transform.position - targetTile.transform.position).sqrMagnitude;
+        distanceSq = (OccupiedTile.transform.position - targetTile.transform.position).sqrMagnitude;
         return OccupiedTile != targetTile &&
-               distSq <= MAX_DISTANCE &&
+               distanceSq <= MAX_DISTANCE &&
                Status != UnitStatus.Moved &&
                Stats.MovementPoints > 1 &&
                !targetTile.UnitOn &&
                Stats.MovementPoints >= targetTile.MovementCost;
     }
         
-    public void MoveToTile(Tile targetTile, float distSq)
+    public void MoveToTile(Tile targetTile, float distanceSq)
     {
         _occupiedTile = targetTile;
         _stats.MovementPoints -= 1;
@@ -79,7 +79,7 @@ public class Unit : MonoBehaviour
         Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
 
         // Запускаем анимацию перемещения       
-        transform.DOMove(newPosition, Mathf.Sqrt(distSq) / MAX_DISTANCE) // Use Mathf.Sqrt for distance
+        transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE) // Use Mathf.Sqrt for distance
                  .SetEase(Ease.Linear)
                  .OnComplete(() =>
                  {
@@ -91,6 +91,9 @@ public class Unit : MonoBehaviour
         OnUnitMoved(this);
     }
 
+    #endregion
+
+    #region Action ATTACK
 
     public bool CanAttack(Unit targetUnit) =>   
         targetUnit != null &&
@@ -111,18 +114,23 @@ public class Unit : MonoBehaviour
         if (_stats.Health <= 0)
         {
             _stats.Health = 0;
-            Die(this);
+            Die();
         }
     }
 
     public bool IsAlive() => _stats.Health > 0;
 
-    public Action Die(Unit unit)
+    public Action Die()
     {
         // Доработать
         Destroy(gameObject);
         return delegate { };
+
     }
+
+    #endregion
+
+    #region Part of unusable code
 
     public void UpdateVisuals()
     {
@@ -162,5 +170,9 @@ public class Unit : MonoBehaviour
         return false;
     }
 
+    protected virtual void OnOnDeath(Unit obj)
+    {
+        OnDeath?.Invoke(obj);
+    }
     #endregion
 }

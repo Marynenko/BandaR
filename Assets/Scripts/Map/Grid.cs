@@ -7,7 +7,7 @@ public class Grid : MonoBehaviour
 {
     public Transform Parent;
     public Tile TilePrefab; 
-    public GridInteractor Interactor { get; private set; }
+    public Interactor Interactor { get; private set; }
     public GridGenerator Generator { get; private set; }
     public List<Unit> AllUnits { get; private set; }
     public Tile[,] Tiles { get; private set; }
@@ -20,19 +20,19 @@ public class Grid : MonoBehaviour
         Tiles = new Tile[GridSize.x, GridSize.y];
         AllUnits = new List<Unit>();
         Generator = GetComponent<GridGenerator>();
-        Interactor = GetComponentInChildren<GridInteractor>();
+        Interactor = GetComponentInChildren<Interactor>();
         Interactor.enabled = true; // Включаем интерактор после инициализации сетки
 
     }
     public void CreateGrid()
     {
-        var TileSize = TilePrefab.GetComponent<MeshRenderer>().bounds.size;
+        var tileSize = TilePrefab.GetComponent<MeshRenderer>().bounds.size;
 
-        for (int x = 0; x < GridSize.x; x++)
-            for (int y = 0; y < GridSize.y; y++)
+        for (var x = 0; x < GridSize.x; x++)
+            for (var y = 0; y < GridSize.y; y++)
             {
                 // Чтобы сгенерировать клетку, нужно знать ее позицию.
-                var position = new Vector3(x * (TileSize.x + Offset), 0, y * (TileSize.z + Offset));
+                var position = new Vector3(x * (tileSize.x + Offset), 0, y * (tileSize.z + Offset));
 
                 var tile = Instantiate(TilePrefab, position, Quaternion.identity, Parent);
                 tile.Initialize(x, y, Interactor, true, false); // тут передается Grid
@@ -41,13 +41,13 @@ public class Grid : MonoBehaviour
             }
     }
 
-    public void LocateNeighboursTiles()
+    public void LocateNeighborsTiles()
     {
         foreach (var tile in Tiles)
-            tile.Neighbours = Interactor.PathConstructor.GetNeighbourTiles(tile, this); // Добавли левую часть.
+            tile.Neighbors = Interactor.PathConstructor.GetNearbyTiles(tile, this); // Добавили левую часть.
     }
 
-    public void SetAvaialableTiles()
+    public void SetAvailableTiles()
     {
         foreach (var tile in Tiles)
             if (!tile.IsOccupied())
@@ -58,8 +58,8 @@ public class Grid : MonoBehaviour
     {       
         foreach (var unit in units)
         {            
-            Vector2Int unitTileCoordinates = GetTileCoordinatesFromPosition(unit.transform.position);
-            Tile tile = Tiles[unitTileCoordinates.x, unitTileCoordinates.y];
+            var unitTileCoordinates = GetTileCoordinatesFromPosition(unit.transform.position);
+            var tile = Tiles[unitTileCoordinates.x, unitTileCoordinates.y];
 
             if (unitTileCoordinates != Vector2Int.one * int.MaxValue)
             {
@@ -73,7 +73,7 @@ public class Grid : MonoBehaviour
     public void RemoveUnit(Unit unit)
     {
         var unitToRemove = unit as Unit;
-        Tile currentTile = unitToRemove.OccupiedTile;
+        var currentTile = unitToRemove.OccupiedTile;
 
         if (currentTile != null)
         {
@@ -85,10 +85,23 @@ public class Grid : MonoBehaviour
 
     public Vector2Int GetTileCoordinatesFromPosition(Vector3 position)
     {
-        int x = Mathf.FloorToInt(position.x / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
-        int y = Mathf.FloorToInt(position.z / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
+        var x = Mathf.FloorToInt(position.x / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
+        var y = Mathf.FloorToInt(position.z / TilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
 
         return new Vector2Int(x, y);
     }
 
+    public bool TryGetTile(Vector2Int coordinate, out Tile tile)
+    {
+        if (coordinate.x >= 0 && coordinate.x < GridSize.x && coordinate.y >= 0 && coordinate.y < GridSize.y)
+        {
+            tile = Tiles[coordinate.x, coordinate.y];
+            return true;
+        }
+        else
+        {
+            tile = null;
+            return false;
+        }
+    }
 }
