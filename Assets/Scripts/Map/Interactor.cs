@@ -75,7 +75,7 @@ public class Interactor : MonoBehaviour
     public void UnhighlightAllTiles(Selector selector)
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var tile in _grid.Tiles)
+        foreach (var tile in _grid.Generator.Tiles)
         {
             // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
             if (tile.State == TileState.Standard && tile != SelectedUnit.OccupiedTile)
@@ -99,7 +99,7 @@ public class Interactor : MonoBehaviour
     {
         var availableTiles = new List<Tile>();
 
-        foreach (var tile in _grid.Tiles)
+        foreach (var tile in _grid.Generator.Tiles)
             if (tile.IsAvailableForUnit(unit))
                 availableTiles.Add(tile);
         return availableTiles;

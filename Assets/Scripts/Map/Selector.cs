@@ -84,7 +84,7 @@ public class Selector : MonoBehaviour
 
     public void ChangeAvailableTilesColor()
     {
-        var tiles = _grid.Tiles;
+        var tiles = _grid.Generator.Tiles;
         foreach (var tile in tiles)
             tile.ChangeColor(tile.ColorStandardTile);
     }
@@ -105,7 +105,7 @@ public class Selector : MonoBehaviour
             availableMoves.Add(currentTile);
 
             if (remainingMoves > 1)
-                foreach (var neighbour in _grid.Interactor.PathConstructor.GetNearbyTiles(currentTile, _grid))
+                foreach (var neighbour in _grid.Generator.Interactor.PathConstructor.GetNearbyTiles(currentTile, _grid))
                     if (!(visitedTiles.Contains(neighbour) && neighbour.IsOccupied()))
                     {
                         // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки

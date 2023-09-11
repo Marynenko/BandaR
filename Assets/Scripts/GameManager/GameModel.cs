@@ -26,7 +26,7 @@ public class GameModel : MonoBehaviour
 
     public void StartGame()
     {
-        _players = _grid.AllUnits;
+        _players = _grid.Generator.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
         StartTurn();
@@ -162,14 +162,14 @@ public class GameModel : MonoBehaviour
 
     public void ResetUnitsAvailability()
     {
-        foreach (var unit in _grid.AllUnits.OfType<Unit>())
+        foreach (var unit in _grid.Generator.AllUnits.OfType<Unit>())
             unit.Status = UnitStatus.Unavailable;
     }
 
 
     private Unit GetNextPlayer(Unit player)
     {
-        var listOfUnits = _grid.AllUnits.OfType<Unit>().ToList();
+        var listOfUnits = _grid.Generator.AllUnits.OfType<Unit>().ToList();
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
         // Проверяем, является ли следующий индекс последним игроком
@@ -214,7 +214,7 @@ public class GameModel : MonoBehaviour
     #region Не использую пока что
     public bool IsTileWithinBoardBounds(Tile tile)
     {
-        return tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.GridSize.x && tile.Coordinates.y >= 0 && tile.Coordinates.y < _grid.GridSize.y;
+        return tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.Generator.GridSize.x && tile.Coordinates.y >= 0 && tile.Coordinates.y < _grid.Generator.GridSize.y;
     }
 
     public bool IsUnitOwnedByCurrentPlayer(Unit unit)

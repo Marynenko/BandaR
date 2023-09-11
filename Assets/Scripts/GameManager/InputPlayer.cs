@@ -23,6 +23,7 @@ public class InputPlayer : MonoBehaviour
 
     public void HandleEndTurnButtonClicked()
     {
+        var units = _gameController.Grid.Generator.AllUnits;
         // Проверяем, выбран ли игрок
         var selectedUnit = _gameController.Selector.SelectedUnit;
         if (selectedUnit != null)
@@ -31,10 +32,8 @@ public class InputPlayer : MonoBehaviour
             return;
         }
 
-        
-
         // Проверяем, был ли игрок перемещен в этом ходе
-        var movedUnits = _gameController.Grid.AllUnits.Where(u => u.Status == UnitStatus.Moved).ToList();
+        var movedUnits = units.Where(u => u.Status == UnitStatus.Moved).ToList();
         if (movedUnits.Count == 0)
         {
             Debug.Log("You can't end the turn until all units have moved.");

@@ -9,7 +9,6 @@ public enum ActionType
     Attack,
     SpecialAbility,
     Die
-
 }
 
 public abstract class Unit : MonoBehaviour
@@ -20,7 +19,8 @@ public abstract class Unit : MonoBehaviour
     [SerializeField] private UnitStats _stats;
 
     // Constants
-    private const float MAX_DISTANCE = 3f;
+    private const float MAX_DISTANCE = 4f;
+    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.8f;
 
     // Private fields
     private Tile _occupiedTile;
@@ -46,7 +46,7 @@ public abstract class Unit : MonoBehaviour
     {
         Grid = grid;
         // Установка позиции юнита на центр ячейки с учетом высоты модели
-        transform.position = startTile.transform.position + Vector3.up * 0.8f;
+        transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
 

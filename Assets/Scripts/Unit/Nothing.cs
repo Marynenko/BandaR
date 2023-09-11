@@ -8,8 +8,7 @@ public class Nothing
     public class PathConstructor : MonoBehaviour
     {
         //public List<Tile> GetNearbyTilesOld(Tile tile, Grid grid)
-        //{
-        //    List<Tile> nearbyTiles = new();
+        //{ 
 
         //    foreach (var direction in Direction)
         //    {

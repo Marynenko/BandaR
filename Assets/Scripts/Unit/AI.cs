@@ -17,6 +17,7 @@ public class AI : MonoBehaviour
 
     public void UpdateUi<T>(T activePlayer, Button button) where T : Unit
     {
+        var units = _gameController.Grid.Generator.AllUnits;
         var currentPlayer = activePlayer;
 
         if (currentPlayer == null)
@@ -30,7 +31,7 @@ public class AI : MonoBehaviour
 
         if (!canEndTurn)
         {
-            var movedUnits = _gameController.Grid.AllUnits.Where
+            var movedUnits = units.Where
                 (u => u.Status == UnitStatus.Moved && u == currentPlayer).
                 ToList();
 
@@ -66,7 +67,7 @@ public class AI : MonoBehaviour
         }
 
         // Находим всех враждебных юнитов
-        var enemies = grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
+        var enemies = grid.Generator.AllUnits.Where(u => u.Type != unit.Type).ToArray();
 
         // Выбираем ближайшего врага
         var targetEnemy = enemies.OrderBy(e => interactor.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();

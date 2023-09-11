@@ -111,9 +111,9 @@ public class GameController : MonoBehaviour
             return;
 
         MoveUnit(selectedUnit, path);
-        HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
+        HandleAdjacentUnits(selectedUnit, Grid.Generator.AllUnits);
 
-        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
+        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.Generator.AllUnits))
         {
             SelectTile(selectedUnit.OccupiedTile);
         }
@@ -143,7 +143,8 @@ public class GameController : MonoBehaviour
     {
         if (IsUnitAdjacentToEnemy(unit, units))
         {
-            var adjacentEnemies = units.OfType<Unit>().Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
+            var adjacentEnemies = units.OfType<Unit>()
+                .Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
             AttackEnemies(unit, adjacentEnemies.ToList());
         }
     }
@@ -153,7 +154,8 @@ public class GameController : MonoBehaviour
     {
         foreach (var neighborTile in unit.OccupiedTile.Neighbors)
         {
-            var neighborUnit = units.OfType<Unit>().FirstOrDefault(u => u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy);
+            var neighborUnit = units.OfType<Unit>()
+                .FirstOrDefault(u => u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy);
             if (neighborUnit != null)
                 return true;
         }
