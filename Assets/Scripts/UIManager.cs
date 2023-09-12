@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
         {
             if (_instance == null)
                 _instance = FindObjectOfType<UIManager>();            
-             return _instance;
+            return _instance;
         }
     }
 

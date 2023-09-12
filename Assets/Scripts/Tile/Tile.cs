@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class Tile : MonoBehaviour
 {
     #region Variables
+
     // Serialized fields
     [SerializeField] private MeshRenderer _meshRenderer;
 
@@ -19,28 +22,32 @@ public class Tile : MonoBehaviour
     public bool Available { get => _available; set => SetAvailable(value); }
     public void SetAvailable(bool isAvailable)
     {
-        if (_available != isAvailable)
+        //if (_available != isAvailable)
+        //{
+            
+        //}
+
+        if (_available && UnitOn)
         {
             _available = isAvailable;
-
-            if (_available && !UnitOn)
+            State = TileState.Standard; // Состояние доступное
+            ChangeColor(TileState.Standard);
+            UnitOn = false; // Игрока нет
+            //Passability = Passability.Passable; // Могу встать сюда
+        }
+        else
+        {
+            if (UnitOn)
             {
-                ChangeColor(ColorStandardTile);
-                UnitOn = false; // Игрока нет
-                State = TileState.Standard; // Состояние доступное
-                //Passability = Passability.Passable; // Могу встать сюда
+                ChangeColor(State);
+                //if (State == TileState.OccupiedByPlayer)
+                //    ChangeColor(TileState.OccupiedByPlayer);
+                //else if (State == TileState.OccupiedByEnemy)
+                //    ChangeColor(ColorEnemyOnTile);
             }
             else
             {
-                if (UnitOn)
-                {
-                    if (State == TileState.OccupiedByPlayer)
-                        ChangeColor(ColorUnitOnTile);
-                    else if (State == TileState.OccupiedByEnemy)
-                        ChangeColor(ColorEnemyOnTile);
-                }
-                else
-                    ChangeColor(ColorMovementTile);
+                ChangeColor(TileState.Movement);
             }
         }
     }
@@ -52,12 +59,9 @@ public class Tile : MonoBehaviour
     public TileState State; // Состояние клетки.
     public Passability Passability;
     public bool UnitOn; // Юнит на клетке или нет.
-    
-    public Color ColorStandardTile; //Стандартный цвет клетки.
-    public Color ColorUnitOnTile; // Цвет клетки на которой стоит гл. герой.
-    public Color ColorEnemyOnTile; // Цвет клетки на которой стоит враг.
-    public Color ColorSelectedTile; // Цвет клетки - выбранной
-    public Color ColorMovementTile; // Цвет клетки - Для движения
+
+    // Static fields
+    public static Dictionary<TileState, Color> StateColors;
 
     // Other variables
     internal readonly int MovementCost = 1;
@@ -80,7 +84,17 @@ public class Tile : MonoBehaviour
         State = TileState.Standard;
         Passability = Passability.Passable;
         Coordinates = new Vector2(row, column);
-        Neighbors = new List<Tile>(4);  
+        Neighbors = new List<Tile>(4);
+
+        StateColors ??= new Dictionary<TileState, Color>()
+        {
+            { TileState.Standard, TileColors.TileColorStandard },
+            { TileState.OccupiedByPlayer, TileColors.ColorPlayerOnTile },
+            { TileState.OccupiedByEnemy, TileColors.ColorEnemyOnTile },
+            { TileState.Selected, TileColors.ColorSelectedTile },
+            { TileState.Movement, TileColors.ColorMovementTile }
+        };
+        //ChangeColor(TileColorStandard);
     }
 
     public void SelectTile()
@@ -91,7 +105,7 @@ public class Tile : MonoBehaviour
         OnTileSelected?.Invoke(this);
     }
 
-    public void DeselectTile()
+    public void UnselectTile()
     {
         Available = true;
         UnhighlightAvailableMoves();
@@ -113,23 +127,19 @@ public class Tile : MonoBehaviour
     public bool IsOccupied() => 
         State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
 
-    public void ChangeColor(Color color)    
+    public void ChangeColor(TileState state)
     {
-        _meshRenderer.material.color = color;
-    }   
+        if (StateColors.TryGetValue(state, out var color))
+        {
+            _meshRenderer.material.color = color;
+        }
+    }
 }
 
-public enum TileState
-{
-    Standard, // Стандартное состояние
-    //Selected, // Выбран пользователем
-    Movement, // Пользователь выбрал этот тайл для движения юнита
-    OccupiedByPlayer, // Занят игроком
-    OccupiedByEnemy, // Занят врагом
-}
 
 public enum Passability
 {
     Impassable, // Непроходимый тайл (например, стена или вода)
     Passable // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
 }
+

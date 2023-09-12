@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour
             else
                 Interactor.UpdateUnit(targetUnit);
 
-            selectedUnit.OccupiedTile.DeselectTile();
+            selectedUnit.OccupiedTile.UnselectTile();
             Selector.UnselectUnit(selectedUnit);
 
 
@@ -60,7 +60,7 @@ public class GameController : MonoBehaviour
             {
                 // Update available moves after attack
                 var availableMoves = Selector.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
-                Interactor.HighlightAvailableMoves(availableMoves, selectedUnit.OccupiedTile.ColorMovementTile, Selector);
+                Interactor.HighlightAvailableMoves(availableMoves, TileState.Movement, Selector);
             }
         }
     }
@@ -185,7 +185,7 @@ public class GameController : MonoBehaviour
     }
 
     private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
-    private void UnselectTile(Tile tile) => tile.DeselectTile();
+    private void UnselectTile(Tile tile) => tile.UnselectTile();
     private void MoveUnit(Unit unit, List<Tile> path) => MoveUnitAlongPath(unit, path);
     public void MoveUnitAlongPath(Unit unit, List<Tile> path)
     {

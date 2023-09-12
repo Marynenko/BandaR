@@ -93,7 +93,7 @@ public class AI : MonoBehaviour
         localSelector.UnselectUnit(unit); // Можно убрать наверное
 
         // Обновляем доступность ячеек после перемещения
-        unit.OccupiedTile.DeselectTile();
+        unit.OccupiedTile.UnselectTile();
         unit.Status = UnitStatus.Moved;
         unit.Stats.MovementPoints = unit.Stats.MovementRange; // Добавил, должно работать
 

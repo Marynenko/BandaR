@@ -29,7 +29,7 @@ public class Selector : MonoBehaviour
     {
         if (SelectedUnit != null)
         {
-            SelectedUnit.OccupiedTile.DeselectTile();
+            SelectedUnit.OccupiedTile.UnselectTile();
             UnselectUnit(SelectedUnit);
         }
 
@@ -47,7 +47,7 @@ public class Selector : MonoBehaviour
         //unit.OccupiedTile.ClearUnit();
     }
 
-    public void SelectTileToMoveFrom(Tile tile, UnitType unitType, bool clearSelectedTiles = false, Color? selectedUnitColor = null)
+    public void SelectTileToMoveFrom(Tile tile, UnitType unitType, bool clearSelectedTiles = false)
     {
         if (clearSelectedTiles)
         {
@@ -61,32 +61,29 @@ public class Selector : MonoBehaviour
         //else
         //    return;
 
-        if (selectedUnitColor.HasValue)
-            SelectedUnit.OccupiedTile.ChangeColor(selectedUnitColor.Value);
-        else
+        //if (selectedUnitColor.HasValue)
+        //    SelectedUnit.OccupiedTile.ChangeColor(selectedUnitColor.Value);
+        switch (unitType)
         {
-            switch (unitType)
-            {
-                case UnitType.Player:
-                    SelectedUnit.OccupiedTile.ChangeColor(tile.ColorUnitOnTile);
-                    break;
-                case UnitType.Enemy:
-                    SelectedUnit.OccupiedTile.ChangeColor(tile.ColorEnemyOnTile);
-                    break;
-            }
+            case UnitType.Player:
+                SelectedUnit.OccupiedTile.ChangeColor(TileState.OccupiedByPlayer);
+                break;
+            case UnitType.Enemy:
+                SelectedUnit.OccupiedTile.ChangeColor(TileState.OccupiedByEnemy);
+                break;
         }
 
         var availableMovesCopy = _availableMoves.GetRange(0, _availableMoves.Count);
         availableMovesCopy.Remove(tile);
-        foreach (var moveTile in availableMovesCopy)
-            moveTile.ChangeColor(moveTile.ColorMovementTile);
+        foreach (var tileToMove in availableMovesCopy)
+            tileToMove.ChangeColor(TileState.Movement);
     }
 
     public void ChangeAvailableTilesColor()
     {
         var tiles = _grid.Generator.Tiles;
         foreach (var tile in tiles)
-            tile.ChangeColor(tile.ColorStandardTile);
+            tile.ChangeColor(TileState.Standard);
     }
 
     public List<Tile> GetAvailableMoves(Tile tile, int maxMoves)

@@ -59,17 +59,17 @@ public class Interactor : MonoBehaviour
     public void HandleUnitDeselection(Unit selectedUnit, Unit unit, Selector selector)
     {
         selector.UnselectUnit(selectedUnit);
-        unit.OccupiedTile.DeselectTile();
+        unit.OccupiedTile.UnselectTile();
         selector.ChangeAvailableTilesColor();
         selector.SelectUnit(unit);
-        HighlightAvailableMoves(AvailableMoves, unit.OccupiedTile.ColorMovementTile, selector);
+        HighlightAvailableMoves(AvailableMoves, TileState.Movement, selector);
     }
 
-    public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, Color color, Selector selector)
+    public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, TileState state, Selector selector)
     {
         selector.ChangeAvailableTilesColor();
-        HighlightTile(availableMoves.First(), availableMoves.First().ColorUnitOnTile);
-        availableMoves.Skip(1).ToList().ForEach(tile => HighlightTile(tile, color));
+        HighlightTile(availableMoves.First(), TileState.OccupiedByPlayer);
+        availableMoves.Skip(1).ToList().ForEach(tile => HighlightTile(tile, state));
     }
 
     public void UnhighlightAllTiles(Selector selector)
@@ -79,7 +79,7 @@ public class Interactor : MonoBehaviour
         {
             // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
             if (tile.State == TileState.Standard && tile != SelectedUnit.OccupiedTile)
-                tile.DeselectTile();
+                tile.UnselectTile();
         }
     }
 
@@ -90,9 +90,9 @@ public class Interactor : MonoBehaviour
             tile.UnhighlightTile();
     }
 
-    public void HighlightTile(Tile tile, Color color)
+    public void HighlightTile(Tile tile, TileState state)
     {
-        tile.ChangeColor(color);
+        tile.ChangeColor(state);
     }
 
     public List<Tile> GetAvailableTiles(Unit unit)

@@ -70,7 +70,7 @@ public class GameModel : MonoBehaviour
     {
         // Снимаем выделение с текущего юнита и доступность ячеек
         //ResetTilesAvailability();
-        //ActivePlayer.OccupiedTile.DeselectTile();
+        //ActivePlayer.OccupiedTile.UnselectTile();
         ActivePlayer = GetNextPlayer(ActivePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
@@ -154,10 +154,10 @@ public class GameModel : MonoBehaviour
     public void ResetTilesAvailability()
     {
         var currentTile = ActivePlayer.OccupiedTile;
-        currentTile.DeselectTile();
+        currentTile.UnselectTile();
 
         // Set all cells to be available for selection
-        _interactor.AvailableMoves.ForEach(move => move.DeselectTile());
+        _interactor.AvailableMoves.ForEach(move => move.UnselectTile());
     }
 
     public void ResetUnitsAvailability()
