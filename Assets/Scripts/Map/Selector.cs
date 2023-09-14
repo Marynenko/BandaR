@@ -3,25 +3,31 @@ using UnityEngine;
 
 public class Selector : MonoBehaviour
 {
-    private Grid _grid;
+    private TilesGrid _grid;
     private Interactor _interactor;
     private List<Tile> _availableMoves;
 
-    public delegate void UnitSelectedEventHandler(Unit unit, Selector selector);
+    // public delegate void UnitSelectedEventHandler(Unit unit, Selector selector);
+    public delegate void UnitSelectedEventHandler(Unit unit);
+
     public static event UnitSelectedEventHandler OnUnitSelected;
+    public static event UnitSelectedEventHandler OnUnitDeselected;
+
 
     public Unit SelectedUnit { get; set; }
 
     private void OnEnable()
     {
-        _grid = GetComponentInParent<Grid>();
+        _grid = GetComponentInParent<TilesGrid>();
         _interactor = GetComponent<Interactor>();
         OnUnitSelected += _interactor.HandleUnitSelected;
+        OnUnitDeselected += _interactor.HandleUnitDeselection;
     }
 
     private void OnDestroy()
     {
         OnUnitSelected -= _interactor.HandleUnitSelected;
+        OnUnitDeselected -= _interactor.HandleUnitDeselection;
     }
 
     public void SelectUnit(Unit unit)
@@ -32,36 +38,25 @@ public class Selector : MonoBehaviour
             UnselectUnit(SelectedUnit);
         }
 
-        OnUnitSelected?.Invoke(unit, this);
-    }
+        ChangeAvailableTilesColor();
+        SelectTileToMoveFrom(SelectedUnit.OccupiedTile, SelectedUnit.Type);
+        OnUnitSelected?.Invoke(unit);
 
+    }
+    
     public void UnselectUnit(Unit unit)
     {
         // Unselect the current unit and reset tile availability
-
-        if (unit == null) return;
-        //unit.Status = UnitStatus.Unselected;
-        SelectedUnit = null;
-        _interactor.SelectedUnit = null;
+        ChangeAvailableTilesColor();
+        OnUnitDeselected?.Invoke(unit);
+        
         //unit.OccupiedTile.ClearUnit();
     }
 
-    public void SelectTileToMoveFrom(Tile tile, UnitType unitType, bool clearSelectedTiles = false)
+    public void SelectTileToMoveFrom(Tile tile, UnitType unitType)
     {
-        if (clearSelectedTiles)
-        {
-            ChangeAvailableTilesColor();
-        }
-
         _availableMoves = GetAvailableMoves(tile, SelectedUnit.MovementPoints);
-
-        //if (unitType == UnitType.Player || unitType == UnitType.Enemy)
-        //    _availableMoves = GetAvailableMoves(tile, SelectedUnit.MovementPoints); // ИСПРАВИТЬ
-        //else
-        //    return;
-
-        //if (selectedUnitColor.HasValue)
-        //    SelectedUnit.OccupiedTile.ChangeColor(selectedUnitColor.Value);
+        
         switch (unitType)
         {
             case UnitType.Player:
@@ -80,7 +75,7 @@ public class Selector : MonoBehaviour
 
     public void ChangeAvailableTilesColor()
     {
-        var tiles = _grid.Generator.Tiles;
+        var tiles = _grid.Tiles;
         foreach (var tile in tiles)
             tile.ChangeColor(TileState.Standard);
     }
@@ -101,7 +96,7 @@ public class Selector : MonoBehaviour
             availableMoves.Add(currentTile);
 
             if (remainingMoves > 1)
-                foreach (var neighbour in _grid.Generator.Interactor.PathConstructor.GetNearbyTiles(currentTile, _grid))
+                foreach (var neighbour in _grid.Interactor.PathConstructor.GetNearbyTiles(currentTile, _grid))
                     if (!(visitedTiles.Contains(neighbour) && neighbour.IsOccupied()))
                     {
                         // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки

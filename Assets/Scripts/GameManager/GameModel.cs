@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GameModel : MonoBehaviour
 {
     [SerializeField] private AI _ai;
-    [SerializeField] private Grid _grid;
+    [SerializeField] private TilesGrid _grid;
     [SerializeField] private InputPlayer _input;
     [SerializeField] private GameController _gameController;
     [SerializeField] private Selector _selector;
@@ -25,7 +25,8 @@ public class GameModel : MonoBehaviour
 
     public void StartGame()
     {
-        _players = _grid.Generator.AllUnits;
+        _grid.StartCreating();
+        _players = _grid.AllUnits;
         ActivePlayer = _players[0]; // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
         StartTurn();
@@ -134,7 +135,6 @@ public class GameModel : MonoBehaviour
     }
 
 
-
     private void UnselectUnit()
     {
         _selector.UnselectUnit(ActivePlayer);
@@ -161,14 +161,14 @@ public class GameModel : MonoBehaviour
 
     public void ResetUnitsAvailability()
     {
-        foreach (var unit in _grid.Generator.AllUnits.OfType<Unit>())
+        foreach (var unit in _grid.AllUnits.OfType<Unit>())
             unit.Status = UnitStatus.Unavailable;
     }
 
 
     private Unit GetNextPlayer(Unit player)
     {
-        var listOfUnits = _grid.Generator.AllUnits.OfType<Unit>().ToList();
+        var listOfUnits = _grid.AllUnits.OfType<Unit>().ToList();
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
         // Проверяем, является ли следующий индекс последним игроком
@@ -196,6 +196,7 @@ public class GameModel : MonoBehaviour
             Debug.Log("The game has ended in a draw.");
             return true;
         }
+
         return false;
     }
 
@@ -210,16 +211,16 @@ public class GameModel : MonoBehaviour
     {
         // Update the score of both players
     }
-    #region Не использую пока что
-    public bool IsTileWithinBoardBounds(Tile tile)
-    {
-        return tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.Generator.GridSize.x && tile.Coordinates.y >= 0 && tile.Coordinates.y < _grid.Generator.GridSize.y;
-    }
 
-    public bool IsUnitOwnedByCurrentPlayer(Unit unit)
-    {
-        return unit.Type == ActivePlayer.Type; // Может быть
-    }
+    #region Не использую пока что
+
+    public bool IsTileWithinBoardBounds(Tile tile) =>
+        tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.GridSize.x
+                                && tile.Coordinates.y >= 0
+                                && tile.Coordinates.y < _grid.GridSize.y;
+
+    public bool IsUnitOwnedByCurrentPlayer(Unit unit) =>
+        unit.Type == ActivePlayer.Type; // Может быть
 
     public bool IsUnitAvailableForAction(Unit unit)
     {
@@ -234,5 +235,6 @@ public class GameModel : MonoBehaviour
         // For example, a unit cannot attack if there are no enemy units nearby
         return false;
     }
+
     #endregion
 }

@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 10
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -38,12 +38,13 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -367,7 +371,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 083fba9bef0b2ee4797d5210f219b9fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generator: {fileID: 971218191}
   Grid: {fileID: 1624328206}
   Selector: {fileID: 1771362893}
   Interactor: {fileID: 1771362891}
@@ -549,8 +552,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -657,7 +661,7 @@ RectTransform:
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &762238524
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -671,7 +675,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -804,7 +807,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Update - 0.1.4.7.7.6 - NOT TESTED
+  m_text: "Update - 0.1.4.7.7.7.3 - \u041D\u0415 \u0422\u0415\u0421\u0422\u0418\u0420\u041E\u0412\u0410\u041D\u041E
+    - GIT \u043D\u0430 Main"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -847,17 +851,15 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
-  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1034,9 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d9c44afcc0dd99499150110e80d5ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1624328206}
   _tilesPlace: {fileID: 1203233631}
-  _gameController: {fileID: 336726933}
   _gameModel: {fileID: 336726934}
   _tilePrefab: {fileID: 5306329372521576483, guid: 3924b4532fcf7fc4c9b4785688018ac4,
     type: 3}
@@ -1318,7 +1318,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1203233631}
-  - component: {fileID: 1203233632}
   m_Layer: 0
   m_Name: Tiles
   m_TagString: Untagged
@@ -1341,23 +1340,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1624328205}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1203233632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1203233630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7ff00d8def356343b26f4c8b86919ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TileColorStandard: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 0}
-  ColorPlayerOnTile: {r: 0.046107598, g: 0.3018868, b: 0.0042719753, a: 0}
-  ColorEnemyOnTile: {r: 0.4339623, g: 0, b: 0, a: 0}
-  ColorSelectedTile: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 0}
-  ColorMovementTile: {r: 0.11250148, g: 0.8396226, b: 0, a: 0}
 --- !u!1 &1624328204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,9 +1370,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1203233631}
   - {fileID: 1771362890}
   - {fileID: 971218190}
-  - {fileID: 1203233631}
   m_Father: {fileID: 336726932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1624328206
@@ -1402,9 +1384,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1624328204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7563097b00e350d4598dd3b456a85adc, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d9c44afcc0dd99499150110e80d5ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tilesPlace: {fileID: 1203233631}
+  _gameModel: {fileID: 336726934}
+  _tilePrefab: {fileID: 5306329372521576483, guid: 3924b4532fcf7fc4c9b4785688018ac4,
+    type: 3}
+  _gridSize: {x: 4, y: 4}
+  _offset: 0.05
 --- !u!1 &1687879070
 GameObject:
   m_ObjectHideFlags: 0

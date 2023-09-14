@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class Tile : MonoBehaviour
 {
     #region Variables
 
     // Serialized fields
     [SerializeField] private MeshRenderer _meshRenderer;
-    [SerializeField] private Material _material;
+    // [SerializeField] private Material _material;
 
     // Private fields
     private bool _available;
@@ -27,7 +25,7 @@ public class Tile : MonoBehaviour
 
         //}
 
-        if (_available && UnitOn)
+        if (_available && !UnitOn)
         {
             _available = isAvailable;
             State = TileState.Standard; // Состояние доступное
@@ -50,9 +48,16 @@ public class Tile : MonoBehaviour
     public Interactor Interactor;
     public TileState State; // Состояние клетки.
     public Passability Passability;
-    public TileColors TileColors;
     public bool UnitOn; // Юнит на клетке или нет.
 
+    public Color TileColorStandard;
+    public Color ColorPlayerOnTile;
+    public Color ColorEnemyOnTile;
+    public Color ColorSelectedTile;
+    public Color ColorMovementTile;
+
+    public Color CurrentColor;
+    
     // Static fields
     public static Dictionary<TileState, Color> StateColors;
 
@@ -70,15 +75,13 @@ public class Tile : MonoBehaviour
 
     private void Awake()
     {
-        TileColors = GetComponentInParent<TileColors>();
-
         StateColors ??= new Dictionary<TileState, Color>()
         {
-            { TileState.Standard, TileColors.TileColorStandard },
-            { TileState.OccupiedByPlayer, TileColors.ColorPlayerOnTile },
-            { TileState.OccupiedByEnemy, TileColors.ColorEnemyOnTile },
-            { TileState.Selected, TileColors.ColorSelectedTile },
-            { TileState.Movement, TileColors.ColorMovementTile }
+            { TileState.Standard, TileColorStandard },
+            { TileState.OccupiedByPlayer, ColorPlayerOnTile },
+            { TileState.OccupiedByEnemy, ColorEnemyOnTile },
+            { TileState.Selected, ColorSelectedTile },
+            { TileState.Movement, ColorMovementTile }
         };
     }
 
@@ -94,6 +97,7 @@ public class Tile : MonoBehaviour
         Neighbors = new List<Tile>(4);
 
         ChangeColor(State);
+        CurrentColor = StateColors[State];
     }
 
     public void SelectTile()
@@ -129,7 +133,7 @@ public class Tile : MonoBehaviour
     public void ChangeColor(TileState state)
     {
         _meshRenderer.material.color = StateColors[state];
-        _material.color = StateColors[state];
+        // _material.color = StateColors[state];
 
 
         //if (StateColors.(state, out var color))
@@ -139,10 +143,17 @@ public class Tile : MonoBehaviour
     }
 }
 
-
 public enum Passability
 {
     Impassable, // Непроходимый тайл (например, стена или вода)
     Passable // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
 }
 
+public enum TileState
+{
+    Standard, // Ńňŕíäŕđňíîĺ ńîńňî˙íčĺ
+    Selected, // Âűáđŕí ďîëüçîâŕňĺëĺě
+    Movement, // Ďîëüçîâŕňĺëü âűáđŕë ýňîň ňŕéë äë˙ äâčćĺíč˙ ţíčňŕ
+    OccupiedByPlayer, // Çŕí˙ň čăđîęîě
+    OccupiedByEnemy, // Çŕí˙ň âđŕăîě
+}

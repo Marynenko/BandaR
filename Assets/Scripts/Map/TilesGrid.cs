@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class GridGenerator : MonoBehaviour
+public class TilesGrid : MonoBehaviour
 {
-    [SerializeField] private Grid _grid;
     [SerializeField] private Transform _tilesPlace;
-    [SerializeField] private GameController _gameController;
+    // [SerializeField] private GameController _gameController;
     [SerializeField] private GameModel _gameModel;
     [SerializeField] private Tile _tilePrefab;
     [SerializeField] private Vector2Int _gridSize;
@@ -18,10 +17,11 @@ public class GridGenerator : MonoBehaviour
 
     private void Awake()
     {
-        Interactor = _grid.GetComponentInChildren<Interactor>();
+        Interactor = GetComponentInChildren<Interactor>();
         Tiles = new Tile[_gridSize.x, _gridSize.y];
     }
-    private void Start()
+    
+    public void StartCreating()
     {
         CreateGrid();
         LocateNeighborsTiles();
@@ -50,12 +50,13 @@ public class GridGenerator : MonoBehaviour
     public void LocateNeighborsTiles()
     {
         foreach (var tile in Tiles)
-            tile.Neighbors = Interactor.PathConstructor.GetNearbyTiles(tile, _grid); // Добавили левую часть.
+            tile.Neighbors = Interactor.PathConstructor.GetNearbyTiles(tile, this); // Добавили левую часть.
     }
 
     private void GetAllExistedUnits()
     {
         // Получить всех персонажей Player и Enemy на сцене
+        var allUnits = AllUnits;
         AllUnits = new List<Unit>();
 
         var players = FindObjectsOfType<Player>();
@@ -75,7 +76,7 @@ public class GridGenerator : MonoBehaviour
 
             if (unitTileCoordinates != Vector2Int.one * int.MaxValue)
             {
-                unit.InitializeUnit(_grid, tile);
+                unit.InitializeUnit(tile);
             }
         }
     }
@@ -99,6 +100,26 @@ public class GridGenerator : MonoBehaviour
         {
             tile = null;
             return false;
+        }
+    }
+    
+    public void SetAvailableTiles()
+    {
+        foreach (var tile in Tiles)
+            if (!tile.IsOccupied())
+                tile.SetAvailable(true);
+    }
+
+    public void RemoveUnit(Unit unit)
+    {
+        var unitToRemove = unit as Unit;
+        var currentTile = unitToRemove.OccupiedTile;
+
+        if (currentTile != null)
+        {
+            //currentTile.ClearUnit();
+            AllUnits.Remove(unitToRemove);
+            Destroy(unitToRemove.gameObject);
         }
     }
 }

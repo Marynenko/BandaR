@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private GridGenerator _generator;
-
     private Unit _lastSelectedUnit;
     private Tile _lastSelectedTile;
 
-    public Grid Grid;
+    public TilesGrid Grid;
     public Selector Selector;
     public Interactor Interactor;
 
@@ -17,11 +16,13 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Interactor.SelectedUnit;
 
-        if (selectedUnit != null) return;
+        // if (selectedUnit != null) return;
         if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
+        {
             Selector.SelectUnit(unit);
-        else if (selectedUnit.Equals(unit))
-            return;
+        }
+        // else if (selectedUnit?.Equals(unit) == true)
+        //     return;
 
         else switch (unit.Type)
         {
@@ -32,7 +33,7 @@ public class GameController : MonoBehaviour
                 HandleUnitAttack(selectedUnit, unit);
                 break;
             default:
-                Interactor.HandleUnitDeselection(selectedUnit, unit, Selector);
+                Interactor.HandleUnitDeselection(selectedUnit);
                 break;
         }
     }
@@ -60,7 +61,7 @@ public class GameController : MonoBehaviour
             {
                 // Update available moves after attack
                 var availableMoves = Selector.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
-                Interactor.HighlightAvailableMoves(availableMoves, TileState.Movement, Selector);
+                Interactor.HighlightAvailableMoves(availableMoves, TileState.Movement);
             }
         }
     }
@@ -86,9 +87,7 @@ public class GameController : MonoBehaviour
         UnselectUnit(selectedUnit);
     }
 
-    private bool IsClickValid<T, TU>(T selectedUnit, TU tile)
-        where T : Unit
-        where TU : Tile
+    private bool IsClickValid(Unit selectedUnit, Tile tile)
         =>
         IsPlayerUnitAvailable(selectedUnit) &&
         tile != selectedUnit.OccupiedTile &&
@@ -96,11 +95,9 @@ public class GameController : MonoBehaviour
 
     private void HandleLastSelectedUnit()
     {
-        if (_lastSelectedUnit != null && _lastSelectedTile != null)
-        {
-            SelectUnit(_lastSelectedUnit);
-            SelectTile(_lastSelectedTile);
-        }
+        if (_lastSelectedUnit ==  _lastSelectedTile) return;
+        SelectUnit(_lastSelectedUnit);
+        SelectTile(_lastSelectedTile);
     }
 
     private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
@@ -111,15 +108,15 @@ public class GameController : MonoBehaviour
             return;
 
         MoveUnit(selectedUnit, path);
-        HandleAdjacentUnits(selectedUnit, Grid.Generator.AllUnits);
+        HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
-        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.Generator.AllUnits))
+        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
         {
             SelectTile(selectedUnit.OccupiedTile);
         }
     }
 
-    private void HandleAdjacentUnits(Unit selectedUnit, List<Unit> allUnits)
+    private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
     {
         foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
         {
@@ -128,39 +125,33 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void UpdateNeighborUnits(Unit unit, Tile neighborTile, List<Unit> units)
+    private void UpdateNeighborUnits(Unit unit, Tile neighborTile, IEnumerable<Unit> units)
     {
         var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighborTile);
 
-        if (neighborUnit != null && neighborUnit.Type == unit.Type)
+        if (neighborUnit?.Type == unit.Type)
         {
             neighborUnit.OnUnitMoved(unit);
         }
     }
 
 
-    private void CheckAdjacentEnemies(Unit unit, List<Unit> units)
+    private void CheckAdjacentEnemies(Unit unit, IReadOnlyCollection<Unit> units)
     {
         if (IsUnitAdjacentToEnemy(unit, units))
         {
-            var adjacentEnemies = units.OfType<Unit>()
+            var adjacentEnemies = units
                 .Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
             AttackEnemies(unit, adjacentEnemies.ToList());
         }
     }
 
     // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
-    private bool IsUnitAdjacentToEnemy(Unit unit, List<Unit> units)
+    private bool IsUnitAdjacentToEnemy(Unit unit, IReadOnlyCollection<Unit> units)
     {
-        foreach (var neighborTile in unit.OccupiedTile.Neighbors)
-        {
-            var neighborUnit = units.OfType<Unit>()
-                .FirstOrDefault(u => u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy);
-            if (neighborUnit != null)
-                return true;
-        }
-
-        return false;
+        return unit.OccupiedTile.Neighbors.Select(neighborTile => units.FirstOrDefault(u => 
+            u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy)).
+            Any(neighborUnit => neighborUnit != null);
     }
 
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)

@@ -60,8 +60,6 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -126,4 +124,10 @@ MonoBehaviour:
   Interactor: {fileID: 0}
   State: 0
   Passability: 0
+  TileColors: {fileID: 0}
   UnitOn: 0
+  TileColorStandard: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 0}
+  ColorPlayerOnTile: {r: 0.047058824, g: 0.3019608, b: 0.003921569, a: 0}
+  ColorEnemyOnTile: {r: 0.43529412, g: 0, b: 0, a: 0}
+  ColorSelectedTile: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 0}
+  ColorMovementTile: {r: 0.11372549, g: 0.8392157, b: 0, a: 0}

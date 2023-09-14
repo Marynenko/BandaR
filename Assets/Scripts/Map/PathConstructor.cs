@@ -24,59 +24,8 @@ public class PathConstructor : MonoBehaviour
         new Direction(-1, 0), // Влево
         new Direction(1, 0)   // Вправо
     };
-
-    //public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> Path, Grid grid)
-    //{
-    //    Path = new List<Tile>();
-
-    //    Dictionary<Tile, float> gScore = new()
-    //    {
-    //        [startTile] = 0
-    //    };
-
-
-    //    Dictionary<Tile, float> fScore = new()
-    //    {
-    //        [startTile] = Heuristic(startTile, endTile)
-    //    };
-
-    //    List<Tile> closedList = new();
-    //    List<Tile> openList = new() { startTile }; 
-
-
-    //    Dictionary<Tile, Tile> cameFrom = new();
-
-    //    while (openList.Count > 0)
-    //    {
-    //        var currentTile = openList.OrderBy(tile => fScore.TryGetValue(tile, out var value) ? value : float.MaxValue).FirstOrDefault();
-    //        if (currentTile == endTile)
-    //            return ReconstructPath(cameFrom, endTile, out Path);
-
-    //        openList.Remove(currentTile);
-    //        closedList.Add(currentTile);
-
-    //        foreach (var neighborTile in GetNearbyTiles(currentTile, grid))
-    //        {
-    //            if (closedList.Contains(neighborTile))
-    //                continue;
-
-    //            var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
-
-    //            if (!openList.Contains(neighborTile))
-    //                openList.Add(neighborTile);
-    //            else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out float gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-    //                continue;
-
-    //            cameFrom[neighborTile] = currentTile;
-    //            gScore[neighborTile] = tentativeScore;
-    //            fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
-    //        }
-    //    }
-
-    //    return new List<Tile>();
-    //}
-
-    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path, Grid grid)
+    
+    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path, TilesGrid grid)
     {
         path = new List<Tile>();
 
@@ -154,7 +103,7 @@ public class PathConstructor : MonoBehaviour
         return path;
     }
 
-    public List<Tile> GetNearbyTiles(Tile tile, Grid grid)
+    public List<Tile> GetNearbyTiles(Tile tile, TilesGrid grid)
     {
         List<Tile> nearbyTiles = new();
 
@@ -163,7 +112,7 @@ public class PathConstructor : MonoBehaviour
             var coordinate = new Vector2Int(Convert.ToInt32(tile.Coordinates.x + direction.X),
                 Convert.ToInt32(tile.Coordinates.y + direction.Y));
 
-            if (grid.Generator.TryGetTile(coordinate, out var neighbor) && neighbor != tile)
+            if (grid.TryGetTile(coordinate, out var neighbor) && neighbor != tile)
                 nearbyTiles.Add(neighbor);
         }
 

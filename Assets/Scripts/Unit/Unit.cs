@@ -26,12 +26,11 @@ public abstract class Unit : MonoBehaviour
     private Tile _occupiedTile;
 
     // Public properties
-    public Grid Grid { get; private set; }
-    public UnitStats Stats { get { return _stats; } }
-    public UnitType Type { get { return _stats.Type; } }
-    public int MovementPoints { get { return Stats.MovementPoints; } }
-    public int MovementRange { get { return Stats.MovementRange; } }
-    public Tile OccupiedTile { get { return _occupiedTile; } } // Можно сослать на _occupiedTile
+    public UnitStats Stats => _stats;
+    public UnitType Type => _stats.Type;
+    public int MovementPoints => Stats.MovementPoints;
+    public int MovementRange => Stats.MovementRange;
+    public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
 
     // Events
@@ -42,9 +41,8 @@ public abstract class Unit : MonoBehaviour
     #region Initialization
     public virtual Unit GetUnitType() => this;
 
-    public void InitializeUnit(Grid grid, Tile startTile)
+    public void InitializeUnit(Tile startTile)
     {
-        Grid = grid;
         // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
@@ -108,7 +106,7 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    private void TakeDamage(int damage)
     {
         _stats.Health = -damage; // используем метод SetHealth() для изменения здоровья
         if (_stats.Health <= 0)
@@ -120,7 +118,7 @@ public abstract class Unit : MonoBehaviour
 
     public bool IsAlive() => _stats.Health > 0;
 
-    public Action Die()
+    private Action Die()
     {
         // Доработать
         Destroy(gameObject);

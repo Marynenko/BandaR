@@ -21,7 +21,7 @@ public class InputPlayer : MonoBehaviour
 
     public void HandleEndTurnButtonClicked()
     {
-        var units = _gameController.Grid.Generator.AllUnits;
+        var units = _gameController.Grid.AllUnits;
         // Проверяем, выбран ли игрок
         var selectedUnit = _gameController.Selector.SelectedUnit;
         if (selectedUnit != null)

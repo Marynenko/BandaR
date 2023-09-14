@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class Interactor : MonoBehaviour
 {
-    private Grid _grid;
+    private TilesGrid _grid;
     private List<Tile> _availableMoves;
 
     public PathConstructor PathConstructor;
-    public Unit SelectedUnit { get; set; }
+    public Unit SelectedUnit { get; private set; }
     public List<Tile> AvailableMoves => _availableMoves.AsReadOnly().ToList();
 
 
     public void OnEnable()
     {
         //GameController.OnUnitAction += HandleUnitAction;
-        _grid = GetComponentInParent<Grid>();
+        _grid = GetComponentInParent<TilesGrid>();
         _availableMoves = new List<Tile>();
     }
 
@@ -25,56 +25,32 @@ public class Interactor : MonoBehaviour
         unit.UpdateVisuals();
     }
 
-    public void HandleUnitSelected(Unit unit, Selector selector)
+    public void HandleUnitSelected(Unit unit)
     {
-        if (unit.Type == UnitType.Player)
-            HandlePlayerSelected(unit, selector);
-        else if (unit.Type == UnitType.Enemy)
-            HandleEnemySelected(unit, selector);
-    }
-
-    private void HandlePlayerSelected(Unit player, Selector selector)
-    {
-        //UIManager.Instance.OpenMenuAction();
-
-        SelectedUnit = player;
-        selector.SelectedUnit = player;
-        SelectedUnit.OccupiedTile.SelectTile(); // был player -> SelectedUnit;
-        selector.SelectTileToMoveFrom(player.OccupiedTile, UnitType.Player);
-        SelectedUnit.OccupiedTile.UnitOn = true; // тут или перед SelectTileToMoveFrom?
-    }
-
-    private void HandleEnemySelected(Unit enemy, Selector selector)
-    {
-        SelectedUnit = enemy;
+        SelectedUnit = unit;
         SelectedUnit.OccupiedTile.Available = true; //был enemy -> SelectedUnit;
-        selector.SelectedUnit = enemy;
         SelectedUnit.Status = UnitStatus.Unavailable;
         SelectedUnit.OccupiedTile.SelectTile();
-        selector.SelectTileToMoveFrom(SelectedUnit.OccupiedTile, UnitType.Enemy, true);
         SelectedUnit.OccupiedTile.UnitOn = true;
     }
 
-    public void HandleUnitDeselection(Unit selectedUnit, Unit unit, Selector selector)
+    public void HandleUnitDeselection(Unit selectedUnit)
     {
-        selector.UnselectUnit(selectedUnit);
-        unit.OccupiedTile.UnselectTile();
-        selector.ChangeAvailableTilesColor();
-        selector.SelectUnit(unit);
-        HighlightAvailableMoves(AvailableMoves, TileState.Movement, selector);
+        SelectedUnit.OccupiedTile.UnselectTile();
+        SelectedUnit = null;
+        HighlightAvailableMoves(AvailableMoves, TileState.Movement);
     }
 
-    public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, TileState state, Selector selector)
+    public void HighlightAvailableMoves(IReadOnlyList<Tile> availableMoves, TileState state)
     {
-        selector.ChangeAvailableTilesColor();
         HighlightTile(availableMoves.First(), TileState.OccupiedByPlayer);
         availableMoves.Skip(1).ToList().ForEach(tile => HighlightTile(tile, state));
     }
 
-    public void UnhighlightAllTiles(Selector selector)
+    public void UnhighlightAllTiles()
     {
         // Идем по всем клеткам на игровом поле
-        foreach (var tile in _grid.Generator.Tiles)
+        foreach (var tile in _grid.Tiles)
         {
             // Если клетка подсвечена и больше не доступна для хода, снимаем подсветку
             if (tile.State == TileState.Standard && tile != SelectedUnit.OccupiedTile)
@@ -98,7 +74,7 @@ public class Interactor : MonoBehaviour
     {
         var availableTiles = new List<Tile>();
 
-        foreach (var tile in _grid.Generator.Tiles)
+        foreach (var tile in _grid.Tiles)
             if (tile.IsAvailableForUnit(unit))
                 availableTiles.Add(tile);
         return availableTiles;
