@@ -14,7 +14,7 @@ public enum ActionType
 public abstract class Unit : MonoBehaviour
 {
     #region Variables
-    
+
     // Fields
     [SerializeField] private UnitStats _stats;
 
@@ -30,7 +30,7 @@ public abstract class Unit : MonoBehaviour
     public UnitStats Stats { get { return _stats; } }
     public UnitType Type { get { return _stats.Type; } }
     public int MovementPoints { get { return Stats.MovementPoints; } }
-    public int MovementRange { get { return Stats.MovementRange; } }    
+    public int MovementRange { get { return Stats.MovementRange; } }
     public Tile OccupiedTile { get { return _occupiedTile; } } // Можно сослать на _occupiedTile
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
 
@@ -68,7 +68,7 @@ public abstract class Unit : MonoBehaviour
                !targetTile.UnitOn &&
                Stats.MovementPoints >= targetTile.MovementCost;
     }
-        
+
     public void MoveToTile(Tile targetTile, float distanceSq)
     {
         _occupiedTile = targetTile;
@@ -78,16 +78,16 @@ public abstract class Unit : MonoBehaviour
         // Вычисляем позицию для перемещения с учетом высоты юнита
         Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
 
-        // Запускаем анимацию перемещения       
+        //Запускаем анимацию перемещения
         transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE) // Use Mathf.Sqrt for distance
-                 .SetEase(Ease.Linear)
+                 .SetEase(  Ease.Linear)
                  .OnComplete(() =>
                  {
                      transform.position = newPosition;
                      OnMoved?.Invoke(this); // Raise the OnMoved event after moving
                  });
 
-        // Raise the event after moving
+        //Raise the event after moving
         OnUnitMoved(this);
     }
 
@@ -95,7 +95,7 @@ public abstract class Unit : MonoBehaviour
 
     #region Action ATTACK
 
-    public bool CanAttack(Unit targetUnit) =>   
+    public bool CanAttack(Unit targetUnit) =>
         targetUnit != null &&
         targetUnit.Type == UnitType.Enemy &&
         Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;
@@ -110,7 +110,7 @@ public abstract class Unit : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        _stats.Health =- damage; // используем метод SetHealth() для изменения здоровья
+        _stats.Health = -damage; // используем метод SetHealth() для изменения здоровья
         if (_stats.Health <= 0)
         {
             _stats.Health = 0;

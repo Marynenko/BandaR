@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -14,7 +12,7 @@ public class UIManager : MonoBehaviour
         get
         {
             if (_instance == null)
-                _instance = FindObjectOfType<UIManager>();            
+                _instance = FindObjectOfType<UIManager>();
             return _instance;
         }
     }

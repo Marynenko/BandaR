@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -104,11 +103,11 @@ public class GameModel : MonoBehaviour
 
             if (SetUnitAvailability(ActivePlayer))
             {
-                EndTurn(); 
+                EndTurn();
                 return;
             }
 
-            _ai.Move(ActivePlayer);            
+            _ai.Move(ActivePlayer);
         }
 
         // Дополнительные действия, если необходимо, после окончания хода
@@ -234,6 +233,6 @@ public class GameModel : MonoBehaviour
         // Check if the unit can perform the action in the current situation
         // For example, a unit cannot attack if there are no enemy units nearby
         return false;
-    } 
+    }
     #endregion
 }

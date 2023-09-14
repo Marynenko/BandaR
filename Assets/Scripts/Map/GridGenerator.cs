@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class GridGenerator: MonoBehaviour
+public class GridGenerator : MonoBehaviour
 {
     [SerializeField] private Grid _grid;
     [SerializeField] private Transform _tilesPlace;
@@ -22,7 +22,7 @@ public class GridGenerator: MonoBehaviour
         Tiles = new Tile[_gridSize.x, _gridSize.y];
     }
     private void Start()
-    { 
+    {
         CreateGrid();
         LocateNeighborsTiles();
         GetAllExistedUnits();
@@ -35,16 +35,16 @@ public class GridGenerator: MonoBehaviour
         var tileSize = _tilePrefab.GetComponent<MeshRenderer>().bounds.size;
 
         for (var x = 0; x < _gridSize.x; x++)
-        for (var y = 0; y < _gridSize.y; y++)
-        {
-            // Чтобы сгенерировать клетку, нужно знать ее позицию.
-            var position = new Vector3(x * (tileSize.x + _offset), 0, y * (tileSize.z + _offset));
+            for (var y = 0; y < _gridSize.y; y++)
+            {
+                // Чтобы сгенерировать клетку, нужно знать ее позицию.
+                var position = new Vector3(x * (tileSize.x + _offset), 0, y * (tileSize.z + _offset));
 
-            var tile = Instantiate(_tilePrefab, position, Quaternion.identity, _tilesPlace);
-            tile.Initialize(x, y, Interactor, true, false); // тут передается Grid
+                var tile = Instantiate(_tilePrefab, position, Quaternion.identity, _tilesPlace);
+                tile.Initialize(x, y, Interactor, true, false); // тут передается Grid
 
-            Tiles[x, y] = tile;
-        }
+                Tiles[x, y] = tile;
+            }
     }
 
     public void LocateNeighborsTiles()

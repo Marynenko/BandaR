@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-public class Player : Unit
+﻿public class Player : Unit
 {
     public override Unit GetUnitType() => this;
 

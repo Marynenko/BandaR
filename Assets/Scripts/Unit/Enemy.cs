@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
-public class Enemy : Unit
+﻿public class Enemy : Unit
 {
     public override Unit GetUnitType() => this;
     //public override void Initialize(Tile cell)

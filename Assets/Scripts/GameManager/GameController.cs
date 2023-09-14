@@ -20,9 +20,9 @@ public class GameController : MonoBehaviour
         if (selectedUnit != null) return;
         if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
             Selector.SelectUnit(unit);
-
         else if (selectedUnit.Equals(unit))
             return;
+
         else switch (unit.Type)
         {
             case UnitType.Player:
@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour
         // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
         HandleLastSelectedUnit();
 
-        if (!IsTileInPath(selectedUnit, tile, out var path)) 
+        if (!IsTileInPath(selectedUnit, tile, out var path))
             return;
 
         HandleTileMovement(selectedUnit, path);
@@ -88,7 +88,7 @@ public class GameController : MonoBehaviour
 
     private bool IsClickValid<T, TU>(T selectedUnit, TU tile)
         where T : Unit
-        where TU : Tile 
+        where TU : Tile
         =>
         IsPlayerUnitAvailable(selectedUnit) &&
         tile != selectedUnit.OccupiedTile &&
@@ -123,7 +123,7 @@ public class GameController : MonoBehaviour
     {
         foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
         {
-            UpdateNeighborUnits(selectedUnit , neighborTile, allUnits);
+            UpdateNeighborUnits(selectedUnit, neighborTile, allUnits);
             CheckAdjacentEnemies(selectedUnit, allUnits);
         }
     }
@@ -180,7 +180,7 @@ public class GameController : MonoBehaviour
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
     private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
     {
-        path = Interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _, Grid);        
+        path = Interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _, Grid);
         return tile.UnitOn == false && unit.MovementPoints >= path.Count;
     }
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public class Interactor : MonoBehaviour
 {
@@ -24,7 +23,7 @@ public class Interactor : MonoBehaviour
     {
         // Обновить отображение юнита на игровом поле
         unit.UpdateVisuals();
-    } 
+    }
 
     public void HandleUnitSelected(Unit unit, Selector selector)
     {
@@ -36,7 +35,7 @@ public class Interactor : MonoBehaviour
 
     private void HandlePlayerSelected(Unit player, Selector selector)
     {
-        UIManager.Instance.OpenMenuAction();
+        //UIManager.Instance.OpenMenuAction();
 
         SelectedUnit = player;
         selector.SelectedUnit = player;
@@ -103,7 +102,7 @@ public class Interactor : MonoBehaviour
             if (tile.IsAvailableForUnit(unit))
                 availableTiles.Add(tile);
         return availableTiles;
-    }   
+    }
 }
 
 public class Direction

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -10,9 +9,10 @@ public class Tile : MonoBehaviour
 
     // Serialized fields
     [SerializeField] private MeshRenderer _meshRenderer;
+    [SerializeField] private Material _material;
 
     // Private fields
-    private bool _available;    
+    private bool _available;
     private readonly int _distance;
 
     // Public Properties fields
@@ -24,7 +24,7 @@ public class Tile : MonoBehaviour
     {
         //if (_available != isAvailable)
         //{
-            
+
         //}
 
         if (_available && UnitOn)
@@ -33,22 +33,14 @@ public class Tile : MonoBehaviour
             State = TileState.Standard; // Состояние доступное
             ChangeColor(TileState.Standard);
             UnitOn = false; // Игрока нет
-            //Passability = Passability.Passable; // Могу встать сюда
         }
         else
         {
-            if (UnitOn)
-            {
-                ChangeColor(State);
-                //if (State == TileState.OccupiedByPlayer)
-                //    ChangeColor(TileState.OccupiedByPlayer);
-                //else if (State == TileState.OccupiedByEnemy)
-                //    ChangeColor(ColorEnemyOnTile);
-            }
-            else
-            {
-                ChangeColor(TileState.Movement);
-            }
+            //if (State == TileState.OccupiedByPlayer)
+            //    ChangeColor(TileState.OccupiedByPlayer);
+            //else if (State == TileState.OccupiedByEnemy)
+            //    ChangeColor(ColorEnemyOnTile);
+            ChangeColor(UnitOn ? State : TileState.Movement);
         }
     }
     #endregion
@@ -58,6 +50,7 @@ public class Tile : MonoBehaviour
     public Interactor Interactor;
     public TileState State; // Состояние клетки.
     public Passability Passability;
+    public TileColors TileColors;
     public bool UnitOn; // Юнит на клетке или нет.
 
     // Static fields
@@ -75,6 +68,20 @@ public class Tile : MonoBehaviour
 
     #endregion
 
+    private void Awake()
+    {
+        TileColors = GetComponentInParent<TileColors>();
+
+        StateColors ??= new Dictionary<TileState, Color>()
+        {
+            { TileState.Standard, TileColors.TileColorStandard },
+            { TileState.OccupiedByPlayer, TileColors.ColorPlayerOnTile },
+            { TileState.OccupiedByEnemy, TileColors.ColorEnemyOnTile },
+            { TileState.Selected, TileColors.ColorSelectedTile },
+            { TileState.Movement, TileColors.ColorMovementTile }
+        };
+    }
+
     public void Initialize(int row, int column, Interactor interactor, bool isAvailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
@@ -86,15 +93,7 @@ public class Tile : MonoBehaviour
         Coordinates = new Vector2(row, column);
         Neighbors = new List<Tile>(4);
 
-        StateColors ??= new Dictionary<TileState, Color>()
-        {
-            { TileState.Standard, TileColors.TileColorStandard },
-            { TileState.OccupiedByPlayer, TileColors.ColorPlayerOnTile },
-            { TileState.OccupiedByEnemy, TileColors.ColorEnemyOnTile },
-            { TileState.Selected, TileColors.ColorSelectedTile },
-            { TileState.Movement, TileColors.ColorMovementTile }
-        };
-        //ChangeColor(TileColorStandard);
+        ChangeColor(State);
     }
 
     public void SelectTile()
@@ -124,15 +123,19 @@ public class Tile : MonoBehaviour
     public bool IsAvailableForUnit(Unit unit) =>
         !IsOccupied() && Vector3.Distance(unit.transform.position, transform.position) <= unit.MovementPoints;
 
-    public bool IsOccupied() => 
+    public bool IsOccupied() =>
         State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
 
     public void ChangeColor(TileState state)
     {
-        if (StateColors.TryGetValue(state, out var color))
-        {
-            _meshRenderer.material.color = color;
-        }
+        _meshRenderer.material.color = StateColors[state];
+        _material.color = StateColors[state];
+
+
+        //if (StateColors.(state, out var color))
+        //{
+        //    _meshRenderer.material.color = color;
+        //}
     }
 }
 

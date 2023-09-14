@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Selector : MonoBehaviour
@@ -11,7 +10,7 @@ public class Selector : MonoBehaviour
     public delegate void UnitSelectedEventHandler(Unit unit, Selector selector);
     public static event UnitSelectedEventHandler OnUnitSelected;
 
-    public Unit SelectedUnit { get; set; }    
+    public Unit SelectedUnit { get; set; }
 
     private void OnEnable()
     {
