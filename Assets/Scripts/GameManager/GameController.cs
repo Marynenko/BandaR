@@ -1,41 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class GameController : MonoBehaviour
 {
-    private Unit _lastSelectedUnit;
-    private Tile _lastSelectedTile;
+    private Unit _lastSelectedUnit; // T - Unit
+    private Tile _lastSelectedTile; // TU - Tile
 
-    public TilesGrid Grid;
+    public Grid Grid;
     public Selector Selector;
-    public Interactor Interactor;
+    
+    // Определение делегата
+    public delegate void SelectionUnitHandler(Unit unit);
+    
+    // Определение событий
+    public event SelectionUnitHandler UnitSelected;
+    public event SelectionUnitHandler UnitUnselected;
 
-    public void HandleUnitClick(Unit unit)
+
+    public void HandleUnitClick(Unit unitToHandle)    
     {
-        var selectedUnit = Interactor.SelectedUnit;
+        var selectedUnit = Selector.SelectedUnit;
 
         // if (selectedUnit != null) return;
-        if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
+        if (unitToHandle.Type == UnitType.Player && unitToHandle.Status == UnitStatus.Available)
         {
-            Selector.SelectUnit(unit);
+            UnitSelected?.Invoke(unitToHandle);
+            // Selector.SelectUnit(unitToHandle); // TODO FROM here continue debug after Select Unit
         }
-        // else if (selectedUnit?.Equals(unit) == true)
+        // else if (selectedUnit?.Equals(unitToHandle) == true)
         //     return;
 
-        else switch (unit.Type)
-        {
-            case UnitType.Player:
-                Selector.SelectUnit(unit);
-                break;
-            case UnitType.Enemy when selectedUnit.Type == UnitType.Player:
-                HandleUnitAttack(selectedUnit, unit);
-                break;
-            default:
-                Interactor.HandleUnitDeselection(selectedUnit);
-                break;
-        }
+        // else switch (unitToHandle.Type)
+        // {
+        //     case UnitType.Player:
+        //         Selector.SelectUnit(unitToHandle);
+        //         break;
+        //     case UnitType.Enemy when selectedUnit.Type == UnitType.Player:
+        //         HandleUnitAttack(selectedUnit, unitToHandle);
+        //         break;
+        //     default:
+        //         Selector.HandleUnitDeselection(selectedUnit);
+        //         break;
+        // }
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
@@ -51,17 +60,17 @@ public class GameController : MonoBehaviour
             if (targetUnit.Stats.Health <= 0)
                 Grid.RemoveUnit(targetUnit);
             else
-                Interactor.UpdateUnit(targetUnit);
+                Selector.UpdateUnit(targetUnit);
 
-            selectedUnit.OccupiedTile.UnselectTile();
-            Selector.UnselectUnit(selectedUnit);
+            // Selector.UnselectUnit(selectedUnit);
+            UnitUnselected?.Invoke(selectedUnit);
 
 
             if (selectedUnit.IsAlive())
             {
                 // Update available moves after attack
-                var availableMoves = Selector.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
-                Interactor.HighlightAvailableMoves(availableMoves, TileState.Movement);
+                var availableMoves = Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
+                GridUI.HighlightAvailableMoves(availableMoves, TileState.Movement); // TODO надо не надо?
             }
         }
     }
@@ -70,7 +79,7 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (!IsClickValid(selectedUnit, tile))
+         if (!IsClickValid(selectedUnit, tile))
             return;
 
         // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
@@ -84,7 +93,8 @@ public class GameController : MonoBehaviour
         _lastSelectedUnit = selectedUnit;
         _lastSelectedTile = selectedUnit.OccupiedTile;
         selectedUnit.Status = UnitStatus.Moved;
-        UnselectUnit(selectedUnit);
+        UnitUnselected?.Invoke(selectedUnit);
+        // Selector.UnselectUnit(selectedUnit);
     }
 
     private bool IsClickValid(Unit selectedUnit, Tile tile)
@@ -96,23 +106,25 @@ public class GameController : MonoBehaviour
     private void HandleLastSelectedUnit()
     {
         if (_lastSelectedUnit ==  _lastSelectedTile) return;
-        SelectUnit(_lastSelectedUnit);
-        SelectTile(_lastSelectedTile);
+        UnitSelected?.Invoke(_lastSelectedUnit);
+        // TileSelected?.Ivoke(); TODO сделать в будущем TileSelected и TileUnselected
+        // Selector?.SelectUnit(_lastSelectedUnit);
+        _lastSelectedTile.SelectTile();
     }
 
     private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
     {
-        UnselectTile(selectedUnit.OccupiedTile); // Убрать выделение из клетки на которой игрок.
-
+        selectedUnit.OccupiedTile.UnselectTile(); // Убрать выделение из клетки
+        
         if (path.Count == 0)
             return;
 
-        MoveUnit(selectedUnit, path);
+        MoveUnitAlongPath(selectedUnit, path);
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
         if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
         {
-            SelectTile(selectedUnit.OccupiedTile);
+            selectedUnit.OccupiedTile.SelectTile();
         }
     }
 
@@ -171,22 +183,17 @@ public class GameController : MonoBehaviour
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
     private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
     {
-        path = Interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _, Grid);
+        path = Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
         return tile.UnitOn == false && unit.MovementPoints >= path.Count;
     }
-
-    private void UnselectUnit(Unit unit) => Selector?.UnselectUnit(unit);
-    private void UnselectTile(Tile tile) => tile.UnselectTile();
-    private void MoveUnit(Unit unit, List<Tile> path) => MoveUnitAlongPath(unit, path);
+    
     public void MoveUnitAlongPath(Unit unit, List<Tile> path)
     {
         // Двигаем юнита поочередно на каждую ячейку из списка
         foreach (var tile in path)
             if (unit.CanMoveToTile(tile, out float distanceSqrt))
-                unit.MoveToTile(tile, distanceSqrt); //
+                unit.MoveToTile(tile, distanceSqrt);
     }
-    private void SelectTile(Tile tile) => tile.SelectTile();
-    private void SelectUnit(Unit unit) => Selector?.SelectUnit(unit);
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ
     private void AttackEnemies(Unit unit, List<Unit> enemies)

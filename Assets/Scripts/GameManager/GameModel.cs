@@ -1,49 +1,50 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameModel : MonoBehaviour
 {
-    [SerializeField] private AI _ai;
-    [SerializeField] private TilesGrid _grid;
-    [SerializeField] private InputPlayer _input;
-    [SerializeField] private GameController _gameController;
-    [SerializeField] private Selector _selector;
-    [SerializeField] private Interactor _interactor;
-    [SerializeField] private Button _endTurnButton;
+    [FormerlySerializedAs("_ai")] [SerializeField] private AI ai;
+    [FormerlySerializedAs("_grid")] [SerializeField] private Grid grid;
+    [FormerlySerializedAs("_input")] [SerializeField] private InputPlayer input;
+    [FormerlySerializedAs("_gameController")] [SerializeField] private GameController gameController;
+    [FormerlySerializedAs("_selector")] [SerializeField] private Selector selector;
+    [FormerlySerializedAs("_endTurnButton")] [SerializeField] private Button endTurnButton;
 
-    [HideInInspector] public Unit ActivePlayer;
+    [FormerlySerializedAs("ActivePlayer")] [HideInInspector] public Unit activePlayer;
 
     private readonly ActionType _actionType;
     private List<Unit> _players = new();
 
     private void Start()
     {
-        _endTurnButton.onClick.AddListener(_input.HandleEndTurnButtonClicked);
+        endTurnButton.onClick.AddListener(input.HandleEndTurnButtonClicked);
+        grid.StartCreating();
+        StartGame();
     }
 
     public void StartGame()
     {
-        _grid.StartCreating();
-        _players = _grid.AllUnits;
-        ActivePlayer = _players[0]; // Назначаем первого игрока активным
-        ActivePlayer.Status = UnitStatus.Available;
+        _players = grid.AllUnits;
+        activePlayer = _players[0]; // Назначаем первого игрока активным
+        activePlayer.Status = UnitStatus.Available;
         StartTurn();
     }
 
 
     private void Update()
     {
-        if (ActivePlayer == null)
+        if (activePlayer == null)
             return;
 
         if (Input.GetMouseButtonDown(0))
         {
             var mousePosition = Input.mousePosition;
-            _input.HandleLeftClick(mousePosition);
+            input.HandleLeftClick(mousePosition);
 
-            _ai.UpdateUi(ActivePlayer, _endTurnButton);
+            ai.UpdateUi(activePlayer, endTurnButton);
         }
     }
 
@@ -53,7 +54,7 @@ public class GameModel : MonoBehaviour
         if (IsGameOver())
             return;
 
-        _grid.SetAvailableTiles();
+        grid.SetAvailableTiles();
 
         //ResetTilesAvailability();
 
@@ -71,7 +72,7 @@ public class GameModel : MonoBehaviour
         // Снимаем выделение с текущего юнита и доступность ячеек
         //ResetTilesAvailability();
         //ActivePlayer.OccupiedTile.UnselectTile();
-        ActivePlayer = GetNextPlayer(ActivePlayer);
+        activePlayer = GetNextPlayer(activePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
         if (_players.All(p => p.Status == UnitStatus.Moved))
@@ -84,31 +85,31 @@ public class GameModel : MonoBehaviour
             EndGame();
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
-        if (ActivePlayer.Type == UnitType.Player)
+        if (activePlayer.Type == UnitType.Player)
         {
-            ActivePlayer.Status = UnitStatus.Available;
+            activePlayer.Status = UnitStatus.Available;
             //SetUnitAvailability(ActivePlayer); 
-            ActivePlayer.Stats.MovementPoints = ActivePlayer.Stats.MovementRange;
+            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
 
-            if (SetUnitAvailability(ActivePlayer))
+            if (SetUnitAvailability(activePlayer))
             {
                 EndTurn();
                 return;
             }
         }
-        else if (ActivePlayer.Type == UnitType.Enemy)
+        else if (activePlayer.Type == UnitType.Enemy)
         {
             // Если следующий игрок - AI, то делаем ход AI
             //ActivePlayer.Status = UnitStatus.Available;
-            ActivePlayer.Status = UnitStatus.AIMove;
+            activePlayer.Status = UnitStatus.AIMove;
 
-            if (SetUnitAvailability(ActivePlayer))
+            if (SetUnitAvailability(activePlayer))
             {
                 EndTurn();
                 return;
             }
 
-            _ai.Move(ActivePlayer);
+            ai.Move(activePlayer);
         }
 
         // Дополнительные действия, если необходимо, после окончания хода
@@ -137,7 +138,7 @@ public class GameModel : MonoBehaviour
 
     private void UnselectUnit()
     {
-        _selector.UnselectUnit(ActivePlayer);
+        selector.UnselectUnit(activePlayer);
         ResetTilesAvailability();
         //// Unselect the current unit and reset tile availability
         //if (_selector.SelectedUnit != null)
@@ -152,23 +153,23 @@ public class GameModel : MonoBehaviour
 
     public void ResetTilesAvailability()
     {
-        var currentTile = ActivePlayer.OccupiedTile;
+        var currentTile = activePlayer.OccupiedTile;
         currentTile.UnselectTile();
 
         // Set all cells to be available for selection
-        _interactor.AvailableMoves.ForEach(move => move.UnselectTile());
+        selector.AvailableMoves.ForEach(move => move.UnselectTile());
     }
 
     public void ResetUnitsAvailability()
     {
-        foreach (var unit in _grid.AllUnits.OfType<Unit>())
+        foreach (var unit in grid.AllUnits.OfType<Unit>())
             unit.Status = UnitStatus.Unavailable;
     }
 
 
     private Unit GetNextPlayer(Unit player)
     {
-        var listOfUnits = _grid.AllUnits.OfType<Unit>().ToList();
+        var listOfUnits = grid.AllUnits.OfType<Unit>().ToList();
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
         // Проверяем, является ли следующий индекс последним игроком
@@ -203,7 +204,7 @@ public class GameModel : MonoBehaviour
     public void EndGame()
     {
         // Implement game ending logic here
-        _endTurnButton.interactable = false;
+        endTurnButton.interactable = false;
         // Дополнительный функционал завершения игры
     }
 
@@ -215,12 +216,12 @@ public class GameModel : MonoBehaviour
     #region Не использую пока что
 
     public bool IsTileWithinBoardBounds(Tile tile) =>
-        tile.Coordinates.x >= 0 && tile.Coordinates.x < _grid.GridSize.x
+        tile.Coordinates.x >= 0 && tile.Coordinates.x < grid.GridSize.x
                                 && tile.Coordinates.y >= 0
-                                && tile.Coordinates.y < _grid.GridSize.y;
+                                && tile.Coordinates.y < grid.GridSize.y;
 
     public bool IsUnitOwnedByCurrentPlayer(Unit unit) =>
-        unit.Type == ActivePlayer.Type; // Может быть
+        unit.Type == activePlayer.Type; // Может быть
 
     public bool IsUnitAvailableForAction(Unit unit)
     {

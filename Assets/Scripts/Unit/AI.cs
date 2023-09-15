@@ -1,23 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class AI : MonoBehaviour
 {
-    [SerializeField] private Button _endTurnButton;
+    [FormerlySerializedAs("_endTurnButton")] [SerializeField] private Button endTurnButton;
     private GameController _gameController;
     private GameModel _gameModel;
+    private Grid _grid;
 
     private void OnEnable()
     {
         _gameController = gameObject.GetComponentInParent<GameController>();
         _gameModel = gameObject.GetComponentInParent<GameModel>();
+        _grid = _gameController.Grid;
     }
 
     public void UpdateUi<T>(T activePlayer, Button button) where T : Unit
     {
-        var units = _gameController.Grid.AllUnits;
+        var units = _grid.AllUnits;
         var currentPlayer = activePlayer;
 
         if (currentPlayer == null)
@@ -53,13 +56,7 @@ public class AI : MonoBehaviour
 
     public void Move(Unit unit)
     {
-        //_gameModel.ActivePlayer = unit;
-        var ameController = _gameController;
-        var grid = _gameController.Grid;
-        var interactor = _gameController.Interactor;
-        var localSelector = _gameController.Selector;
-
-        var availableMoves = localSelector.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints);
+        var availableMoves = _gameController.Selector.PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints);
         if (availableMoves.Count == 0)
         {
             unit.Status = UnitStatus.Moved;
@@ -67,16 +64,17 @@ public class AI : MonoBehaviour
         }
 
         // Находим всех враждебных юнитов
-        var enemies = grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
+        var enemies = _grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
 
         // Выбираем ближайшего врага
-        var targetEnemy = enemies.OrderBy(e => interactor.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+        var targetEnemy = enemies.OrderBy(e => 
+            _gameController.Selector.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
         // Если нашли врага, движемся к нему
         if (targetEnemy != null)
         {
             var targetTile = targetEnemy.OccupiedTile;
-            interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> path, _gameController.Grid);
+            _gameController.Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> path);
             _gameController.MoveUnitAlongPath(unit, path);
         }
         else
@@ -84,13 +82,13 @@ public class AI : MonoBehaviour
             // Если врагов нет, движемся к случайной доступной клетке
             var randomIndex = Random.Range(0, availableMoves.Count);
             var targetTile = availableMoves[randomIndex];
-            interactor.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out List<Tile> path, _gameController.Grid);
+            _gameController.Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile, out var path);
             _gameController.MoveUnitAlongPath(unit, path);
         }
 
         // Обновляем состояние юнита
-        interactor.UpdateUnit(unit);
-        localSelector.UnselectUnit(unit); // Можно убрать наверное
+        _grid.Selector.UpdateUnit(unit); // TODO переместить во внутрь
+        _grid.Selector.UnselectUnit(unit); // Можно убрать наверное
 
         // Обновляем доступность ячеек после перемещения
         unit.OccupiedTile.UnselectTile();

@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class PathConstructor : MonoBehaviour
 {
-    public readonly struct Direction
+    private Grid _grid;
+    private readonly struct Direction
     {
         public int X { get; }
         public int Y { get; }
@@ -24,8 +25,13 @@ public class PathConstructor : MonoBehaviour
         new Direction(-1, 0), // Влево
         new Direction(1, 0)   // Вправо
     };
-    
-    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path, TilesGrid grid)
+
+    private void OnEnable()
+    {
+        _grid = GetComponentInParent<Grid>();
+    }
+
+    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path) // edit here grid
     {
         path = new List<Tile>();
 
@@ -55,7 +61,7 @@ public class PathConstructor : MonoBehaviour
                 openList.Remove(openList.First().Key);
             closedList.Add(currentTile);
 
-            foreach (var neighborTile in GetNearbyTiles(currentTile, grid).Where(neighborTile => !closedList.Contains(neighborTile)))
+            foreach (var neighborTile in GetNeighborTiles(currentTile).Where(neighborTile => !closedList.Contains(neighborTile)))
             {
                 if (currentTile != null)
                 {
@@ -103,7 +109,7 @@ public class PathConstructor : MonoBehaviour
         return path;
     }
 
-    public List<Tile> GetNearbyTiles(Tile tile, TilesGrid grid)
+    public IEnumerable<Tile> GetNeighborTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
 
@@ -112,12 +118,55 @@ public class PathConstructor : MonoBehaviour
             var coordinate = new Vector2Int(Convert.ToInt32(tile.Coordinates.x + direction.X),
                 Convert.ToInt32(tile.Coordinates.y + direction.Y));
 
-            if (grid.TryGetTile(coordinate, out var neighbor) && neighbor != tile)
+            if (TryGetTile(coordinate, out var neighbor) && neighbor != tile)
                 nearbyTiles.Add(neighbor);
         }
 
         tile.Neighbors = nearbyTiles;
         return nearbyTiles;
+    }
+    
+    public List<Tile> GetAvailableMoves(Tile tile, int maxMoves)
+    {
+        var visitedTiles = new HashSet<Tile>();
+        var availableMoves = new List<Tile>();
+
+        var queue = new Queue<(Tile, int)>();
+        queue.Enqueue((tile, maxMoves));
+
+        while (queue.Count > 0)
+        {
+            var (currentTile, remainingMoves) = queue.Dequeue();
+
+            visitedTiles.Add(currentTile);
+            availableMoves.Add(currentTile);
+
+            if (remainingMoves <= 1) continue;
+            foreach (var neighbour in GetNeighborTiles(currentTile))
+                if (!(visitedTiles.Contains(neighbour) && neighbour.IsOccupied()))
+                {
+                    // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки
+                    var cost = neighbour.MovementCost;
+                    if (cost <= remainingMoves)
+                        queue.Enqueue((neighbour, remainingMoves - cost));
+                }
+        }
+
+        return availableMoves;
+    }
+
+    private bool TryGetTile(Vector2Int coordinate, out Tile tile)
+    {
+        if (coordinate.x >= 0 && coordinate.x < _grid.GridSize.x && coordinate.y >= 0 && coordinate.y < _grid.GridSize.y)
+        {
+            tile = _grid.Tiles[coordinate.x, coordinate.y];
+            return true;
+        }
+        else
+        {
+            tile = null;
+            return false;
+        }
     }
 
     public float GetDistance(Tile tileFrom, Tile tileTo)

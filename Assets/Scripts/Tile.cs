@@ -5,16 +5,13 @@ public class Tile : MonoBehaviour
 {
     #region Variables
 
-    // Serialized fields
-    [SerializeField] private MeshRenderer _meshRenderer;
-    // [SerializeField] private Material _material;
-
     // Private fields
+    private MeshRenderer _meshRenderer;
     private bool _available;
     private readonly int _distance;
 
     // Public Properties fields
-    public List<Tile> Neighbors { get; set; }
+    public IEnumerable<Tile> Neighbors { get; set; }
 
     #region Variable -> Available
     public bool Available { get => _available; set => SetAvailable(value); }
@@ -45,7 +42,6 @@ public class Tile : MonoBehaviour
 
     // Public fields
     public Vector2 Coordinates; // Позиция Клетки.
-    public Interactor Interactor;
     public TileState State; // Состояние клетки.
     public Passability Passability;
     public bool UnitOn; // Юнит на клетке или нет.
@@ -59,7 +55,7 @@ public class Tile : MonoBehaviour
     public Color CurrentColor;
     
     // Static fields
-    public static Dictionary<TileState, Color> StateColors;
+    private static Dictionary<TileState, Color> _stateColors;
 
     // Other variables
     internal readonly int MovementCost = 1;
@@ -75,7 +71,9 @@ public class Tile : MonoBehaviour
 
     private void Awake()
     {
-        StateColors ??= new Dictionary<TileState, Color>()
+        _meshRenderer = GetComponent<MeshRenderer>();
+        
+        _stateColors ??= new Dictionary<TileState, Color>()
         {
             { TileState.Standard, TileColorStandard },
             { TileState.OccupiedByPlayer, ColorPlayerOnTile },
@@ -85,10 +83,9 @@ public class Tile : MonoBehaviour
         };
     }
 
-    public void Initialize(int row, int column, Interactor interactor, bool isAvailable, bool unitOn)
+    public void Initialize(int row, int column, bool isAvailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
-        Interactor = interactor;
         _available = isAvailable;
         UnitOn = unitOn;
         State = TileState.Standard;
@@ -97,7 +94,6 @@ public class Tile : MonoBehaviour
         Neighbors = new List<Tile>(4);
 
         ChangeColor(State);
-        CurrentColor = StateColors[State];
     }
 
     public void SelectTile()
@@ -110,19 +106,9 @@ public class Tile : MonoBehaviour
 
     public void UnselectTile()
     {
-        Available = true;
-        UnhighlightAvailableMoves();
+        Available = true; // TODO выяснить нужно это или GridUI.HighlightTile?
         OnTileDeselected?.Invoke(this);
     }
-
-    public void UnhighlightAvailableMoves()
-    {
-        // Идем по всем клеткам на игровом поле
-        foreach (var tile in Neighbors)
-            tile.UnhighlightTile();
-    }
-
-    public void UnhighlightTile() => Available = true;
 
     public bool IsAvailableForUnit(Unit unit) =>
         !IsOccupied() && Vector3.Distance(unit.transform.position, transform.position) <= unit.MovementPoints;
@@ -132,14 +118,8 @@ public class Tile : MonoBehaviour
 
     public void ChangeColor(TileState state)
     {
-        _meshRenderer.material.color = StateColors[state];
-        // _material.color = StateColors[state];
-
-
-        //if (StateColors.(state, out var color))
-        //{
-        //    _meshRenderer.material.color = color;
-        //}
+        _meshRenderer.material.color = _stateColors[state];
+        CurrentColor = _stateColors[state];
     }
 }
 

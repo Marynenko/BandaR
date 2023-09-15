@@ -22,7 +22,7 @@
 
     //private bool IsPlayerInSight()
     //{
-    //    foreach (Unit unit in Interactor.AllUnits)
+    //    foreach (Unit unit in Selector.AllUnits)
     //    {
     //        if (unit.Type == UnitType.Player)
     //        {
