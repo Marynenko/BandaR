@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class GameModel : MonoBehaviour
 {
-    [FormerlySerializedAs("_ai")] [SerializeField] private AI ai;
-    [FormerlySerializedAs("_grid")] [SerializeField] private Grid grid;
-    [FormerlySerializedAs("_input")] [SerializeField] private InputPlayer input;
-    [FormerlySerializedAs("_gameController")] [SerializeField] private GameController gameController;
-    [FormerlySerializedAs("_selector")] [SerializeField] private Selector selector;
-    [FormerlySerializedAs("_endTurnButton")] [SerializeField] private Button endTurnButton;
+    [SerializeField] private AI ai;
+    [SerializeField] private Grid grid;
+    [SerializeField] private InputPlayer input;
+    [SerializeField] private GameController gameController;
+    [SerializeField] private Selector selector;
+    [SerializeField] private Button endTurnButton;
 
-    [FormerlySerializedAs("ActivePlayer")] [HideInInspector] public Unit activePlayer;
+    [HideInInspector] public Unit activePlayer;
 
     private readonly ActionType _actionType;
     private List<Unit> _players = new();
@@ -43,9 +43,9 @@ public class GameModel : MonoBehaviour
         {
             var mousePosition = Input.mousePosition;
             input.HandleLeftClick(mousePosition);
-
-            ai.UpdateUi(activePlayer, endTurnButton);
         }
+        
+        ai.UpdateUi(activePlayer, endTurnButton);
     }
 
 

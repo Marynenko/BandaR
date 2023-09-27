@@ -27,3 +27,12 @@ public enum UnitStatus
     Waiting,
     AIMove
 }
+
+public enum ActionType
+{
+    Select,
+    Move,
+    Attack,
+    SpecialAbility,
+    Die
+}

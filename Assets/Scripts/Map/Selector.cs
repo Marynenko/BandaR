@@ -31,45 +31,39 @@ public class Selector: MonoBehaviour
         _gameController.UnitUnselected -= UnselectUnit;
     }
 
-    public void SelectUnit(Unit unit)
+    private void SelectUnit(Unit unit)
     {
-        // GridUI.HighlightAllTilesToStandard(); // TODO посмотреть стоит ли чистить цвета постоянно??
         GridUI.HighlightTile(unit.OccupiedTile, unit.OccupiedTile.State);
-        // HighlightAvailableMoves(unit.OccupiedTile);
         _availableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         GridUI.HighlightAvailableMoves(_availableMoves, TileState.Movement);
-        
         SelectedUnit = unit;
-        SelectedUnit.OccupiedTile.Available = true; //был enemy -> SelectedUnit;
-        SelectedUnit.Status = UnitStatus.Unavailable;
-        SelectedUnit.OccupiedTile.SelectTile();
-        SelectedUnit.OccupiedTile.UnitOn = true;
+        SelectedUnit.OccupiedTile.SelectTile(); 
     }
     
     public void UnselectUnit(Unit unit)
     {
-        // Unselect the current unit and reset tile availability
-        // HighlightAllTilesToStandard(); // TODO посмотреть стоит ли чистить цвета постоянно??
-        GridUI.HighlightTile(unit.OccupiedTile, TileState.Standard);
+        // GridUI.HighlightTile(unit.OccupiedTile, TileState.Standard);
+        GridUI.HighlightTiles(_availableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
+        UnitTurnIsOver();
         SelectedUnit = null;
-        
-        //unit.OccupiedTile.ClearUnit();
     }
-
-    public List<Tile> GetAvailableTiles(Unit unit)
+    
+    public bool UnitTurnIsOver()
     {
-        var availableTiles = new List<Tile>();
+        // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё Сѓ РїРµСЂСЃРѕРЅР°Р¶Р° РµС‰Рµ РѕС‡РєРё РїРµСЂРµРґРІРёР¶РµРЅРёСЏ
+        if (SelectedUnit != null && SelectedUnit.MovementPoints > 1)
+        {
+            // Р•СЃР»Рё РµСЃС‚СЊ, СЃРЅРѕРІР° Р°РєС‚РёРІРёСЂСѓРµРј РїРµСЂСЃРѕРЅР°Р¶Р°
+            SelectUnit(SelectedUnit);
+        }
 
-        foreach (var tile in _grid.Tiles)
-            if (tile.IsAvailableForUnit(unit))
-                availableTiles.Add(tile);
-        return availableTiles;
+        return true;
     }
 
     public void UpdateUnit(Unit unit)
     {
-        // Обновить отображение юнита на игровом поле
+        // РћР±РЅРѕРІРёС‚СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ СЋРЅРёС‚Р° РЅР° РёРіСЂРѕРІРѕРј РїРѕР»Рµ
         unit.UpdateVisuals();
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputPlayer : MonoBehaviour
@@ -16,7 +18,6 @@ public class InputPlayer : MonoBehaviour
             else if (hit.collider.TryGetComponent(out Tile tile))
                 _gameController.HandleTileClick(tile);
         }
-        //_gameController.UnhighlightAvailableMoves();
     }
 
     public void HandleEndTurnButtonClicked()

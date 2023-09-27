@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class AI : MonoBehaviour
 {
-    [FormerlySerializedAs("_endTurnButton")] [SerializeField] private Button endTurnButton;
+    [SerializeField] private Button endTurnButton;
     private GameController _gameController;
     private GameModel _gameModel;
     private Grid _grid;
@@ -18,7 +18,7 @@ public class AI : MonoBehaviour
         _grid = _gameController.Grid;
     }
 
-    public void UpdateUi<T>(T activePlayer, Button button) where T : Unit
+    public void UpdateUi(Unit activePlayer, Button button)
     {
         var units = _grid.AllUnits;
         var currentPlayer = activePlayer;
@@ -45,12 +45,6 @@ public class AI : MonoBehaviour
         }
 
         button.interactable = canEndTurn;
-
-        // Дополнение: проверяем, выбран ли юнит и сделан ли уже ход
-        if (currentPlayer.Status != UnitStatus.Moved)
-        {
-            canEndTurn = false;
-        }
     }
 
 
@@ -91,8 +85,8 @@ public class AI : MonoBehaviour
         _grid.Selector.UnselectUnit(unit); // Можно убрать наверное
 
         // Обновляем доступность ячеек после перемещения
-        unit.OccupiedTile.UnselectTile();
-        unit.Status = UnitStatus.Moved;
+        // unit.OccupiedTile.UnselectTile();
+        // unit.Status = UnitStatus.Moved;
         unit.Stats.MovementPoints = unit.Stats.MovementRange; // Добавил, должно работать
 
         _gameModel.EndTurn();

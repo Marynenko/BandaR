@@ -805,7 +805,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Update - 0.1.4.7.7.7.4 - \u041D\u0415 \u0422\u0415\u0421\u0422\u0418\u0420\u041E\u0412\u0410\u041D\u041E "
+  m_text: "Update - 0.1.4.7.7.7.5 - \u0414\u043E\u0440\u0430\u0431\u043E\u0442\u043A\u0430
+    + \u0422\u0435\u0441\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1347,7 +1348,7 @@ GameObject:
   - component: {fileID: 1624328205}
   - component: {fileID: 1624328206}
   m_Layer: 0
-  m_Name: Tiles Map
+  m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -20,26 +20,25 @@ public class GameController : MonoBehaviour
     public event SelectionUnitHandler UnitUnselected;
 
 
-    public void HandleUnitClick(Unit unitToHandle)    
+    public void HandleUnitClick(Unit unit)    
     {
         var selectedUnit = Selector.SelectedUnit;
 
         // if (selectedUnit != null) return;
-        if (unitToHandle.Type == UnitType.Player && unitToHandle.Status == UnitStatus.Available)
+        if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
         {
-            UnitSelected?.Invoke(unitToHandle);
-            // Selector.SelectUnit(unitToHandle); // TODO FROM here continue debug after Select Unit
+            UnitSelected?.Invoke(unit);
         }
-        // else if (selectedUnit?.Equals(unitToHandle) == true)
+        // else if (selectedUnit?.Equals(unit) == true)
         //     return;
 
-        // else switch (unitToHandle.Type)
+        // else switch (unit.Type)
         // {
         //     case UnitType.Player:
-        //         Selector.SelectUnit(unitToHandle);
+        //         Selector.SelectUnit(unit);
         //         break;
         //     case UnitType.Enemy when selectedUnit.Type == UnitType.Player:
-        //         HandleUnitAttack(selectedUnit, unitToHandle);
+        //         HandleUnitAttack(selectedUnit, unit);
         //         break;
         //     default:
         //         Selector.HandleUnitDeselection(selectedUnit);
@@ -59,8 +58,8 @@ public class GameController : MonoBehaviour
 
             if (targetUnit.Stats.Health <= 0)
                 Grid.RemoveUnit(targetUnit);
-            else
-                Selector.UpdateUnit(targetUnit);
+            // else
+            //     Selector.UpdateUnit(targetUnit);
 
             // Selector.UnselectUnit(selectedUnit);
             UnitUnselected?.Invoke(selectedUnit);
@@ -82,8 +81,9 @@ public class GameController : MonoBehaviour
          if (!IsClickValid(selectedUnit, tile))
             return;
 
-        // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
-        HandleLastSelectedUnit();
+        // // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
+        // if (Selector.SelectedUnit != null)
+        //     HandleLastSelectedUnit();
 
         if (!IsTileInPath(selectedUnit, tile, out var path))
             return;
@@ -93,8 +93,6 @@ public class GameController : MonoBehaviour
         _lastSelectedUnit = selectedUnit;
         _lastSelectedTile = selectedUnit.OccupiedTile;
         selectedUnit.Status = UnitStatus.Moved;
-        UnitUnselected?.Invoke(selectedUnit);
-        // Selector.UnselectUnit(selectedUnit);
     }
 
     private bool IsClickValid(Unit selectedUnit, Tile tile)
@@ -103,18 +101,18 @@ public class GameController : MonoBehaviour
         tile != selectedUnit.OccupiedTile &&
         selectedUnit.Status != UnitStatus.Moved;
 
-    private void HandleLastSelectedUnit()
-    {
-        if (_lastSelectedUnit ==  _lastSelectedTile) return;
-        UnitSelected?.Invoke(_lastSelectedUnit);
-        // TileSelected?.Ivoke(); TODO сделать в будущем TileSelected и TileUnselected
-        // Selector?.SelectUnit(_lastSelectedUnit);
-        _lastSelectedTile.SelectTile();
-    }
+    // private void HandleLastSelectedUnit()
+    // {
+    //     if (_lastSelectedUnit ==  _lastSelectedTile) return;
+    //     UnitSelected?.Invoke(_lastSelectedUnit);
+    //     // TileSelected?.Ivoke(); TODO сделать в будущем TileSelected и TileUnselected
+    //     // Selector?.SelectUnit(_lastSelectedUnit);
+    //     _lastSelectedTile.SelectTile();
+    // }
 
     private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
     {
-        selectedUnit.OccupiedTile.UnselectTile(); // Убрать выделение из клетки
+        selectedUnit.OccupiedTile.UnselectTile();
         
         if (path.Count == 0)
             return;
@@ -126,6 +124,8 @@ public class GameController : MonoBehaviour
         {
             selectedUnit.OccupiedTile.SelectTile();
         }
+        
+        Selector.UnitTurnIsOver();
     }
 
     private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)

@@ -17,27 +17,20 @@ public class Tile : MonoBehaviour
     public bool Available { get => _available; set => SetAvailable(value); }
     public void SetAvailable(bool isAvailable)
     {
-        //if (_available != isAvailable)
-        //{
+        _available = isAvailable;
+        UnitOn = !_available;
 
-        //}
-
-        if (_available && !UnitOn)
+        if (_available || !UnitOn)
         {
-            _available = isAvailable;
             State = TileState.Standard; // Состояние доступное
             ChangeColor(TileState.Standard);
-            UnitOn = false; // Игрока нет
         }
         else
         {
-            //if (State == TileState.OccupiedByPlayer)
-            //    ChangeColor(TileState.OccupiedByPlayer);
-            //else if (State == TileState.OccupiedByEnemy)
-            //    ChangeColor(ColorEnemyOnTile);
             ChangeColor(UnitOn ? State : TileState.Movement);
         }
     }
+
     #endregion
 
     // Public fields
@@ -52,21 +45,11 @@ public class Tile : MonoBehaviour
     public Color ColorSelectedTile;
     public Color ColorMovementTile;
 
-    public Color CurrentColor;
-    
     // Static fields
     private static Dictionary<TileState, Color> _stateColors;
 
     // Other variables
     internal readonly int MovementCost = 1;
-
-    // Delegates
-    public delegate void TileEvent(Tile tile);
-
-    // Events
-    public event TileEvent OnTileSelected;
-    public event TileEvent OnTileDeselected;
-
     #endregion
 
     private void Awake()
@@ -100,14 +83,13 @@ public class Tile : MonoBehaviour
     {
         UnitOn = true;
         Available = false; //true
-        //Passability = Passability.Impassable;
-        OnTileSelected?.Invoke(this);
     }
 
     public void UnselectTile()
     {
+        UnitOn = false;
         Available = true; // TODO выяснить нужно это или GridUI.HighlightTile?
-        OnTileDeselected?.Invoke(this);
+        GridUI.HighlightTiles(Neighbors, TileState.Standard);
     }
 
     public bool IsAvailableForUnit(Unit unit) =>
@@ -119,7 +101,6 @@ public class Tile : MonoBehaviour
     public void ChangeColor(TileState state)
     {
         _meshRenderer.material.color = _stateColors[state];
-        CurrentColor = _stateColors[state];
     }
 }
 
@@ -131,9 +112,9 @@ public enum Passability
 
 public enum TileState
 {
-    Standard, // Ńňŕíäŕđňíîĺ ńîńňî˙íčĺ
-    Selected, // Âűáđŕí ďîëüçîâŕňĺëĺě
-    Movement, // Ďîëüçîâŕňĺëü âűáđŕë ýňîň ňŕéë äë˙ äâčćĺíč˙ ţíčňŕ
-    OccupiedByPlayer, // Çŕí˙ň čăđîęîě
-    OccupiedByEnemy, // Çŕí˙ň âđŕăîě
+    Standard, 
+    Selected, 
+    Movement, 
+    OccupiedByPlayer, 
+    OccupiedByEnemy
 }

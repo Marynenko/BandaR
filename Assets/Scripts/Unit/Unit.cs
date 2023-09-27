@@ -1,15 +1,7 @@
 ﻿using DG.Tweening;
 using System;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
-
-public enum ActionType
-{
-    Select,
-    Move,
-    Attack,
-    SpecialAbility,
-    Die
-}
 
 public abstract class Unit : MonoBehaviour
 {
@@ -146,7 +138,7 @@ public abstract class Unit : MonoBehaviour
         Status = UnitStatus.Moved;
     }
 
-
+    // TODO эта часть скрипта связана с меню UI v. 1.4.7.7.X Когда будет работать код, тогда можно сюда лезть
     public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
     {
         switch (actionType)

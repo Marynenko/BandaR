@@ -31,70 +31,82 @@ public class PathConstructor : MonoBehaviour
         _grid = GetComponentInParent<Grid>();
     }
 
-    public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path) // edit here grid
+public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path)
+{
+    path = new List<Tile>();
+
+    Dictionary<Tile, float> gScore = new()
     {
-        path = new List<Tile>();
+        [startTile] = 0
+    };
 
-        Dictionary<Tile, float> gScore = new()
+    Dictionary<Tile, float> fScore = new()
+    {
+        [startTile] = Heuristic(startTile, endTile)
+    };
+
+    HashSet<Tile> closedList = new();
+    var openList = new SortedDictionary<float, List<Tile>>() { { fScore[startTile], new List<Tile> { startTile } } };
+    Dictionary<Tile, Tile> cameFrom = new();
+
+    while (openList.Count > 0)
+    {
+        var currentTile = openList.First().Value[0];
+        if (currentTile == endTile)
         {
-            [startTile] = 0
-        };
-
-        Dictionary<Tile, float> fScore = new()
-        {
-            [startTile] = Heuristic(startTile, endTile)
-        };
-
-        HashSet<Tile> closedList = new();
-        var openList = new SortedDictionary<float, List<Tile>>() { { fScore[startTile], new List<Tile> { startTile } } };
-        Dictionary<Tile, Tile> cameFrom = new();
-
-        while (openList.Count > 0)
-        {
-            var currentTile = openList.First().Value[0];
-            if (currentTile == endTile)
-                path = ReconstructPath(cameFrom, endTile);
-
-            if (openList.First().Value.Count > 1)
-                openList.First().Value.RemoveAt(0);
-            else
-                openList.Remove(openList.First().Key);
-            closedList.Add(currentTile);
-
-            foreach (var neighborTile in GetNeighborTiles(currentTile).Where(neighborTile => !closedList.Contains(neighborTile)))
-            {
-                if (currentTile != null)
-                {
-                    var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
-
-                    fScore.TryAdd(neighborTile, float.MaxValue);
-
-                    if (!openList.ContainsKey(fScore[neighborTile]))
-                        openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
-                    else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-                        continue;
-
-                    cameFrom[neighborTile] = currentTile;
-                    gScore[neighborTile] = tentativeScore;
-                }
-
-                fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
-                if (openList.ContainsKey(fScore[neighborTile]))
-                    openList[fScore[neighborTile]].Remove(neighborTile);
-                if (!openList.ContainsKey(fScore[neighborTile]))
-                    openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
-                else
-                    openList[fScore[neighborTile]].Add(neighborTile);
-            }
+            path = ReconstructPath(cameFrom, endTile);
+            return path; // Возвращаем путь как только его нашли
         }
 
-        return new List<Tile>();
+        if (openList.First().Value.Count > 1)
+            openList.First().Value.RemoveAt(0);
+        else
+            openList.Remove(openList.First().Key);
+        closedList.Add(currentTile);
+
+        foreach (var neighborTile in GetNeighborTiles(currentTile).Where(neighborTile => !closedList.Contains(neighborTile)))
+        {
+            if (currentTile != null)
+            {
+                var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
+
+                fScore.TryAdd(neighborTile, float.MaxValue);
+
+                if (!openList.ContainsKey(fScore[neighborTile]))
+                    openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+                else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
+                    continue;
+
+                cameFrom[neighborTile] = currentTile;
+                gScore[neighborTile] = tentativeScore;
+            }
+
+            fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
+            if (openList.ContainsKey(fScore[neighborTile]))
+                openList[fScore[neighborTile]].Remove(neighborTile);
+            if (!openList.ContainsKey(fScore[neighborTile]))
+                openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+            else
+                openList[fScore[neighborTile]].Add(neighborTile);
+        }
     }
+
+    return new List<Tile>(); // Возвращаем пустой список, если путь не найден
+}
 
 
     // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
-    private float Heuristic(Tile a, Tile b) =>
-        Mathf.Abs(a.Coordinates.x - b.Coordinates.x) + Mathf.Abs(a.Coordinates.y - b.Coordinates.y);
+    private float Heuristic(Tile currentTile, Tile endTile)
+    {
+        var dx = Math.Abs(currentTile.Coordinates.x - endTile.Coordinates.x);
+        var dy = Math.Abs(currentTile.Coordinates.y - endTile.Coordinates.y);
+
+        // Модифицируем эвристику так, чтобы она штрафовала пути, которые отдаляют от цели
+        if (dx > dy)
+            return 1.001f * dx + dy;
+        else
+            return dx + 1.001f * dy;
+    }
 
 
     private List<Tile> ReconstructPath(IReadOnlyDictionary<Tile, Tile> cameFrom, Tile currentTile)
