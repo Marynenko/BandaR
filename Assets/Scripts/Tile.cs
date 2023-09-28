@@ -36,7 +36,6 @@ public class Tile : MonoBehaviour
     // Public fields
     public Vector2 Coordinates; // Позиция Клетки.
     public TileState State; // Состояние клетки.
-    public Passability Passability;
     public bool UnitOn; // Юнит на клетке или нет.
 
     public Color TileColorStandard;
@@ -72,7 +71,6 @@ public class Tile : MonoBehaviour
         _available = isAvailable;
         UnitOn = unitOn;
         State = TileState.Standard;
-        Passability = Passability.Passable;
         Coordinates = new Vector2(row, column);
         Neighbors = new List<Tile>(4);
 
@@ -92,9 +90,6 @@ public class Tile : MonoBehaviour
         GridUI.HighlightTiles(Neighbors, TileState.Standard);
     }
 
-    public bool IsAvailableForUnit(Unit unit) =>
-        !IsOccupied() && Vector3.Distance(unit.transform.position, transform.position) <= unit.MovementPoints;
-
     public bool IsOccupied() =>
         State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
 
@@ -102,12 +97,6 @@ public class Tile : MonoBehaviour
     {
         _meshRenderer.material.color = _stateColors[state];
     }
-}
-
-public enum Passability
-{
-    Impassable, // Непроходимый тайл (например, стена или вода)
-    Passable // Тайл, на который юнит может сделать ход (если это необходимо в вашей игре)
 }
 
 public enum TileState

@@ -1,6 +1,5 @@
 ﻿using DG.Tweening;
 using System;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public abstract class Unit : MonoBehaviour
@@ -24,10 +23,7 @@ public abstract class Unit : MonoBehaviour
     public int MovementRange => Stats.MovementRange;
     public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
-
-    // Events
-    public event Action<Unit> OnMoved; // Add event for unit movement
-    public event Action<Unit> OnDeath; // Add event for unit death
+    
     #endregion
 
     #region Initialization
@@ -74,7 +70,6 @@ public abstract class Unit : MonoBehaviour
                  .OnComplete(() =>
                  {
                      transform.position = newPosition;
-                     OnMoved?.Invoke(this); // Raise the OnMoved event after moving
                  });
 
         //Raise the event after moving
@@ -137,32 +132,6 @@ public abstract class Unit : MonoBehaviour
         _stats.MovementPoints = _stats.MovementRange;
         Status = UnitStatus.Moved;
     }
-
-    // TODO эта часть скрипта связана с меню UI v. 1.4.7.7.X Когда будет работать код, тогда можно сюда лезть
-    public bool IsActionAvailableForUnit(Unit unit, ActionType actionType)
-    {
-        switch (actionType)
-        {
-            case ActionType.Move:
-                // Check if the unit can move in the current situation
-                break;
-            case ActionType.Attack:
-                // Check if the unit can attack in the current situation
-                break;
-            case ActionType.SpecialAbility:
-                // Check if the unit can use its special ability in the current situation
-                break;
-            default:
-                // Handle invalid action type
-                break;
-        }
-
-        return false;
-    }
-
-    protected virtual void OnOnDeath(Unit obj)
-    {
-        OnDeath?.Invoke(obj);
-    }
+    
     #endregion
 }

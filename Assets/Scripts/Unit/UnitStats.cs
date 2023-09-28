@@ -28,11 +28,3 @@ public enum UnitStatus
     AIMove
 }
 
-public enum ActionType
-{
-    Select,
-    Move,
-    Attack,
-    SpecialAbility,
-    Die
-}

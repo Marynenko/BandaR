@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 
 public class GameController : MonoBehaviour
 {
+    #region Variables
     private Unit _lastSelectedUnit; // T - Unit
     private Tile _lastSelectedTile; // TU - Tile
 
@@ -18,32 +19,17 @@ public class GameController : MonoBehaviour
     // Определение событий
     public event SelectionUnitHandler UnitSelected;
     public event SelectionUnitHandler UnitUnselected;
-
+    
+    #endregion
 
     public void HandleUnitClick(Unit unit)    
     {
-        var selectedUnit = Selector.SelectedUnit;
-
-        // if (selectedUnit != null) return;
         if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
         {
             UnitSelected?.Invoke(unit);
         }
-        // else if (selectedUnit?.Equals(unit) == true)
-        //     return;
-
-        // else switch (unit.Type)
-        // {
-        //     case UnitType.Player:
-        //         Selector.SelectUnit(unit);
-        //         break;
-        //     case UnitType.Enemy when selectedUnit.Type == UnitType.Player:
-        //         HandleUnitAttack(selectedUnit, unit);
-        //         break;
-        //     default:
-        //         Selector.HandleUnitDeselection(selectedUnit);
-        //         break;
-        // }
+        
+        UIManager.Instance.MenuAction.HideMenu();
     }
 
     private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)

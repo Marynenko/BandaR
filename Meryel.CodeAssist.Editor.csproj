@@ -50,30 +50,30 @@
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\ELogger.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\NetMQInitializer.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorCoroutines\EditorWaitForSeconds.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\MemorySink.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\Attributes.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\FeedbackWindow.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\NetMQPublisher.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\UnityInputManager.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\InputManagerMonitor.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\CommonTools.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\MainThreadDispatcher.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\StatusWindow.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\UnityClassExtensions.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\Text2Yaml.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Preferences\PreferenceMonitor.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\Binary2TextExec.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Assister.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\TinyJson\JsonParser.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorCoroutines\EditorWindowCoroutineExtension.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\Preferences\PreferenceStorageAccessor.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\UnitySink.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorCoroutines\EditorCoroutine.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Monitor.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\DomainHashEnricher.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\ScriptFinder.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\MemorySink.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Logger\Attributes.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\FeedbackWindow.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\UnityInputManager.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\InputManagerMonitor.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\UnityClassExtensions.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Input\Text2Yaml.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\TinyJson\JsonParser.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorCoroutines\EditorWindowCoroutineExtension.cs" />
-     <Compile Include="Assets\Plugins\CodeAssist\Editor\Preferences\PreferenceStorageAccessor.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorCoroutines\EditorCoroutineUtility.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\AboutWindow.cs" />
+     <Compile Include="Assets\Plugins\CodeAssist\Editor\ScriptFinder.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\EditorWindowFocusUtility.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\MySerializer.cs" />
      <Compile Include="Assets\Plugins\CodeAssist\Editor\Preferences\RegistryMonitor.cs" />
@@ -784,20 +784,24 @@
      <Reference Include="System.Xml.XPath.XDocument">
      <HintPath>C:\Programs\Unity\2022.3.9f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEditor.UI">
-     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UI">
-     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.TestRunner">
-     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\ScriptAssemblies\UnityEngine.TestRunner.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEditor.TestRunner">
-     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\ScriptAssemblies\UnityEditor.TestRunner.dll</HintPath>
-     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{eb07e491-d7f7-00e6-db19-b28f29ab453c}</Project>
+      <Name>UnityEditor.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{b409d01f-1dab-f8b0-d58b-bed87b17638a}</Project>
+      <Name>UnityEngine.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.TestRunner.csproj">
+      <Project>{026bfb97-5625-fe49-08dc-aac9aad9e31b}</Project>
+      <Name>UnityEngine.TestRunner</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.TestRunner.csproj">
+      <Project>{48415975-2806-ed97-e754-63cb4bf1db18}</Project>
+      <Name>UnityEditor.TestRunner</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

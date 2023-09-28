@@ -31,18 +31,17 @@ public class Selector: MonoBehaviour
         _gameController.UnitUnselected -= UnselectUnit;
     }
 
-    private void SelectUnit(Unit unit)
+    public void SelectUnit(Unit unit)
     {
-        GridUI.HighlightTile(unit.OccupiedTile, unit.OccupiedTile.State);
         _availableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
-        GridUI.HighlightAvailableMoves(_availableMoves, TileState.Movement);
+        GridUI.HighlightAvailableMoves(_availableMoves, unit.OccupiedTile.State);
         SelectedUnit = unit;
-        SelectedUnit.OccupiedTile.SelectTile(); 
+        SelectedUnit.OccupiedTile.SelectTile();
+        
     }
     
     public void UnselectUnit(Unit unit)
     {
-        // GridUI.HighlightTile(unit.OccupiedTile, TileState.Standard);
         GridUI.HighlightTiles(_availableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
         UnitTurnIsOver();

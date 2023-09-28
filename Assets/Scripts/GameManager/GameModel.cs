@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameModel : MonoBehaviour
@@ -11,21 +10,18 @@ public class GameModel : MonoBehaviour
     [SerializeField] private InputPlayer input;
     [SerializeField] private GameController gameController;
     [SerializeField] private Selector selector;
-    [SerializeField] private Button endTurnButton;
 
     [HideInInspector] public Unit activePlayer;
 
-    private readonly ActionType _actionType;
     private List<Unit> _players = new();
 
     private void Start()
     {
-        endTurnButton.onClick.AddListener(input.HandleEndTurnButtonClicked);
         grid.StartCreating();
         StartGame();
     }
 
-    public void StartGame()
+    private void StartGame()
     {
         _players = grid.AllUnits;
         activePlayer = _players[0]; // Назначаем первого игрока активным
@@ -45,11 +41,11 @@ public class GameModel : MonoBehaviour
             input.HandleLeftClick(mousePosition);
         }
         
-        ai.UpdateUi(activePlayer, endTurnButton);
+        ai.UpdateUi(activePlayer);
     }
 
 
-    public void StartTurn()
+    private void StartTurn()
     {
         if (IsGameOver())
             return;
@@ -69,9 +65,6 @@ public class GameModel : MonoBehaviour
 
     public void EndTurn()
     {
-        // Снимаем выделение с текущего юнита и доступность ячеек
-        //ResetTilesAvailability();
-        //ActivePlayer.OccupiedTile.UnselectTile();
         activePlayer = GetNextPlayer(activePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
@@ -109,7 +102,7 @@ public class GameModel : MonoBehaviour
                 return;
             }
 
-            ai.Move(activePlayer);
+            ai.StartMove(activePlayer);
         }
 
         // Дополнительные действия, если необходимо, после окончания хода
@@ -151,7 +144,7 @@ public class GameModel : MonoBehaviour
         //}
     }
 
-    public void ResetTilesAvailability()
+    private void ResetTilesAvailability()
     {
         var currentTile = activePlayer.OccupiedTile;
         currentTile.UnselectTile();
@@ -160,7 +153,7 @@ public class GameModel : MonoBehaviour
         selector.AvailableMoves.ForEach(move => move.UnselectTile());
     }
 
-    public void ResetUnitsAvailability()
+    private void ResetUnitsAvailability()
     {
         foreach (var unit in grid.AllUnits.OfType<Unit>())
             unit.Status = UnitStatus.Unavailable;
@@ -169,7 +162,7 @@ public class GameModel : MonoBehaviour
 
     private Unit GetNextPlayer(Unit player)
     {
-        var listOfUnits = grid.AllUnits.OfType<Unit>().ToList();
+        var listOfUnits = grid.AllUnits.ToList();
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
         // Проверяем, является ли следующий индекс последним игроком
@@ -183,7 +176,7 @@ public class GameModel : MonoBehaviour
         return listOfUnits[nextIndex];
     }
 
-    public bool IsGameOver()
+    private bool IsGameOver()
     {
         // Implement game over condition here
         var alivePlayers = _players.Where(p => p.gameObject.activeInHierarchy == true).ToList();
@@ -201,10 +194,10 @@ public class GameModel : MonoBehaviour
         return false;
     }
 
-    public void EndGame()
+    private void EndGame()
     {
         // Implement game ending logic here
-        endTurnButton.interactable = false;
+        // endTurnButton.interactable = false;
         // Дополнительный функционал завершения игры
     }
 
@@ -227,13 +220,6 @@ public class GameModel : MonoBehaviour
     {
         if (unit.Status == UnitStatus.Available || unit.Status == UnitStatus.Unavailable) // Тяп ляп
             return true;
-        return false;
-    }
-
-    public bool IsActionAvailableForUnit(Unit unit, ActionType unitActionType)
-    {
-        // Check if the unit can perform the action in the current situation
-        // For example, a unit cannot attack if there are no enemy units nearby
         return false;
     }
 
