@@ -33,11 +33,16 @@ public class Selector: MonoBehaviour
 
     public void SelectUnit(Unit unit)
     {
+        SelectedUnit = unit;
+        SelectedUnit.OccupiedTile.State = SelectedUnit.Type switch
+        {
+            UnitType.Player => TileState.OccupiedByPlayer,
+            UnitType.Enemy => TileState.OccupiedByEnemy,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        SelectedUnit.OccupiedTile.SelectTile();
         _availableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         GridUI.HighlightAvailableMoves(_availableMoves, unit.OccupiedTile.State);
-        SelectedUnit = unit;
-        SelectedUnit.OccupiedTile.SelectTile();
-        
     }
     
     public void UnselectUnit(Unit unit)

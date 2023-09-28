@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -27,7 +28,21 @@ public class Tile : MonoBehaviour
         }
         else
         {
-            ChangeColor(UnitOn ? State : TileState.Movement);
+            ChangeColor(State);
+            // switch (State)
+            // {
+            //     case (TileState.OccupiedByPlayer):
+            //         ChangeColor(State);
+            //         break;
+            //     case (TileState.OccupiedByEnemy):
+            //         ChangeColor(State);
+            //         break;
+            //     default:
+            //         ChangeColor(State);
+            //         break;
+            // }
+
+            // ChangeColor(UnitOn ? State : TileState.Movement);
         }
     }
 

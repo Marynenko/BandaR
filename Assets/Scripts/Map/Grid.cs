@@ -4,12 +4,10 @@ using UnityEngine.Serialization;
 
 public class Grid : MonoBehaviour
 {
-    [FormerlySerializedAs("_tilesPlace")] [SerializeField] private Transform tilesPlace;
-    // [SerializeField] private GameController _gameController;
-    // [SerializeField] private GameModel _gameModel;
-    [FormerlySerializedAs("_tilePrefab")] [SerializeField] private Tile tilePrefab;
-    [FormerlySerializedAs("_gridSize")] [SerializeField] private Vector2Int gridSize;
-    [FormerlySerializedAs("_offset")] [SerializeField] private float offset;
+    [SerializeField] private Transform tilesPlace;
+    [SerializeField] private Tile tilePrefab;
+    [SerializeField] private Vector2Int gridSize;
+    [SerializeField] private float offset;
 
     public Selector Selector { get; private set; }
     public List<Unit> AllUnits { get; private set; }

@@ -13,7 +13,7 @@ public class GameModel : MonoBehaviour
 
     [HideInInspector] public Unit activePlayer;
 
-    private List<Unit> _players = new();
+    private List<Unit> _units = new();
 
     private void Start()
     {
@@ -23,8 +23,8 @@ public class GameModel : MonoBehaviour
 
     private void StartGame()
     {
-        _players = grid.AllUnits;
-        activePlayer = _players[0]; // Назначаем первого игрока активным
+        _units = grid.AllUnits;
+        activePlayer = _units[0]; // Назначаем первого игрока активным
         activePlayer.Status = UnitStatus.Available;
         StartTurn();
     }
@@ -40,8 +40,6 @@ public class GameModel : MonoBehaviour
             var mousePosition = Input.mousePosition;
             input.HandleLeftClick(mousePosition);
         }
-        
-        ai.UpdateUi(activePlayer);
     }
 
 
@@ -68,10 +66,10 @@ public class GameModel : MonoBehaviour
         activePlayer = GetNextPlayer(activePlayer);
 
         // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
-        if (_players.All(p => p.Status == UnitStatus.Moved))
-            ResetUnitsAvailability();
+        // if (_units.All(u => u.Status == UnitStatus.Moved))
+        //     ResetUnitsAvailability();
 
-        UpdateScore();
+        // UpdateScore();
         //SetAvailableTiles();
 
         if (IsGameOver())
@@ -87,7 +85,6 @@ public class GameModel : MonoBehaviour
             if (SetUnitAvailability(activePlayer))
             {
                 EndTurn();
-                return;
             }
         }
         else if (activePlayer.Type == UnitType.Enemy)
@@ -95,7 +92,8 @@ public class GameModel : MonoBehaviour
             // Если следующий игрок - AI, то делаем ход AI
             //ActivePlayer.Status = UnitStatus.Available;
             activePlayer.Status = UnitStatus.AIMove;
-
+            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
+            
             if (SetUnitAvailability(activePlayer))
             {
                 EndTurn();
@@ -179,13 +177,13 @@ public class GameModel : MonoBehaviour
     private bool IsGameOver()
     {
         // Implement game over condition here
-        var alivePlayers = _players.Where(p => p.gameObject.activeInHierarchy == true).ToList();
+        var alivePlayers = _units.Where(p => p.gameObject.activeInHierarchy == true).ToList();
         if (alivePlayers.Count == 1)
         {
-            Debug.Log($"{alivePlayers[0].name} has won the game!");
+            Debug.Log($"{alivePlayers[0].name} has won the game!"); // TODO пока на карте есть только enemy или только players
             return true;
         }
-        else if (alivePlayers.Count == 0)
+        else if (alivePlayers.Count == 0) // TODO это невозможно
         {
             Debug.Log("The game has ended in a draw.");
             return true;
