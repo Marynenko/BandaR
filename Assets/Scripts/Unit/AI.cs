@@ -23,7 +23,7 @@ public class AI : MonoBehaviour
         StartCoroutine(Move(unit));
     }
 
-    public IEnumerator Move(Unit unit)
+    private IEnumerator Move(Unit unit)
     { 
         // Выбор юнита
         _gameController.Selector.SelectUnit(unit);
@@ -50,6 +50,7 @@ public class AI : MonoBehaviour
         }
 
         _gameController.Selector.UnselectUnit(unit);
+        GridUI.HighlightTiles(unit.AvailableMoves, TileState.Standard);
         _gameModel.EndTurn();
     }
 }

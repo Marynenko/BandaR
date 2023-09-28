@@ -6,12 +6,10 @@ using UnityEngine.Serialization;
 
 public class Selector: MonoBehaviour
 {
-    private List<Tile> _availableMoves;
     private Grid _grid;
     private GameController _gameController;
     
     public PathConstructor PathConstructor;
-    public List<Tile> AvailableMoves => _availableMoves.AsReadOnly().ToList();
     public Unit SelectedUnit { get; private set; }
 
     // public delegate void UnitSelectedEventHandler(Unit unit, Selector selector);
@@ -19,7 +17,6 @@ public class Selector: MonoBehaviour
     private void OnEnable()
     {
         _grid = GetComponentInParent<Grid>();
-        _availableMoves = new List<Tile>();
         _gameController = GetComponentInParent<GameController>();
         _gameController.UnitSelected += SelectUnit;
         _gameController.UnitUnselected += UnselectUnit;
@@ -41,13 +38,13 @@ public class Selector: MonoBehaviour
             _ => throw new ArgumentOutOfRangeException()
         };
         SelectedUnit.OccupiedTile.SelectTile();
-        _availableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
-        GridUI.HighlightAvailableMoves(_availableMoves, unit.OccupiedTile.State);
+        SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
+        GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
     
     public void UnselectUnit(Unit unit)
     {
-        GridUI.HighlightTiles(_availableMoves, TileState.Standard);
+        GridUI.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
         UnitTurnIsOver();
         SelectedUnit = null;

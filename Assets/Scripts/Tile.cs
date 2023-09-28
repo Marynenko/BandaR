@@ -29,27 +29,13 @@ public class Tile : MonoBehaviour
         else
         {
             ChangeColor(State);
-            // switch (State)
-            // {
-            //     case (TileState.OccupiedByPlayer):
-            //         ChangeColor(State);
-            //         break;
-            //     case (TileState.OccupiedByEnemy):
-            //         ChangeColor(State);
-            //         break;
-            //     default:
-            //         ChangeColor(State);
-            //         break;
-            // }
-
-            // ChangeColor(UnitOn ? State : TileState.Movement);
         }
     }
 
     #endregion
 
     // Public fields
-    public Vector2 Coordinates; // Позиция Клетки.
+    public Vector2Int Coordinates; // Позиция Клетки.
     public TileState State; // Состояние клетки.
     public bool UnitOn; // Юнит на клетке или нет.
 
@@ -86,7 +72,7 @@ public class Tile : MonoBehaviour
         _available = isAvailable;
         UnitOn = unitOn;
         State = TileState.Standard;
-        Coordinates = new Vector2(row, column);
+        Coordinates = new Vector2Int(row, column);
         Neighbors = new List<Tile>(4);
 
         ChangeColor(State);

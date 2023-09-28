@@ -1,5 +1,8 @@
 ﻿using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Unit : MonoBehaviour
@@ -24,15 +27,21 @@ public abstract class Unit : MonoBehaviour
     public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
     
+    // public fields
+    public Vector2Int SpawnCellVector2Int;
+    public List<Tile> AvailableMoves;
+    
     #endregion
 
     #region Initialization
     public virtual Unit GetUnitType() => this;
 
-    public void InitializeUnit(Tile startTile)
+    public void InitializeUnit(Tile[,] tiles)
     {
+        var startTile = CompareSpawnPosToTile(tiles);
         // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
+        // transform.position = spawnCell.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
 
@@ -41,6 +50,14 @@ public abstract class Unit : MonoBehaviour
         Status = UnitStatus.Unavailable;
 
     }
+
+    private Tile CompareSpawnPosToTile(Tile[,] tiles)
+    {
+        return tiles.Cast<Tile>().
+            FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x 
+                                   && tile.Coordinates.y == SpawnCellVector2Int.y);
+    }
+
     #endregion
 
     #region Action Movement
@@ -64,8 +81,9 @@ public abstract class Unit : MonoBehaviour
         // Вычисляем позицию для перемещения с учетом высоты юнита
         Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
 
+        const float movementSpeed = 5.5f;
         //Запускаем анимацию перемещения
-        transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE) // Use Mathf.Sqrt for distance
+        transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE * movementSpeed)
                  .SetEase(  Ease.Linear)
                  .OnComplete(() =>
                  {

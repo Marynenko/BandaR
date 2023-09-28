@@ -19,7 +19,7 @@ public class Grid : MonoBehaviour
         Selector = GetComponentInChildren<Selector>();
         Tiles = new Tile[gridSize.x, gridSize.y];
     }
-    
+
     public void StartCreating()
     {
         CreateGrid();
@@ -33,16 +33,16 @@ public class Grid : MonoBehaviour
         var tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
 
         for (var x = 0; x < gridSize.x; x++)
-            for (var y = 0; y < gridSize.y; y++)
-            {
-                // Чтобы сгенерировать клетку, нужно знать ее позицию.
-                var position = new Vector3(x * (tileSize.x + offset), 0, y * (tileSize.z + offset));
+        for (var y = 0; y < gridSize.y; y++)
+        {
+            // Чтобы сгенерировать клетку, нужно знать ее позицию.
+            var position = new Vector3(x * (tileSize.x + offset), 0, y * (tileSize.z + offset));
 
-                var tile = Instantiate(tilePrefab, position, Quaternion.identity, tilesPlace);
-                tile.Initialize(x, y, true, false); // тут передается Grid
+            var tile = Instantiate(tilePrefab, position, Quaternion.identity, tilesPlace);
+            tile.Initialize(x, y, true, false); // тут передается Grid
 
-                Tiles[x, y] = tile;
-            }
+            Tiles[x, y] = tile;
+        }
     }
 
     private void LocateNeighborsTiles()
@@ -68,26 +68,10 @@ public class Grid : MonoBehaviour
     {
         foreach (var unit in AllUnits)
         {
-            var unitTileCoordinates = GetTileCoordinatesFromPosition(unit.transform.position);
-            var tile = Tiles[unitTileCoordinates.x, unitTileCoordinates.y];
-
-            if (unitTileCoordinates != Vector2Int.one * int.MaxValue)
-            {
-                unit.InitializeUnit(tile);
-            }
+            unit.InitializeUnit(Tiles);
         }
     }
 
-    private Vector2Int GetTileCoordinatesFromPosition(Vector3 position)
-    {
-        var x = Mathf.FloorToInt(position.x / tilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
-        var y = Mathf.FloorToInt(position.z / tilePrefab.GetComponent<MeshRenderer>().bounds.size.x);
-
-        return new Vector2Int(x, y);
-    }
-
-
-    
     public void SetAvailableTiles()
     {
         foreach (var tile in Tiles)
@@ -108,4 +92,3 @@ public class Grid : MonoBehaviour
         }
     }
 }
-

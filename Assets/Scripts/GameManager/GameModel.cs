@@ -126,38 +126,6 @@ public class GameModel : MonoBehaviour
         return false;
     }
 
-
-    private void UnselectUnit()
-    {
-        selector.UnselectUnit(activePlayer);
-        ResetTilesAvailability();
-        //// Unselect the current unit and reset tile availability
-        //if (_selector.SelectedUnit != null)
-        //{
-        //    //_selector.SelectedUnit.Status = UnitStatus.Unselected;
-        //    _selector.SelectedUnit = null;
-        //    _interactor.SelectedUnit = null; // Добавил
-
-        //    ResetTilesAvailability();
-        //}
-    }
-
-    private void ResetTilesAvailability()
-    {
-        var currentTile = activePlayer.OccupiedTile;
-        currentTile.UnselectTile();
-
-        // Set all cells to be available for selection
-        selector.AvailableMoves.ForEach(move => move.UnselectTile());
-    }
-
-    private void ResetUnitsAvailability()
-    {
-        foreach (var unit in grid.AllUnits.OfType<Unit>())
-            unit.Status = UnitStatus.Unavailable;
-    }
-
-
     private Unit GetNextPlayer(Unit player)
     {
         var listOfUnits = grid.AllUnits.ToList();

@@ -87,18 +87,10 @@ public class GameController : MonoBehaviour
         tile != selectedUnit.OccupiedTile &&
         selectedUnit.Status != UnitStatus.Moved;
 
-    // private void HandleLastSelectedUnit()
-    // {
-    //     if (_lastSelectedUnit ==  _lastSelectedTile) return;
-    //     UnitSelected?.Invoke(_lastSelectedUnit);
-    //     // TileSelected?.Ivoke(); TODO сделать в будущем TileSelected и TileUnselected
-    //     // Selector?.SelectUnit(_lastSelectedUnit);
-    //     _lastSelectedTile.SelectTile();
-    // }
-
     private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
     {
         selectedUnit.OccupiedTile.UnselectTile();
+        GridUI.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
         
         if (path.Count == 0)
             return;
