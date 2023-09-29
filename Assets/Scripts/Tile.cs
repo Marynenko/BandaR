@@ -88,7 +88,7 @@ public class Tile : MonoBehaviour
     {
         UnitOn = false;
         Available = true; // TODO выяснить нужно это или GridUI.HighlightTile?
-        GridUI.HighlightTiles(Neighbors, TileState.Standard);
+        GridUI.Instance.HighlightTiles(Neighbors, TileState.Standard);
     }
 
     public bool IsOccupied() =>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Selector: MonoBehaviour
@@ -35,19 +36,23 @@ public class Selector: MonoBehaviour
             _ => throw new ArgumentOutOfRangeException()
         };
         SelectedUnit.OccupiedTile.SelectTile();
-        SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
-        GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
+        // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
+        SelectedUnit.AvailableMoves = new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange));
+        GridUI.Instance.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
+        
     }
     
     public void UnselectUnit(Unit unit)
     {
-        GridUI.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
+        SelectedUnit = unit;
+        if (SelectedUnit.AvailableMoves != null)
+            GridUI.Instance.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
-        UnitTurnIsOver();
+        MoveMore();
         SelectedUnit = null;
     }
     
-    public bool UnitTurnIsOver()
+    public void MoveMore()
     {
         // Проверяем, есть ли у персонажа еще очки передвижения
         if (SelectedUnit != null && SelectedUnit.MovementPoints > 1)
@@ -55,8 +60,6 @@ public class Selector: MonoBehaviour
             // Если есть, снова активируем персонажа
             SelectUnit(SelectedUnit);
         }
-
-        return true;
     }
 
     public void UpdateUnit(Unit unit)

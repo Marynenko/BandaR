@@ -14,7 +14,7 @@ public abstract class Unit : MonoBehaviour
 
     // Constants
     private const float MAX_DISTANCE = 4f;
-    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.8f;
+    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
 
     // Private fields
     private Tile _occupiedTile;
@@ -29,7 +29,8 @@ public abstract class Unit : MonoBehaviour
 
     // public fields
     public Vector2Int SpawnCellVector2Int;
-    public List<Tile> AvailableMoves;
+    // public List<Tile> AvailableMoves;
+    public HashSet<Tile> AvailableMoves;
     public bool UnitIsMoving = false;
 
     #endregion

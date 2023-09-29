@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,5 +17,10 @@ public class UIManager : MonoBehaviour
                 _instance = FindObjectOfType<UIManager>();
             return _instance;
         }
+    }
+
+    private void OnEnable()
+    {
+        Instance.gameObject.SetActive(true);
     }
 }

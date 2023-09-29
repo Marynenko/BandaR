@@ -9,6 +9,7 @@ public class AI : MonoBehaviour
     private GameModel _gameModel;
     private Grid _grid;
     private Unit _unit;
+    private bool _isCoroutineRunning = false;
 
     private void OnEnable()
     {
@@ -19,47 +20,51 @@ public class AI : MonoBehaviour
 
     private void Update()
     {
-        // if (_unit == null) return; // TODO в будущем через Update пробовать
-        // if (_unit.UnitIsMoving)
-        //     StartCoroutine(Move(_unit));
+        if (_unit == null || _isCoroutineRunning) return;
+        if (_unit.UnitIsMoving)
+        {
+            StartCoroutine(Move(_unit));
+            _isCoroutineRunning = true;
+        }
     }
 
     public void StartMove(Unit unit)
     {
-        // _unit = unit;
-        // unit.UnitIsMoving = true;
-        StartCoroutine(Move(_unit));
+        _unit = unit;
+        unit.UnitIsMoving = true;
     }
 
     private IEnumerator Move(Unit unit)
     {
+        var localSelector = _gameController.Selector;
         // Выбор юнита
-        _gameController.Selector.SelectUnit(unit);
+        if (localSelector.SelectedUnit == null)
+            localSelector.SelectUnit(unit);
         yield return new WaitForSeconds(1.5f);
+        
+        _isCoroutineRunning = false;
 
-        // Находим всех враждебных юнитов
-        var enemies = _grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
-
-        // Выбираем ближайшего врага
-        var targetEnemy = enemies.OrderBy(e =>
-            _gameController.Selector.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
-
-        // Если нашли врага, движемся к нему
-        if (targetEnemy != null)
+        if (!_isCoroutineRunning)
         {
-            var targetTile = targetEnemy.OccupiedTile;
-            _gameController.Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, targetTile,
-                out List<Tile> path);
-            _gameController.MoveUnitAlongPath(unit, path);
-            unit.Status = UnitStatus.Moved;
+            // Находим всех враждебных юнитов
+            var enemies = _grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
+
+            // Выбираем ближайшего врага
+            var targetEnemy = enemies.OrderBy(e =>
+                localSelector.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+
+            // Если нашли врага, движемся к нему
+            if (targetEnemy != null)
+            {
+                var targetTile = targetEnemy.OccupiedTile;
+                _gameController.HandleTileClick(targetTile);
+            }
         }
-        else
-        {
+
+        // if (!unit.UnitIsMoving)
+        //     localSelector.MoveMore();
+
+        if(!_isCoroutineRunning && unit.UnitIsMoving)
             _gameModel.EndTurn();
-        }
-
-        _gameController.Selector.UnselectUnit(unit);
-        GridUI.HighlightTiles(unit.AvailableMoves, TileState.Standard);
-        _gameModel.EndTurn();
     }
 }

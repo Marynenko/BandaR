@@ -37,24 +37,4 @@ public class InputPlayer : MonoBehaviour
             GameController.HandleTileClick(_clickedTile);
         }
     }
-
-    public void HandleEndTurnButtonClicked()
-    {
-        UIManager.Instance.MenuAction.HideMenu();
-        var Status = GameController.Selector.SelectedUnit.Status;
-        GameController.Selector.UnselectUnit(GameController.Selector.SelectedUnit);
-
-        if (GameController.Selector.SelectedUnit != null)
-        {
-            Debug.Log("You must unselect the current unit before ending the turn.");
-            return;
-        }
-
-        // Проверяем, был ли игрок перемещен в этом ходе
-        if (Status == UnitStatus.Moved)
-        {
-            // Передаем ход следующему игроку
-            GameModel.EndTurn();    
-        }
-    }
 }

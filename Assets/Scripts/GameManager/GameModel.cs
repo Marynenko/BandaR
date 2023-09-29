@@ -103,12 +103,21 @@ public class GameModel : MonoBehaviour
 
             ai.StartMove(activePlayer);
         }
+    }
+    
+    public void HandleEndTurnButtonClicked()
+    {
+        UIManager.Instance.MenuAction.HideMenu();
+        activePlayer.Stats.MovementPoints = 0;
+        selector.UnselectUnit(activePlayer);
+        activePlayer.Status = UnitStatus.Moved;
 
-        // Дополнительные действия, если необходимо, после окончания хода
-        // ...
-
-        // Обновляем UI или выполняем другие действия, связанные с окончанием хода
-        // ...
+        // Проверяем, был ли игрок перемещен в этом ходе
+        if (activePlayer.Status == UnitStatus.Moved)
+        {
+            // Передаем ход следующему игроку
+            EndTurn();    
+        }
     }
 
     private bool SetUnitAvailability(Unit unit)

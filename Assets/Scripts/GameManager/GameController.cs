@@ -57,9 +57,10 @@ public class GameController : MonoBehaviour
             if (selectedUnit.IsAlive())
             {
                 // Update available moves after attack
-                var availableMoves =
-                    Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
-                GridUI.HighlightAvailableMoves(availableMoves, TileState.Movement); // TODO надо не надо?
+                var availableMoves = new HashSet<Tile>
+                (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
+                    selectedUnit.MovementPoints));
+                GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement); // TODO надо не надо?
             }
         }
     }
@@ -83,26 +84,26 @@ public class GameController : MonoBehaviour
             PathIsFounded = true;
         }
 
-        HandleTileMovement(selectedUnit, Path);
+        HandleTileMovement(selectedUnit);
 
         if (!selectedUnit.UnitIsMoving)
         {
             _lastSelectedUnit = selectedUnit;
             _lastSelectedTile = selectedUnit.OccupiedTile;
-            selectedUnit.Status = UnitStatus.Moved;    
+            selectedUnit.Status = UnitStatus.Moved;
         }
     }
 
-    private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
+    private void HandleTileMovement(Unit selectedUnit)
     {
         selectedUnit.OccupiedTile.UnselectTile();
-        GridUI.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
+        GridUI.Instance.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
 
 
-        if (path.Count == 0)
+        if (Path.Count == 0)
             return;
-        
-        MoveUnitAlongPath(selectedUnit, path);
+
+        MoveUnitAlongPath(selectedUnit);
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
         if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
@@ -111,14 +112,15 @@ public class GameController : MonoBehaviour
         }
 
         if (!selectedUnit.UnitIsMoving)
-            Selector.UnitTurnIsOver();
+            Selector.MoveMore();
     }
 
-    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
+    public void MoveUnitAlongPath(Unit unit)
     {
+        Path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
         Tile nextTile = null;
         // Двигаем юнита поочередно на каждую ячейку из списка
-        foreach (var tile in path)
+        foreach (var tile in Path)
         {
             nextTile = tile;
             break;
@@ -127,17 +129,17 @@ public class GameController : MonoBehaviour
         Vector2 unitV2 = new(unit.transform.position.x, unit.transform.position.z);
         Vector2 nextTileV2 = new(nextTile.transform.position.x, nextTile.transform.position.z);
         if (unitV2 == nextTileV2)
-            path.Remove(nextTile);
-        
+            Path.Remove(nextTile);
+
         if (unit.CanMoveToTile(nextTile, out var distanceSqrt) && nextTile != null)
         {
             unit.MoveToTile(nextTile, distanceSqrt);
         }
-        
-        if (path.Count == 0)
+
+        if (Path.Count == 0)
             unit.UnitIsMoving = false;
     }
-    
+
     private bool IsClickValid(Unit selectedUnit, Tile tile)
         =>
             IsPlayerUnitAvailable(selectedUnit) &&
