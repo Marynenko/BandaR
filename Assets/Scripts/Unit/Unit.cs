@@ -26,14 +26,16 @@ public abstract class Unit : MonoBehaviour
     public int MovementRange => Stats.MovementRange;
     public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
-    
+
     // public fields
     public Vector2Int SpawnCellVector2Int;
     public List<Tile> AvailableMoves;
-    
+    public bool UnitIsMoving = false;
+
     #endregion
 
     #region Initialization
+
     public virtual Unit GetUnitType() => this;
 
     public void InitializeUnit(Tile[,] tiles)
@@ -48,22 +50,22 @@ public abstract class Unit : MonoBehaviour
         _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
-
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles)
     {
-        return tiles.Cast<Tile>().
-            FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x 
-                                   && tile.Coordinates.y == SpawnCellVector2Int.y);
+        return tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
+                                                         && tile.Coordinates.y == SpawnCellVector2Int.y);
     }
 
     #endregion
 
     #region Action Movement
+
     public bool CanMoveToTile(Tile targetTile, out float distanceSq)
     {
         distanceSq = (OccupiedTile.transform.position - targetTile.transform.position).sqrMagnitude;
+
         return OccupiedTile != targetTile &&
                distanceSq <= MAX_DISTANCE &&
                Status != UnitStatus.Moved &&
@@ -74,23 +76,19 @@ public abstract class Unit : MonoBehaviour
 
     public void MoveToTile(Tile targetTile, float distanceSq)
     {
-        _occupiedTile = targetTile;
-        _stats.MovementPoints -= 1;
-        //OnUnitAction?.Invoke(ActionType.Move, this, targetTile);
-
         // Вычисляем позицию для перемещения с учетом высоты юнита
-        Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y, targetTile.transform.position.z);
+        Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y,
+            targetTile.transform.position.z);
 
         const float movementSpeed = 5.5f;
         //Запускаем анимацию перемещения
         transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE * movementSpeed)
-                 .SetEase(  Ease.Linear)
-                 .OnComplete(() =>
-                 {
-                     transform.position = newPosition;
-                 });
+            .SetEase(Ease.Linear)
+            .OnComplete(() => { transform.position = newPosition; });
+        
+        _occupiedTile = targetTile;
+        _stats.MovementPoints -= 1;
 
-        //Raise the event after moving
         OnUnitMoved(this);
     }
 
@@ -128,7 +126,6 @@ public abstract class Unit : MonoBehaviour
         // Доработать
         Destroy(gameObject);
         return delegate { };
-
     }
 
     #endregion
@@ -150,6 +147,6 @@ public abstract class Unit : MonoBehaviour
         _stats.MovementPoints = _stats.MovementRange;
         Status = UnitStatus.Moved;
     }
-    
+
     #endregion
 }

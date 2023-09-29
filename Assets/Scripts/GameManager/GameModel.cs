@@ -39,6 +39,7 @@ public class GameModel : MonoBehaviour
         {
             var mousePosition = Input.mousePosition;
             input.HandleLeftClick(mousePosition);
+            
         }
     }
 

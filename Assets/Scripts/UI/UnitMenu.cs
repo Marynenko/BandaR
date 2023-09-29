@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,13 +30,12 @@ public class UnitMenu : MonoBehaviour
     {
         HideMenu();
 
-        // ��������� ����������� ��� ������
         moveButton.onClick.AddListener(HandleMove);
         attackButton.onClick.AddListener(HandleAttack);
         infoButton.onClick.AddListener(HandleInfo);
         endTurnButton.onClick.AddListener(HandleEndTurn);
     }
-    
+
     public void ShowMenu(Unit unit)
     {
         _currentUnit = unit;

@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 5099475863235921304}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 1.05}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.7, y: 1.2, z: 0.55}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -120,6 +120,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stats: {fileID: 2069235198530996241}
+  SpawnCellVector2Int: {x: 0, y: 0}
+  AvailableMoves: []
 --- !u!114 &2069235198530996241
 MonoBehaviour:
   m_ObjectHideFlags: 0

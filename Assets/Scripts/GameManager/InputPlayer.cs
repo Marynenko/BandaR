@@ -8,6 +8,9 @@ public class InputPlayer : MonoBehaviour
 {
     public GameController GameController;
     public GameModel GameModel;
+    
+    private Unit _clickedUnit;
+    private Tile _clickedTile;
 
     public void HandleLeftClick(Vector3 mousePosition)
     {
@@ -16,10 +19,22 @@ public class InputPlayer : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out Unit unit))
             {
+                _clickedUnit = unit;
                 UIManager.Instance.MenuAction.ShowMenu(unit);
             }
-            else if (hit.collider.TryGetComponent(out Tile tile))
-                GameController.HandleTileClick(tile);
+            else if (hit.collider.TryGetComponent(out Tile tile) && _clickedUnit != null)
+            {
+                _clickedTile = tile;
+                _clickedUnit.UnitIsMoving = true;
+            }
+        }
+    }
+    
+    private void Update()
+    {
+        if (_clickedTile != null && _clickedUnit.UnitIsMoving)
+        {
+            GameController.HandleTileClick(_clickedTile);
         }
     }
 

@@ -7,28 +7,32 @@ using UnityEngine.Serialization;
 public class GameController : MonoBehaviour
 {
     #region Variables
-    private Unit _lastSelectedUnit; // T - Unit
-    private Tile _lastSelectedTile; // TU - Tile
+
+    private Unit _lastSelectedUnit;
+    private Tile _lastSelectedTile;
 
     public Grid Grid;
     public Selector Selector;
-    
+
     // Определение делегата
     public delegate void SelectionUnitHandler(Unit unit);
-    
+
     // Определение событий
     public event SelectionUnitHandler UnitSelected;
     public event SelectionUnitHandler UnitUnselected;
-    
+
+    private List<Tile> Path;
+    private bool PathIsFounded;
+
     #endregion
 
-    public void HandleUnitClick(Unit unit)    
+    public void HandleUnitClick(Unit unit)
     {
         if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
         {
             UnitSelected?.Invoke(unit);
         }
-        
+
         UIManager.Instance.MenuAction.HideMenu();
     }
 
@@ -50,11 +54,11 @@ public class GameController : MonoBehaviour
             // Selector.UnselectUnit(selectedUnit);
             UnitUnselected?.Invoke(selectedUnit);
 
-
             if (selectedUnit.IsAlive())
             {
                 // Update available moves after attack
-                var availableMoves = Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
+                var availableMoves =
+                    Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile, selectedUnit.MovementPoints);
                 GridUI.HighlightAvailableMoves(availableMoves, TileState.Movement); // TODO надо не надо?
             }
         }
@@ -64,37 +68,40 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Selector.SelectedUnit;
 
-         if (!IsClickValid(selectedUnit, tile))
-            return;
-
+        // if (!IsClickValid(selectedUnit, tile))
+        //     return;
         // // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
         // if (Selector.SelectedUnit != null)
         //     HandleLastSelectedUnit();
 
-        if (!IsTileInPath(selectedUnit, tile, out var path))
-            return;
+        // if (!IsTileInPath(selectedUnit, tile, out var path))
+        //     return;
 
-        HandleTileMovement(selectedUnit, path);
+        if (PathIsFounded == false)
+        {
+            Path = FindPath(selectedUnit, tile);
+            PathIsFounded = true;
+        }
 
-        _lastSelectedUnit = selectedUnit;
-        _lastSelectedTile = selectedUnit.OccupiedTile;
-        selectedUnit.Status = UnitStatus.Moved;
+        HandleTileMovement(selectedUnit, Path);
+
+        if (!selectedUnit.UnitIsMoving)
+        {
+            _lastSelectedUnit = selectedUnit;
+            _lastSelectedTile = selectedUnit.OccupiedTile;
+            selectedUnit.Status = UnitStatus.Moved;    
+        }
     }
-
-    private bool IsClickValid(Unit selectedUnit, Tile tile)
-        =>
-        IsPlayerUnitAvailable(selectedUnit) &&
-        tile != selectedUnit.OccupiedTile &&
-        selectedUnit.Status != UnitStatus.Moved;
 
     private void HandleTileMovement(Unit selectedUnit, List<Tile> path)
     {
         selectedUnit.OccupiedTile.UnselectTile();
         GridUI.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
-        
+
+
         if (path.Count == 0)
             return;
-
+        
         MoveUnitAlongPath(selectedUnit, path);
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
@@ -102,9 +109,40 @@ public class GameController : MonoBehaviour
         {
             selectedUnit.OccupiedTile.SelectTile();
         }
-        
-        Selector.UnitTurnIsOver();
+
+        if (!selectedUnit.UnitIsMoving)
+            Selector.UnitTurnIsOver();
     }
+
+    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
+    {
+        Tile nextTile = null;
+        // Двигаем юнита поочередно на каждую ячейку из списка
+        foreach (var tile in path)
+        {
+            nextTile = tile;
+            break;
+        }
+
+        Vector2 unitV2 = new(unit.transform.position.x, unit.transform.position.z);
+        Vector2 nextTileV2 = new(nextTile.transform.position.x, nextTile.transform.position.z);
+        if (unitV2 == nextTileV2)
+            path.Remove(nextTile);
+        
+        if (unit.CanMoveToTile(nextTile, out var distanceSqrt) && nextTile != null)
+        {
+            unit.MoveToTile(nextTile, distanceSqrt);
+        }
+        
+        if (path.Count == 0)
+            unit.UnitIsMoving = false;
+    }
+    
+    private bool IsClickValid(Unit selectedUnit, Tile tile)
+        =>
+            IsPlayerUnitAvailable(selectedUnit) &&
+            tile != selectedUnit.OccupiedTile &&
+            selectedUnit.Status != UnitStatus.Moved;
 
     private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
     {
@@ -139,9 +177,8 @@ public class GameController : MonoBehaviour
     // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
     private bool IsUnitAdjacentToEnemy(Unit unit, IReadOnlyCollection<Unit> units)
     {
-        return unit.OccupiedTile.Neighbors.Select(neighborTile => units.FirstOrDefault(u => 
-            u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy)).
-            Any(neighborUnit => neighborUnit != null);
+        return unit.OccupiedTile.Neighbors.Select(neighborTile => units.FirstOrDefault(u =>
+            u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy)).Any(neighborUnit => neighborUnit != null);
     }
 
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
@@ -159,21 +196,19 @@ public class GameController : MonoBehaviour
         unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
 
     // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
+    // private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
+    // {
+    //     path = Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
+    //     return tile.UnitOn == false && unit.MovementPoints >= path.Count;
+    // }
+
+    private List<Tile> FindPath(Unit unit, Tile tile)
     {
-        path = Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
-        return tile.UnitOn == false && unit.MovementPoints >= path.Count;
-    }
-    
-    public void MoveUnitAlongPath(Unit unit, List<Tile> path)
-    {
-        // Двигаем юнита поочередно на каждую ячейку из списка
-        foreach (var tile in path)
-            if (unit.CanMoveToTile(tile, out float distanceSqrt))
-                unit.MoveToTile(tile, distanceSqrt);
+        return Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
     }
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ
+
     private void AttackEnemies(Unit unit, List<Unit> enemies)
     {
         foreach (var enemy in enemies)
@@ -184,5 +219,6 @@ public class GameController : MonoBehaviour
                 Grid.RemoveUnit(enemy);
         }
     }
+
     #endregion
 }

@@ -25,7 +25,7 @@ public class Grid : MonoBehaviour
         CreateGrid();
         LocateNeighborsTiles();
         GetAllExistedUnits();
-        AddUnitsToTiles(); // передаем список AllExistedUnits вместо использования Grid.AllUnits
+        AddUnitsToTiles();
     }
 
     private void CreateGrid()
