@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -91,19 +92,20 @@ public class GameController : MonoBehaviour
             _lastSelectedUnit = selectedUnit;
             _lastSelectedTile = selectedUnit.OccupiedTile;
             selectedUnit.Status = UnitStatus.Moved;
+            PathIsFounded = false;
         }
+        // UnitMenu.Instance.MenuAction._blockPanel.SetActive(false);
     }
 
     private void HandleTileMovement(Unit selectedUnit)
     {
+        // UnitMenu.Instance.MenuAction._blockPanel.SetActive(true);
         selectedUnit.OccupiedTile.UnselectTile();
         GridUI.Instance.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
 
-
-        if (Path.Count == 0)
-            return;
-
         MoveUnitAlongPath(selectedUnit);
+        if (selectedUnit.UnitIsMoving)
+            return;
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
         if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
@@ -117,6 +119,7 @@ public class GameController : MonoBehaviour
 
     public void MoveUnitAlongPath(Unit unit)
     {
+        unit.UnitIsMoving = NeedToMoveMore(unit);
         Path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
         Tile nextTile = null;
         // Двигаем юнита поочередно на каждую ячейку из списка
@@ -136,8 +139,14 @@ public class GameController : MonoBehaviour
             unit.MoveToTile(nextTile, distanceSqrt);
         }
 
+        unit.UnitIsMoving = NeedToMoveMore(unit);
+    }
+
+    private bool NeedToMoveMore(Unit unit)
+    {
         if (Path.Count == 0)
-            unit.UnitIsMoving = false;
+            return false;
+        return unit.MovementPoints > 1;
     }
 
     private bool IsClickValid(Unit selectedUnit, Tile tile)

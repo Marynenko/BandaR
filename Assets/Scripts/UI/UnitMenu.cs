@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UnitMenu : MonoBehaviour
 {
     [SerializeField] private InputPlayer _input;
-    [SerializeField] private GameObject _blockPanel;
+    public GameObject _blockPanel;
 
 
     public Button moveButton;

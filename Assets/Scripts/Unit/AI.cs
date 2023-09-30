@@ -8,7 +8,7 @@ public class AI : MonoBehaviour
     private GameController _gameController;
     private GameModel _gameModel;
     private Grid _grid;
-    private Unit _unit;
+    private Unit _currentUnit;
     private bool _isCoroutineRunning = false;
 
     private void OnEnable()
@@ -20,42 +20,78 @@ public class AI : MonoBehaviour
 
     private void Update()
     {
-        if (_unit == null || _isCoroutineRunning) return;
-        if (_unit.UnitIsMoving)
+        if (_currentUnit == null) return;
+        StartMove();
+    }
+
+    public void InitializeAI(Unit unit)
+    {
+        _currentUnit = unit;
+        // _currentUnit.UnitIsMoving = true;
+    }
+
+    private void StartMove()
+    {
+        if (_currentUnit.Status == UnitStatus.AIMove)
         {
-            StartCoroutine(Move(_unit));
-            _isCoroutineRunning = true;
+            if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
+            {
+                Move();
+
+                if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
+                {
+                    _gameModel.EndTurn();
+                    return;
+                }
+            }
+
+            if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
+            {
+                _isCoroutineRunning = true;
+                StartCoroutine(SelectUnit());    
+            }
+
+            if (_currentUnit.UnitIsMoving)
+            {
+                _isCoroutineRunning = false;
+                _currentUnit.UnitIsMoving = true;
+            }
         }
     }
 
-    public void StartMove(Unit unit)
-    {
-        _unit = unit;
-        unit.UnitIsMoving = true;
-    }
-
-    private IEnumerator Move(Unit unit)
+    private IEnumerator SelectUnit()
     {
         var localSelector = _gameController.Selector;
         // Выбор юнита
         if (localSelector.SelectedUnit == null)
-            localSelector.SelectUnit(unit);
-        yield return new WaitForSeconds(1.5f);
+            localSelector.SelectUnit(_currentUnit);
+        if (!_currentUnit.UnitIsMoving)
+        {
+            // _isCoroutineRunning = true;
+            yield return new WaitForSeconds(1.5f);
+            
+        }
         
-        _isCoroutineRunning = false;
+        _currentUnit.UnitIsMoving = true;
+    }
+
+    private void Move()
+    {
+        var localSelector = _gameController.Selector;
 
         if (!_isCoroutineRunning)
         {
             // Находим всех враждебных юнитов
-            var enemies = _grid.AllUnits.Where(u => u.Type != unit.Type).ToArray();
+            var enemies = _grid.AllUnits.Where(u => u.Type != _currentUnit.Type).ToArray();
 
             // Выбираем ближайшего врага
             var targetEnemy = enemies.OrderBy(e =>
-                localSelector.PathConstructor.GetDistance(unit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+                localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
             // Если нашли врага, движемся к нему
             if (targetEnemy != null)
             {
+                // _currentUnit.UnitIsMoving = true;
                 var targetTile = targetEnemy.OccupiedTile;
                 _gameController.HandleTileClick(targetTile);
             }
@@ -63,8 +99,5 @@ public class AI : MonoBehaviour
 
         // if (!unit.UnitIsMoving)
         //     localSelector.MoveMore();
-
-        if(!_isCoroutineRunning && unit.UnitIsMoving)
-            _gameModel.EndTurn();
     }
 }

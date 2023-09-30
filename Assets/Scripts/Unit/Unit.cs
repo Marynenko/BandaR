@@ -81,7 +81,7 @@ public abstract class Unit : MonoBehaviour
         Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y,
             targetTile.transform.position.z);
 
-        const float movementSpeed = 5.5f;
+        const float movementSpeed = 2.5f;
         //Запускаем анимацию перемещения
         transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE * movementSpeed)
             .SetEase(Ease.Linear)

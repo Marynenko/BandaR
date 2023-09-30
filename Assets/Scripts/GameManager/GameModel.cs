@@ -101,7 +101,7 @@ public class GameModel : MonoBehaviour
                 return;
             }
 
-            ai.StartMove(activePlayer);
+            ai.InitializeAI(activePlayer);
         }
     }
     
