@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Selector: MonoBehaviour
+public class Selector : MonoBehaviour
 {
     private Grid _grid;
     private GameController _gameController;
-    
+
     public PathConstructor PathConstructor;
     public Unit SelectedUnit { get; private set; }
 
@@ -37,11 +37,11 @@ public class Selector: MonoBehaviour
         };
         SelectedUnit.OccupiedTile.SelectTile();
         // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
-        SelectedUnit.AvailableMoves = new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange));
+        SelectedUnit.AvailableMoves =
+            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange));
         GridUI.Instance.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
-        
     }
-    
+
     public void UnselectUnit(Unit unit)
     {
         SelectedUnit = unit;
@@ -51,7 +51,7 @@ public class Selector: MonoBehaviour
         MoveMore();
         SelectedUnit = null;
     }
-    
+
     public void MoveMore()
     {
         // Проверяем, есть ли у персонажа еще очки передвижения

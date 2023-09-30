@@ -61,7 +61,7 @@ public class GameController : MonoBehaviour
                 var availableMoves = new HashSet<Tile>
                 (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
                     selectedUnit.MovementPoints));
-                GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement); // TODO надо не надо?
+                GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement);
             }
         }
     }
@@ -71,12 +71,6 @@ public class GameController : MonoBehaviour
         var selectedUnit = Selector.SelectedUnit;
 
         // if (!IsClickValid(selectedUnit, tile))
-        //     return;
-        // // Если есть последний выбранный юнит и ячейка, восстанавливаем их состояние
-        // if (Selector.SelectedUnit != null)
-        //     HandleLastSelectedUnit();
-
-        // if (!IsTileInPath(selectedUnit, tile, out var path))
         //     return;
 
         if (PathIsFounded == false)
@@ -94,7 +88,6 @@ public class GameController : MonoBehaviour
             selectedUnit.Status = UnitStatus.Moved;
             PathIsFounded = false;
         }
-        // UnitMenu.Instance.MenuAction._blockPanel.SetActive(false);
     }
 
     private void HandleTileMovement(Unit selectedUnit)
@@ -114,12 +107,14 @@ public class GameController : MonoBehaviour
         }
 
         if (!selectedUnit.UnitIsMoving)
-            Selector.MoveMore();
+        {
+            if (Path.Count > 1)
+                Selector.MoveMore();
+        }
     }
 
     public void MoveUnitAlongPath(Unit unit)
     {
-        unit.UnitIsMoving = NeedToMoveMore(unit);
         Path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
         Tile nextTile = null;
         // Двигаем юнита поочередно на каждую ячейку из списка
@@ -146,7 +141,13 @@ public class GameController : MonoBehaviour
     {
         if (Path.Count == 0)
             return false;
-        return unit.MovementPoints > 1;
+        if (unit.MovementPoints <= 1)
+            return false;
+        if (unit.OccupiedTile == Path.ElementAt(Path.Count - 1))
+            return false;
+        // if (unit.OccupiedTile == Path.Contains(unit.OccupiedTile))
+        //     return false;
+        return true;
     }
 
     private bool IsClickValid(Unit selectedUnit, Tile tile)
