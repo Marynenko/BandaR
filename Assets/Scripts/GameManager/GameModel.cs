@@ -61,49 +61,6 @@ public class GameModel : MonoBehaviour
 
         Update();
     }
-
-    public void EndTurn()
-    {
-        activePlayer = GetNextPlayer(activePlayer);
-
-        // Если все игроки уже "Moved", перезапускаем возможность ходить всем на "Unavailable"
-        // if (_units.All(u => u.Status == UnitStatus.Moved))
-        //     ResetUnitsAvailability();
-
-        // UpdateScore();
-        //SetAvailableTiles();
-
-        if (IsGameOver())
-            EndGame();
-
-        // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
-        if (activePlayer.Type == UnitType.Player)
-        {
-            activePlayer.Status = UnitStatus.Available;
-            //SetUnitAvailability(ActivePlayer); 
-            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
-
-            if (SetUnitAvailability(activePlayer))
-            {
-                EndTurn();
-            }
-        }
-        else if (activePlayer.Type == UnitType.Enemy)
-        {
-            // Если следующий игрок - AI, то делаем ход AI
-            //ActivePlayer.Status = UnitStatus.Available;
-            activePlayer.Status = UnitStatus.AIMove;
-            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
-            
-            if (SetUnitAvailability(activePlayer))
-            {
-                EndTurn();
-                return;
-            }
-
-            ai.InitializeAI(activePlayer);
-        }
-    }
     
     public void HandleEndTurnButtonClicked()
     {
@@ -120,20 +77,25 @@ public class GameModel : MonoBehaviour
         }
     }
 
-    private bool SetUnitAvailability(Unit unit)
+    public void EndTurn()
     {
-        if (unit.Status != UnitStatus.Available && unit.Status != UnitStatus.AIMove)
+        activePlayer = GetNextPlayer(activePlayer);
+        
+        if (IsGameOver())
+            EndGame();
+        
+        // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
+        if (activePlayer.Type == UnitType.Player)
         {
-            return false;
+            activePlayer.Status = UnitStatus.Available;
+            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
         }
-
-        if (unit.MovementPoints == 0 || unit.MovementPoints == 1)
+        else if (activePlayer.Type == UnitType.Enemy)
         {
-            unit.SetAvailability();
-            return true;
+            activePlayer.Status = UnitStatus.AIMove;
+            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
+            ai.InitializeAI(activePlayer);
         }
-
-        return false;
     }
 
     private Unit GetNextPlayer(Unit player)

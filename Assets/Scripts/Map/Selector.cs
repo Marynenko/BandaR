@@ -38,7 +38,7 @@ public class Selector : MonoBehaviour
         SelectedUnit.OccupiedTile.SelectTile();
         // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         SelectedUnit.AvailableMoves =
-            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange));
+            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints));
         GridUI.Instance.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
 
@@ -54,12 +54,9 @@ public class Selector : MonoBehaviour
 
     public void MoveMore()
     {
-        // Проверяем, есть ли у персонажа еще очки передвижения
-        if (SelectedUnit != null && SelectedUnit.MovementPoints > 1)
-        {
-            // Если есть, снова активируем персонажа
+        if (SelectedUnit.CanMoveMore())
             SelectUnit(SelectedUnit);
-        }
+        
     }
 
     public void UpdateUnit(Unit unit)

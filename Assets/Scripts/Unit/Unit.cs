@@ -93,6 +93,17 @@ public abstract class Unit : MonoBehaviour
         OnUnitMoved(this);
     }
 
+    public bool CanMoveMore()
+    {
+        // Проверяем, есть ли у персонажа еще очки передвижения
+        if (MovementPoints > 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     #endregion
 
     #region Action ATTACK

@@ -83,9 +83,8 @@ public class GameController : MonoBehaviour
 
         if (!selectedUnit.UnitIsMoving)
         {
-            _lastSelectedUnit = selectedUnit;
-            _lastSelectedTile = selectedUnit.OccupiedTile;
-            selectedUnit.Status = UnitStatus.Moved;
+            // _lastSelectedUnit = selectedUnit;
+            // _lastSelectedTile = selectedUnit.OccupiedTile;
             PathIsFounded = false;
         }
     }
@@ -113,17 +112,10 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void MoveUnitAlongPath(Unit unit)
+    private void MoveUnitAlongPath(Unit unit)
     {
         Path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
-        Tile nextTile = null;
-        // Двигаем юнита поочередно на каждую ячейку из списка
-        foreach (var tile in Path)
-        {
-            nextTile = tile;
-            break;
-        }
-
+        var nextTile = Path.FirstOrDefault();
         Vector2 unitV2 = new(unit.transform.position.x, unit.transform.position.z);
         Vector2 nextTileV2 = new(nextTile.transform.position.x, nextTile.transform.position.z);
         if (unitV2 == nextTileV2)

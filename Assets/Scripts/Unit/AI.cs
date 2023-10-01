@@ -32,31 +32,27 @@ public class AI : MonoBehaviour
 
     private void StartMove()
     {
-        if (_currentUnit.Status == UnitStatus.AIMove)
+        if (_currentUnit.Status != UnitStatus.AIMove) return;
+        if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
         {
-            if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
-            {
-                Move();
-
-                if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
-                {
-                    _gameModel.EndTurn();
-                    return;
-                }
-            }
+            Move();
 
             if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
             {
-                _isCoroutineRunning = true;
-                StartCoroutine(SelectUnit());    
-            }
-
-            if (_currentUnit.UnitIsMoving)
-            {
-                _isCoroutineRunning = false;
-                _currentUnit.UnitIsMoving = true;
+                _gameModel.HandleEndTurnButtonClicked();
+                return;
             }
         }
+
+        if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
+        {
+            _isCoroutineRunning = true;
+            StartCoroutine(SelectUnit());    
+        }
+
+        if (!_currentUnit.UnitIsMoving) return;
+        _isCoroutineRunning = false;
+        _currentUnit.UnitIsMoving = true;
     }
 
     private IEnumerator SelectUnit()

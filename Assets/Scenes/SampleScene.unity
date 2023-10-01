@@ -1513,7 +1513,7 @@ MonoBehaviour:
   tilesPlace: {fileID: 1203233631}
   tilePrefab: {fileID: 5306329372521576483, guid: 3924b4532fcf7fc4c9b4785688018ac4,
     type: 3}
-  gridSize: {x: 6, y: 6}
+  gridSize: {x: 6, y: 12}
   offset: 0.05
 --- !u!114 &1624328207
 MonoBehaviour:
@@ -1823,12 +1823,12 @@ PrefabInstance:
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementRange
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementPoints
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5099475863235921304, guid: d00151081c233334e90c56236c0be649,
         type: 3}
@@ -1986,12 +1986,12 @@ PrefabInstance:
     - target: {fileID: 2578142731543985585, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}
       propertyPath: MovementRange
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2578142731543985585, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}
       propertyPath: MovementPoints
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8613169456036177319, guid: 825b9ef269e36ec4a895ede59648dd37,
         type: 3}
