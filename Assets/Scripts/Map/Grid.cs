@@ -75,7 +75,7 @@ public class Grid : MonoBehaviour
     public void SetAvailableTiles()
     {
         foreach (var tile in Tiles)
-            if (!tile.IsOccupied())
+            if (!tile.IsAvailable())
                 tile.SetAvailable(true);
     }
 

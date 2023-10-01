@@ -56,6 +56,9 @@ public class GameModel : MonoBehaviour
         UIManager.Instance.MenuAction.HideMenu();
         activePlayer.Stats.MovementPoints = 0;
         selector.UnselectUnit(activePlayer);
+        activePlayer.OccupiedTile.Available = false;
+        activePlayer.OccupiedTile.State = activePlayer.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
+        
         activePlayer.Status = UnitStatus.Moved;
 
         // Проверяем, был ли игрок перемещен в этом ходе

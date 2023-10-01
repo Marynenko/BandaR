@@ -6,6 +6,9 @@ using UnityEngine;
 public class PathConstructor : MonoBehaviour
 {
     private Grid _grid;
+    private HashSet<Tile> _availableMoves;
+    private Tile _destinationTile;
+
     private readonly struct Direction
     {
         public int X { get; }
@@ -20,10 +23,10 @@ public class PathConstructor : MonoBehaviour
 
     private readonly List<Direction> _direction = new()
     {
-        new Direction(0, 1),  // Вверх
-        new Direction(0, -1), // Вниз
-        new Direction(-1, 0), // Влево
-        new Direction(1, 0)   // Вправо
+        new Direction(0, 1), // up
+        new Direction(0, -1), // down
+        new Direction(-1, 0), // left
+        new Direction(1, 0) // right
     };
 
     private void OnEnable()
@@ -31,77 +34,83 @@ public class PathConstructor : MonoBehaviour
         _grid = GetComponentInParent<Grid>();
     }
 
-public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> path)
-{
-    path = new List<Tile>();
-
-    Dictionary<Tile, float> gScore = new()
+    public List<Tile> FindPathToTarget(Unit unit, Tile endTile, out List<Tile> path)
     {
-        [startTile] = 0
-    };
+        path = new List<Tile>();
+        var startTile = unit.OccupiedTile;
+        _availableMoves = unit.AvailableMoves;
+        _destinationTile = endTile;
 
-    Dictionary<Tile, float> fScore = new()
-    {
-        [startTile] = Heuristic(startTile, endTile)
-    };
 
-    HashSet<Tile> closedList = new();
-    var openList = new SortedDictionary<float, List<Tile>>() { { fScore[startTile], new List<Tile> { startTile } } };
-    Dictionary<Tile, Tile> cameFrom = new();
-
-    while (openList.Count > 0)
-    {
-        var currentTile = openList.First().Value[0];
-        if (currentTile == endTile)
+        Dictionary<Tile, float> gScore = new()
         {
-            path = ReconstructPath(cameFrom, endTile);
-            return path; // Возвращаем путь как только его нашли
-        }
+            [startTile] = 0
+        };
 
-        if (openList.First().Value.Count > 1)
-            openList.First().Value.RemoveAt(0);
-        else
-            openList.Remove(openList.First().Key);
-        closedList.Add(currentTile);
-
-        foreach (var neighborTile in GetNeighborTiles(currentTile).Where(neighborTile => !closedList.Contains(neighborTile)))
+        Dictionary<Tile, float> fScore = new()
         {
-            if (currentTile != null)
+            [startTile] = Heuristic(startTile, endTile)
+        };
+
+        HashSet<Tile> closedList = new();
+        var openList = new SortedDictionary<float, List<Tile>>()
+            { { fScore[startTile], new List<Tile> { startTile } } };
+        Dictionary<Tile, Tile> cameFrom = new();
+
+        while (openList.Count > 0)
+        {
+            var currentTile = openList.First().Value[0];
+            if (currentTile == endTile)
             {
-                var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
-
-                fScore.TryAdd(neighborTile, float.MaxValue);
-
-                if (!openList.ContainsKey(fScore[neighborTile]))
-                    openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
-                else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor) ? gScoreNeighbor : float.MaxValue))
-                    continue;
-
-                cameFrom[neighborTile] = currentTile;
-                gScore[neighborTile] = tentativeScore;
+                path = ReconstructPath(cameFrom, endTile);
+                return path;
             }
 
-            fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
-            if (openList.ContainsKey(fScore[neighborTile]))
-                openList[fScore[neighborTile]].Remove(neighborTile);
-            if (!openList.ContainsKey(fScore[neighborTile]))
-                openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+            if (openList.First().Value.Count > 1)
+                openList.First().Value.RemoveAt(0);
             else
-                openList[fScore[neighborTile]].Add(neighborTile);
+                openList.Remove(openList.First().Key);
+            closedList.Add(currentTile);
+
+            foreach (var neighborTile in GetNeighborTiles(currentTile)
+                         .Where(neighborTile => !closedList.Contains(neighborTile)))
+            {
+                if (currentTile != null)
+                {
+                    var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
+
+                    fScore.TryAdd(neighborTile, float.MaxValue);
+
+                    if (!openList.ContainsKey(fScore[neighborTile]))
+                        openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+                    else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor)
+                                 ? gScoreNeighbor
+                                 : float.MaxValue))
+                        continue;
+
+                    cameFrom[neighborTile] = currentTile;
+                    gScore[neighborTile] = tentativeScore;
+                }
+
+                fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
+                if (openList.ContainsKey(fScore[neighborTile]))
+                    openList[fScore[neighborTile]].Remove(neighborTile);
+                if (!openList.ContainsKey(fScore[neighborTile]))
+                    openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+                else
+                    openList[fScore[neighborTile]].Add(neighborTile);
+            }
         }
+
+        return new List<Tile>();
     }
 
-    return new List<Tile>(); // Возвращаем пустой список, если путь не найден
-}
 
-
-    // Используем эвристику Манхэттенского расстояния для оценки стоимости пути
     private float Heuristic(Tile currentTile, Tile endTile)
     {
         var dx = Math.Abs(currentTile.Coordinates.x - endTile.Coordinates.x);
         var dy = Math.Abs(currentTile.Coordinates.y - endTile.Coordinates.y);
 
-        // Модифицируем эвристику так, чтобы она штрафовала пути, которые отдаляют от цели
         if (dx > dy)
             return 1.001f * dx + dy;
         else
@@ -131,14 +140,26 @@ public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> 
                 Convert.ToInt32(tile.Coordinates.y + direction.Y));
 
             if (TryGetTile(coordinate, out var neighbor) && neighbor != tile)
-                nearbyTiles.Add(neighbor);
+            {
+                // Проверяем, является ли клетка доступной для движения
+                if (_destinationTile == null)
+                {
+                    if (neighbor.IsAvailable())
+                        nearbyTiles.Add(neighbor);
+                }
+                else
+                {
+                    if (neighbor.IsAvailable() || neighbor == _destinationTile)
+                        nearbyTiles.Add(neighbor);
+                }
+            }
         }
 
         tile.Neighbors = nearbyTiles;
         return nearbyTiles;
     }
-    
-    public List<Tile> GetAvailableMoves(Tile tile, int maxMoves)
+
+    public IEnumerable<Tile> GetAvailableMoves(Tile tile, int maxMoves)
     {
         var visitedTiles = new HashSet<Tile>();
         var availableMoves = new List<Tile>();
@@ -155,9 +176,8 @@ public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> 
 
             if (remainingMoves <= 1) continue;
             foreach (var neighbour in GetNeighborTiles(currentTile))
-                if (!(visitedTiles.Contains(neighbour) && neighbour.IsOccupied()))
+                if (!(visitedTiles.Contains(neighbour)))
                 {
-                    // Проверяем, хватает ли очков передвижения, чтобы дойти до соседней клетки
                     var cost = neighbour.MovementCost;
                     if (cost <= remainingMoves)
                         queue.Enqueue((neighbour, remainingMoves - cost));
@@ -169,7 +189,8 @@ public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> 
 
     private bool TryGetTile(Vector2Int coordinate, out Tile tile)
     {
-        if (coordinate.x >= 0 && coordinate.x < _grid.GridSize.x && coordinate.y >= 0 && coordinate.y < _grid.GridSize.y)
+        if (coordinate.x >= 0 && coordinate.x < _grid.GridSize.x && coordinate.y >= 0 &&
+            coordinate.y < _grid.GridSize.y)
         {
             tile = _grid.Tiles[coordinate.x, coordinate.y];
             return true;
@@ -183,12 +204,12 @@ public List<Tile> FindPathToTarget(Tile startTile, Tile endTile, out List<Tile> 
 
     public float GetDistance(Tile tileFrom, Tile tileTo)
     {
-        // Если ячейки равны, то расстояние между ними равно 0
+        // ???? ?????? ?????, ?? ?????????? ????? ???? ????? 0
         if (tileFrom == tileTo)
             return 0;
 
-        // Здесь мы можем использовать любой алгоритм для вычисления расстояния между ячейками.
-        // Например, можно использовать евклидово расстояние:
+        // ????? ?? ????? ???????????? ????? ???????? ??? ?????????? ?????????? ????? ????????.
+        // ????????, ????? ???????????? ????????? ??????????:
         var dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
         var dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
         return Mathf.Sqrt(dx * dx + dy * dy);

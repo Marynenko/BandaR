@@ -6,16 +6,17 @@ public class UnitMenu : MonoBehaviour
 {
     [SerializeField] private InputPlayer _input;
     public GameObject _blockPanel;
-
+    public GameObject MainContainerPlayer; // Меню игрока
+    public GameObject MainContainerEnemy; // Меню врага
 
     public Button moveButton;
     public Button attackButton;
     public Button infoButton;
     public Button endTurnButton;
-
-    private Unit _currentUnit;
     
+    private Unit _currentUnit;
     private static UIManager _instance;
+
     public static UIManager Instance
     {
         get
@@ -25,7 +26,7 @@ public class UnitMenu : MonoBehaviour
             return _instance;
         }
     }
-    
+
     private void Start()
     {
         HideMenu();
@@ -39,8 +40,27 @@ public class UnitMenu : MonoBehaviour
     public void ShowMenu(Unit unit)
     {
         _currentUnit = unit;
+        
+        
         gameObject.SetActive(true);
+        CheckUnitType(unit);
         _blockPanel.SetActive(true);
+    }
+    
+    private void CheckUnitType(Unit unit)
+    {
+        if(unit.Type == UnitType.Player)
+        {
+            // Открыть меню игрока и закрыть меню врага
+            MainContainerPlayer.SetActive(true);
+            MainContainerEnemy.SetActive(false);
+        }
+        else
+        {
+            // Открыть меню врага и закрыть меню игрока
+            MainContainerEnemy.SetActive(true);
+            MainContainerPlayer.SetActive(false);
+        }
     }
 
     public void HideMenu()

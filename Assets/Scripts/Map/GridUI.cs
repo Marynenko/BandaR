@@ -21,7 +21,7 @@ public class GridUI : MonoBehaviour
         Instance.gameObject.SetActive(true);
     }
 
-    public void HighlightTile(Tile tile, TileState state) =>
+    private void HighlightTile(Tile tile, TileState state) =>
         tile.ChangeColor(state);
     
     public void HighlightTiles(IEnumerable<Tile> tiles, TileState state)
@@ -32,8 +32,18 @@ public class GridUI : MonoBehaviour
 
     public void HighlightAvailableMoves(HashSet<Tile> availableMoves, TileState unitState)
     {
-        HighlightTile(availableMoves.First(), unitState); // TODO неизвестно нада ли это, так как уже вызывается HighlightTile
-        HighlightTiles(availableMoves.Skip(1), TileState.Movement);
+        // Выделить первый тайл
+        HighlightTile(availableMoves.First(), unitState);
+
+        // Выделить остальные тайлы в зависимости от их состояния
+        var standardTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.Standard);
+        HighlightTiles(standardTiles, TileState.Movement);
+
+        var occupiedByPlayerTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.OccupiedByPlayer);
+        HighlightTiles(occupiedByPlayerTiles, TileState.OccupiedByPlayer);
+
+        var occupiedByEnemyTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.OccupiedByEnemy);
+        HighlightTiles(occupiedByEnemyTiles, TileState.OccupiedByEnemy);
     }
     
     

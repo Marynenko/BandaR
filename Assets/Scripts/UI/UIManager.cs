@@ -23,4 +23,9 @@ public class UIManager : MonoBehaviour
     {
         Instance.gameObject.SetActive(true);
     }
+
+    private void OnDisable()
+    {
+        Instance.gameObject.SetActive(false);
+    }
 }

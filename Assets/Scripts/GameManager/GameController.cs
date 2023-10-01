@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     #region Variables
 
     private Unit _lastSelectedUnit;
-    private Tile _lastSelectedTile;
+    private Tile _lastSelectedTile; // TODO Переименовать в StartTile и использовать
 
     public Grid Grid;
     public Selector Selector;
@@ -79,6 +79,7 @@ public class GameController : MonoBehaviour
             PathIsFounded = true;
         }
 
+        // if (Path.Count != 0)
         HandleTileMovement(selectedUnit);
 
         if (!selectedUnit.UnitIsMoving)
@@ -105,11 +106,10 @@ public class GameController : MonoBehaviour
             selectedUnit.OccupiedTile.SelectTile();
         }
 
-        if (!selectedUnit.UnitIsMoving)
-        {
-            if (Path.Count > 1)
-                Selector.MoveMore();
-        }
+        if (selectedUnit.UnitIsMoving) return;
+        if (Path.Count <= 1) return;
+        if (selectedUnit.CanMoveMore())
+            Selector.SelectUnit(selectedUnit);
     }
 
     private void MoveUnitAlongPath(Unit unit)
@@ -208,7 +208,7 @@ public class GameController : MonoBehaviour
 
     private List<Tile> FindPath(Unit unit, Tile tile)
     {
-        return Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
+        return Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
     }
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ

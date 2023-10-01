@@ -58,7 +58,7 @@ public class AI : MonoBehaviour
     private IEnumerator SelectUnit()
     {
         var localSelector = _gameController.Selector;
-        // Выбор юнита
+        // ????? ?????
         if (localSelector.SelectedUnit == null)
             localSelector.SelectUnit(_currentUnit);
         if (!_currentUnit.UnitIsMoving)
@@ -77,14 +77,14 @@ public class AI : MonoBehaviour
 
         if (!_isCoroutineRunning)
         {
-            // Находим всех враждебных юнитов
+            // ??????? ???? ?????????? ??????
             var enemies = _grid.AllUnits.Where(u => u.Type != _currentUnit.Type).ToArray();
 
-            // Выбираем ближайшего врага
+            // ???????? ?????????? ?????
             var targetEnemy = enemies.OrderBy(e =>
                 localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
-            // Если нашли врага, движемся к нему
+            // ???? ????? ?????, ???????? ? ????
             if (targetEnemy != null)
             {
                 // _currentUnit.UnitIsMoving = true;

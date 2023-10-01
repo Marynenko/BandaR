@@ -87,12 +87,23 @@ public class Tile : MonoBehaviour
     public void UnselectTile()
     {
         UnitOn = false;
-        Available = true; // TODO выяснить нужно это или GridUI.HighlightTile?
+        Available = true;
         GridUI.Instance.HighlightTiles(Neighbors, TileState.Standard);
     }
 
-    public bool IsOccupied() =>
-        State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
+    // public bool IsOccupied() =>
+    //     State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
+    
+    public bool IsAvailable()
+    {
+        return State == TileState.Standard;
+        // if (!Available)
+        //     return true;
+        // if (State == TileState.Standard)
+        //     return
+        // State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
+
+    }
 
     public void ChangeColor(TileState state)
     {
@@ -100,7 +111,7 @@ public class Tile : MonoBehaviour
     }
 }
 
-public enum TileState
+public enum TileState   
 {
     Standard, 
     Selected, 

@@ -48,20 +48,8 @@ public class Selector : MonoBehaviour
         if (SelectedUnit.AvailableMoves != null)
             GridUI.Instance.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
-        MoveMore();
-        SelectedUnit = null;
-    }
-
-    public void MoveMore()
-    {
         if (SelectedUnit.CanMoveMore())
             SelectUnit(SelectedUnit);
-        
-    }
-
-    public void UpdateUnit(Unit unit)
-    {
-        // Обновить отображение юнита на игровом поле
-        unit.UpdateVisuals();
+        SelectedUnit = null;
     }
 }
