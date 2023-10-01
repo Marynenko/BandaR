@@ -34,12 +34,12 @@ public class GameModel : MonoBehaviour
     {
         if (activePlayer == null)
             return;
-
+        if (activePlayer.UnitIsMoving || activePlayer.Status == UnitStatus.AIMove)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
             var mousePosition = Input.mousePosition;
             input.HandleLeftClick(mousePosition);
-            
         }
     }
 
@@ -48,18 +48,7 @@ public class GameModel : MonoBehaviour
     {
         if (IsGameOver())
             return;
-
         grid.SetAvailableTiles();
-
-        //ResetTilesAvailability();
-
-        //if (!SetUnitAvailability(ActivePlayer))
-        //{
-        //    EndTurn();
-        //    return;
-        //}
-
-        Update();
     }
     
     public void HandleEndTurnButtonClicked()
@@ -77,7 +66,7 @@ public class GameModel : MonoBehaviour
         }
     }
 
-    public void EndTurn()
+    private void EndTurn()
     {
         activePlayer = GetNextPlayer(activePlayer);
         
@@ -104,32 +93,28 @@ public class GameModel : MonoBehaviour
         var index = listOfUnits.IndexOf(player);
         var nextIndex = (index + 1) % listOfUnits.Count;
         // Проверяем, является ли следующий индекс последним игроком
-        if (nextIndex == listOfUnits.Count)
-        {
+        return nextIndex == listOfUnits.Count ?
             // Если да, то возвращаем первого игрока из списка
-            return listOfUnits[0];
-        }
-
-        // Если не последний игрок, возвращаем следующего игрока по индексу
-        return listOfUnits[nextIndex];
+            listOfUnits[0] :
+            // Если не последний игрок, возвращаем следующего игрока по индексу
+            listOfUnits[nextIndex];
     }
 
     private bool IsGameOver()
     {
         // Implement game over condition here
         var alivePlayers = _units.Where(p => p.gameObject.activeInHierarchy == true).ToList();
-        if (alivePlayers.Count == 1)
+        switch (alivePlayers.Count)
         {
-            Debug.Log($"{alivePlayers[0].name} has won the game!"); // TODO пока на карте есть только enemy или только players
-            return true;
+            case 1:
+                Debug.Log($"{alivePlayers[0].name} has won the game!"); // TODO пока на карте есть только enemy или только players
+                return true;
+            case 0:
+                Debug.Log("The game has ended in a draw.");
+                return true;
+            default:
+                return false;
         }
-        else if (alivePlayers.Count == 0) // TODO это невозможно
-        {
-            Debug.Log("The game has ended in a draw.");
-            return true;
-        }
-
-        return false;
     }
 
     private void EndGame()
@@ -138,28 +123,4 @@ public class GameModel : MonoBehaviour
         // endTurnButton.interactable = false;
         // Дополнительный функционал завершения игры
     }
-
-    private void UpdateScore()
-    {
-        // Update the score of both players
-    }
-
-    #region Не использую пока что
-
-    public bool IsTileWithinBoardBounds(Tile tile) =>
-        tile.Coordinates.x >= 0 && tile.Coordinates.x < grid.GridSize.x
-                                && tile.Coordinates.y >= 0
-                                && tile.Coordinates.y < grid.GridSize.y;
-
-    public bool IsUnitOwnedByCurrentPlayer(Unit unit) =>
-        unit.Type == activePlayer.Type; // Может быть
-
-    public bool IsUnitAvailableForAction(Unit unit)
-    {
-        if (unit.Status == UnitStatus.Available || unit.Status == UnitStatus.Unavailable) // Тяп ляп
-            return true;
-        return false;
-    }
-
-    #endregion
 }
