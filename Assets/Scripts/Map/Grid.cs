@@ -91,4 +91,28 @@ public class Grid : MonoBehaviour
             Destroy(unitToRemove.gameObject);
         }
     }
+
+    public TileState GetStateAndCheckUnitOn(Unit unit, Tile tile)
+    {
+        // return tile.State switch
+        // {
+        //     TileState.OccupiedByEnemy when unit.Type == UnitType.Enemy => tile.State,
+        //     TileState.OccupiedByPlayer when unit.Type == UnitType.Player => tile.State,
+        //     _ => tile.State
+        // };
+        
+        if (tile.State == TileState.OccupiedByEnemy && unit.Type == UnitType.Enemy)
+            return tile.State;
+        if (tile.State == TileState.OccupiedByPlayer && unit.Type == UnitType.Player)
+            return tile.State;
+        return tile.State;
+    }
+    
+    
+    public bool CheckTileToUnitStandOn(Unit unit, Tile tile)
+    {
+        if (tile.State == TileState.OccupiedByEnemy && unit.Type == UnitType.Player)
+            return true;
+        return false;
+    }
 }

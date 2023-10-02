@@ -6,7 +6,7 @@ using UnityEngine;
 public class PathConstructor : MonoBehaviour
 {
     private Grid _grid;
-    private HashSet<Tile> _availableMoves;
+    private Unit _currentUnit;
     private Tile _destinationTile;
 
     private readonly struct Direction
@@ -38,7 +38,7 @@ public class PathConstructor : MonoBehaviour
     {
         path = new List<Tile>();
         var startTile = unit.OccupiedTile;
-        _availableMoves = unit.AvailableMoves;
+        _currentUnit = unit;
         _destinationTile = endTile;
 
 
@@ -63,7 +63,7 @@ public class PathConstructor : MonoBehaviour
             if (currentTile == endTile)
             {
                 path = ReconstructPath(cameFrom, endTile);
-                // _destinationTile = null;
+                _destinationTile = null;
                 return path;
             }
 
@@ -103,7 +103,7 @@ public class PathConstructor : MonoBehaviour
             }
         }
 
-        // _destinationTile = null;
+        _destinationTile = null;
         return new List<Tile>();
     }
 
@@ -115,8 +115,7 @@ public class PathConstructor : MonoBehaviour
 
         if (dx > dy)
             return 1.001f * dx + dy;
-        else
-            return dx + 1.001f * dy;
+        return dx + 1.001f * dy;
     }
 
 
@@ -135,7 +134,10 @@ public class PathConstructor : MonoBehaviour
     public IEnumerable<Tile> GetNeighborTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
-
+        // var tileOccupied = _grid.CheckTileToUnitStandOn(_currentUnit, tile);
+        // if (tileOccupied)
+        //     return nearbyTiles;
+            
         foreach (var direction in _direction)
         {
             var coordinate = new Vector2Int(Convert.ToInt32(tile.Coordinates.x + direction.X),

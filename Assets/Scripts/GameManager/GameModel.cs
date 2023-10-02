@@ -80,12 +80,12 @@ public class GameModel : MonoBehaviour
         if (activePlayer.Type == UnitType.Player)
         {
             activePlayer.Status = UnitStatus.Available;
-            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
+            activePlayer.Stats.MovementPoints = activePlayer.MovementRange;
         }
         else if (activePlayer.Type == UnitType.Enemy)
         {
             activePlayer.Status = UnitStatus.AIMove;
-            activePlayer.Stats.MovementPoints = activePlayer.Stats.MovementRange;
+            activePlayer.Stats.MovementPoints = activePlayer.MovementRange;
             ai.InitializeAI(activePlayer);
         }
     }
