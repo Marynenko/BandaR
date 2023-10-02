@@ -1689,10 +1689,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilesPlace: {fileID: 1203233631}
-  tilePrefab: {fileID: 5306329372521576483, guid: 3924b4532fcf7fc4c9b4785688018ac4,
+  tilePrefab: {fileID: 8210557890246080385, guid: e2450c32e686a99429395f9ce04d3ff5,
     type: 3}
   gridSize: {x: 4, y: 5}
-  offset: 0.05
+  offset: 0.01
 --- !u!114 &1624328207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2158,12 +2158,12 @@ PrefabInstance:
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementRange
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2069235198530996241, guid: d00151081c233334e90c56236c0be649,
         type: 3}
       propertyPath: MovementPoints
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5099475863235921304, guid: d00151081c233334e90c56236c0be649,
         type: 3}

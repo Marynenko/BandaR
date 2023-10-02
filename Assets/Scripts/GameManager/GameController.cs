@@ -101,11 +101,6 @@ public class GameController : MonoBehaviour
             return;
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
-        if (IsUnitAdjacentToEnemy(selectedUnit, Grid.AllUnits))
-        {
-            selectedUnit.OccupiedTile.SelectTile();
-        }
-
         if (selectedUnit.UnitIsMoving) return;
         if (Path.Count <= 1) return;
         if (selectedUnit.CanMoveMore())
@@ -153,7 +148,6 @@ public class GameController : MonoBehaviour
         foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
         {
             UpdateNeighborUnits(selectedUnit, neighborTile, allUnits);
-            CheckAdjacentEnemies(selectedUnit, allUnits);
         }
     }
 
@@ -165,24 +159,7 @@ public class GameController : MonoBehaviour
         {
             neighborUnit.OnUnitMoved(unit);
         }
-    }
 
-
-    private void CheckAdjacentEnemies(Unit unit, IReadOnlyCollection<Unit> units)
-    {
-        if (IsUnitAdjacentToEnemy(unit, units))
-        {
-            var adjacentEnemies = units
-                .Where(u => u.Type != unit.Type && IsUnitAdjacentTo(u, unit));
-            AttackEnemies(unit, adjacentEnemies.ToList());
-        }
-    }
-
-    // Метод проверяет, находится ли юнит рядом с юнитами указанной команды
-    private bool IsUnitAdjacentToEnemy(Unit unit, IReadOnlyCollection<Unit> units)
-    {
-        return unit.OccupiedTile.Neighbors.Select(neighborTile => units.FirstOrDefault(u =>
-            u.OccupiedTile == neighborTile && u.Type == UnitType.Enemy)).Any(neighborUnit => neighborUnit != null);
     }
 
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)

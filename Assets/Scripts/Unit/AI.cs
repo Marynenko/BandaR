@@ -40,6 +40,7 @@ public class AI : MonoBehaviour
             if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
             {
                 _gameModel.HandleEndTurnButtonClicked();
+                _currentUnit = null;
                 return;
             }
         }
@@ -58,14 +59,12 @@ public class AI : MonoBehaviour
     private IEnumerator SelectUnit()
     {
         var localSelector = _gameController.Selector;
-        // ????? ?????
         if (localSelector.SelectedUnit == null)
             localSelector.SelectUnit(_currentUnit);
         if (!_currentUnit.UnitIsMoving)
         {
             // _isCoroutineRunning = true;
             yield return new WaitForSeconds(1.5f);
-            
         }
         
         _currentUnit.UnitIsMoving = true;
@@ -75,25 +74,14 @@ public class AI : MonoBehaviour
     {
         var localSelector = _gameController.Selector;
 
-        if (!_isCoroutineRunning)
-        {
-            // ??????? ???? ?????????? ??????
-            var enemies = _grid.AllUnits.Where(u => u.Type != _currentUnit.Type).ToArray();
+        if (_isCoroutineRunning) return;
+        var enemies = _grid.AllUnits.Where(u => u.Type != _currentUnit.Type).ToArray();
+        var targetEnemy = enemies.OrderBy(e =>
+            localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
-            // ???????? ?????????? ?????
-            var targetEnemy = enemies.OrderBy(e =>
-                localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
-
-            // ???? ????? ?????, ???????? ? ????
-            if (targetEnemy != null)
-            {
-                // _currentUnit.UnitIsMoving = true;
-                var targetTile = targetEnemy.OccupiedTile;
-                _gameController.HandleTileClick(targetTile);
-            }
-        }
-
-        // if (!unit.UnitIsMoving)
-        //     localSelector.MoveMore();
+        if (targetEnemy == null) return;
+        // _currentUnit.UnitIsMoving = true;
+        var targetTile = targetEnemy.OccupiedTile;
+        _gameController.HandleTileClick(targetTile);
     }
 }

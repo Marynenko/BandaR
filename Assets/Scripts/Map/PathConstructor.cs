@@ -63,6 +63,7 @@ public class PathConstructor : MonoBehaviour
             if (currentTile == endTile)
             {
                 path = ReconstructPath(cameFrom, endTile);
+                // _destinationTile = null;
                 return path;
             }
 
@@ -102,6 +103,7 @@ public class PathConstructor : MonoBehaviour
             }
         }
 
+        // _destinationTile = null;
         return new List<Tile>();
     }
 

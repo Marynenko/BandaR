@@ -21,7 +21,7 @@ public class GridUI : MonoBehaviour
         Instance.gameObject.SetActive(true);
     }
 
-    private void HighlightTile(Tile tile, TileState state) =>
+    public void HighlightTile(Tile tile, TileState state) =>
         tile.ChangeColor(state);
     
     public void HighlightTiles(IEnumerable<Tile> tiles, TileState state)
