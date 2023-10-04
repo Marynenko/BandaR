@@ -384,3 +384,6 @@ Assets/Models and Textures/Green Lawn/Render/Materials/Green Lawn (2).mat
 Assets/Models and Textures/Green Lawn/Texture/Materials/Green Lawn (1).mat
 Assets/Models and Textures/Green Lawn/Texture/Materials/Green Lawn (2).mat
 Assets/Models and Textures/Sprites/Bastion_1.png
+*.mat
+*.fbx
+*.max
