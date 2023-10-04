@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class Grid : MonoBehaviour
 {
@@ -8,8 +9,7 @@ public class Grid : MonoBehaviour
     [SerializeField] private Tile tilePrefab;
     [SerializeField] private Vector2Int gridSize;
     [SerializeField] private float offset;
-
-    public Selector Selector { get; private set; }
+    private Selector Selector { get; set; }
     public List<Unit> AllUnits { get; private set; }
     public Tile[,] Tiles { get; private set; }
     public Vector2Int GridSize => gridSize;
@@ -19,6 +19,9 @@ public class Grid : MonoBehaviour
         Selector = GetComponentInChildren<Selector>();
         Tiles = new Tile[gridSize.x, gridSize.y];
     }
+    
+    //   3842 - Готово
+
 
     public void StartCreating()
     {

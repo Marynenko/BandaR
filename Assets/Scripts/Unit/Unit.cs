@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-public abstract class Unit : MonoBehaviour
+public abstract class Unit : SoundsManager
 {
     #region Variables
 
     // Fields
+    [SerializeField] private Image _portrait;
     [SerializeField] private UnitStats _stats;
 
     // Constants
@@ -20,8 +22,10 @@ public abstract class Unit : MonoBehaviour
     private Tile _occupiedTile;
 
     // Public properties
+    public Image Portrait => _portrait;
     public UnitStats Stats => _stats;
     public UnitType Type => _stats.Type;
+    public string Name => Stats.Name;
     public int MovementPoints => Stats.MovementPoints;
     public int MovementRange => Stats.MovementRange;
     public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
@@ -29,6 +33,7 @@ public abstract class Unit : MonoBehaviour
 
     // public fields
     public Vector2Int SpawnCellVector2Int;
+
     // public List<Tile> AvailableMoves;
     public HashSet<Tile> AvailableMoves;
     public bool UnitIsMoving = false;
@@ -47,7 +52,8 @@ public abstract class Unit : MonoBehaviour
         // transform.position = spawnCell.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
-
+        UIManager.Instance.UiGroupPortraits.InitializePortrait(this, _portrait);
+        GridUI.Instance.HighlightCurrentPlayer(_portrait);
         _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
@@ -83,10 +89,13 @@ public abstract class Unit : MonoBehaviour
 
         const float movementSpeed = 2.5f;
         //Запускаем анимацию перемещения
+
+        // var sound = GetComponentInParent<SoundsManager>();
+        // PlaySound(Sounds[0]);            
         transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE * movementSpeed)
             .SetEase(Ease.Linear)
             .OnComplete(() => { transform.position = newPosition; });
-        
+
         _occupiedTile = targetTile;
         _stats.MovementPoints -= 1;
 

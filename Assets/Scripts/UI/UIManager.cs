@@ -1,10 +1,12 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private UnitMenu _menuAction;
+    public  UIGroupPortraits UiGroupPortraits;
 
     public UnitMenu MenuAction { get => _menuAction; set => _menuAction = value; }
 

@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class UnitStats : MonoBehaviour
 {
-    public int ID;
+    public string Name;
     public UnitType Type;
-    public float ViewRange;
     public int MovementPoints;
     public int MovementRange;
     public int AttackDamage;

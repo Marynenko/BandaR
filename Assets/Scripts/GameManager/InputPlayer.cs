@@ -28,6 +28,7 @@ public class InputPlayer : MonoBehaviour
             if (hit.collider.TryGetComponent(out Unit unit))
             {
                 _clickedUnit = unit;
+                GridUI.Instance.HighlightCurrentPlayer(_clickedUnit.Portrait, true);
                 UIManager.Instance.MenuAction.ShowMenu(unit);
             }
             else if (hit.collider.TryGetComponent(out Tile tile) && _clickedUnit != null)

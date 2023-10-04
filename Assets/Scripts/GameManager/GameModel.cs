@@ -65,6 +65,7 @@ public class GameModel : MonoBehaviour
         if (activePlayer.Status == UnitStatus.Moved)
         {
             // Передаем ход следующему игроку
+            GridUI.Instance.HighlightCurrentPlayer(activePlayer.Portrait, false);
             EndTurn();    
         }
     }
