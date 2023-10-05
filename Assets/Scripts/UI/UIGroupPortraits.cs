@@ -12,7 +12,8 @@ public class UIGroupPortraits : MonoBehaviour
     public void InitializePortrait(Unit unit, Image playerPortrait)
     {
         GetPortrait(unit.Name, playerPortrait);
-        uiPlayerPortraits.Add(unit.Name, playerPortrait);
+        uiPlayerPortraits.Add(unit.Name + unit.ID, playerPortrait);
+        Debug.Log(unit.Name + unit.ID);
         uiBackground.Add(playerPortrait, GetBackground(playerPortrait));
     }
 
@@ -36,7 +37,7 @@ public class UIGroupPortraits : MonoBehaviour
     {
         try
         {
-            return uiPlayerPortraits.TryGetValue(unit.Name, out var portrait) ? portrait : null;
+            return uiPlayerPortraits.TryGetValue(unit.Name + unit.ID, out var portrait) ? portrait : null;
         }
         catch (Exception e)
         {

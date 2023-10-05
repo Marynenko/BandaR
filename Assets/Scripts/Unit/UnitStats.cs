@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class UnitStats : MonoBehaviour
 {
+    public int ID;
     public string Name;
     public UnitType Type;
     public int MovementPoints;

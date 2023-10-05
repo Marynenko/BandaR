@@ -25,6 +25,7 @@ public abstract class Unit : SoundsManager
     public Image Portrait => _portrait;
     public Tile Target;
     public UISign Sign;
+    public int ID => _stats.ID;
     public UnitStats Stats => _stats;
     public UnitType Type => _stats.Type;
     public string Name => Stats.Name;
