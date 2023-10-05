@@ -1,14 +1,11 @@
-using System;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private UnitMenu _menuAction;
-    public  UIGroupPortraits UiGroupPortraits;
+    [SerializeField] private UnitMenu menuAction;
+    public  UIGroupPortraits uiGroupPortraits;
 
-    public UnitMenu MenuAction { get => _menuAction; set => _menuAction = value; }
+    public UnitMenu MenuAction { get => menuAction; set => menuAction = value; }
 
     private static UIManager _instance;
     public static UIManager Instance

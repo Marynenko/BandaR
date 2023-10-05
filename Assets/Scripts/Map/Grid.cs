@@ -10,6 +10,7 @@ public class Grid : MonoBehaviour
     [SerializeField] private Vector2Int gridSize;
     [SerializeField] private float offset;
     private Selector Selector { get; set; }
+    
     public List<Unit> AllUnits { get; private set; }
     public Tile[,] Tiles { get; private set; }
     public Vector2Int GridSize => gridSize;
@@ -29,6 +30,7 @@ public class Grid : MonoBehaviour
         LocateNeighborsTiles();
         GetAllExistedUnits();
         AddUnitsToTiles();
+        GridUI.Instance.TurnManager.Launch();
     }
 
     private void CreateGrid()

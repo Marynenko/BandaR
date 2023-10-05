@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UnitMenu : MonoBehaviour
 {
-    [SerializeField] private InputPlayer _input;
-    public GameObject _blockPanel;
-    public GameObject MainContainerPlayer; // Меню игрока
-    public GameObject MainContainerEnemy; // Меню врага
+    [SerializeField] private InputPlayer input;
+    public GameObject blockPanel;
+    public GameObject mainContainerPlayer; // Меню игрока
+    public GameObject mainContainerEnemy; // Меню врага
 
     public Button moveButton;
     public Button attackButton;
@@ -17,7 +18,7 @@ public class UnitMenu : MonoBehaviour
     private Unit _currentUnit;
     private static UIManager _instance;
 
-    public static UIManager Instance
+    public static UIManager instance
     {
         get
         {
@@ -44,7 +45,7 @@ public class UnitMenu : MonoBehaviour
         
         gameObject.SetActive(true);
         CheckUnitType(unit);
-        _blockPanel.SetActive(true);
+        blockPanel.SetActive(true);
     }
     
     private void CheckUnitType(Unit unit)
@@ -52,26 +53,26 @@ public class UnitMenu : MonoBehaviour
         if(unit.Type == UnitType.Player)
         {
             // Открыть меню игрока и закрыть меню врага
-            MainContainerPlayer.SetActive(true);
-            MainContainerEnemy.SetActive(false);
+            mainContainerPlayer.SetActive(true);
+            mainContainerEnemy.SetActive(false);
         }
         else
         {
             // Открыть меню врага и закрыть меню игрока
-            MainContainerEnemy.SetActive(true);
-            MainContainerPlayer.SetActive(false);
+            mainContainerEnemy.SetActive(true);
+            mainContainerPlayer.SetActive(false);
         }
     }
 
     public void HideMenu()
     {
         gameObject.SetActive(false);
-        _blockPanel.SetActive(false);
+        blockPanel.SetActive(false);
     }
 
     private void HandleMove()
     {
-        _input.GameController.HandleUnitClick(_currentUnit);
+        input.GameController.HandleUnitClick(_currentUnit);
     }
 
     private void HandleAttack()
@@ -86,6 +87,6 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleEndTurn()
     {
-        _input.GameModel.HandleEndTurnButtonClicked();
+        input.GameModel.HandleEndTurnButtonClicked();
     }
 }

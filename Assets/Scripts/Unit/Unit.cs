@@ -49,11 +49,10 @@ public abstract class Unit : SoundsManager
         var startTile = CompareSpawnPosToTile(tiles);
         // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
-        // transform.position = spawnCell.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
-        UIManager.Instance.UiGroupPortraits.InitializePortrait(this, _portrait);
-        GridUI.Instance.HighlightCurrentPlayer(_portrait);
+        UIManager.Instance.uiGroupPortraits.InitializePortrait(this, _portrait);
+        GridUI.Instance.TurnManager.HighlightPlayer(this, false);
         _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
