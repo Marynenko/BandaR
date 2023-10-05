@@ -70,12 +70,10 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        // if (!IsClickValid(selectedUnit, tile))
-        //     return;
-
         if (PathIsFounded == false)
         {
             Path = FindPath(selectedUnit, tile);
+            SetUnitTarget(selectedUnit, tile);
             PathIsFounded = true;
         }
 
@@ -87,6 +85,16 @@ public class GameController : MonoBehaviour
             // _lastSelectedUnit = selectedUnit;
             // _lastSelectedTile = selectedUnit.OccupiedTile;
             PathIsFounded = false;
+        }
+    }
+
+    private void SetUnitTarget(Unit selectedUnit, Tile tile)
+    {
+        var units = Grid.AllUnits;
+        foreach (var unit in units)
+        {
+            if (unit == selectedUnit)
+                unit.Target = tile;
         }
     }
 
@@ -121,15 +129,22 @@ public class GameController : MonoBehaviour
             unit.MoveToTile(nextTile, distanceSqrt);
         }
 
-        unit.UnitIsMoving = NeedToMoveMore(unit);
+        unit.UnitIsMoving = NeedToMoveMore(unit, nextTile);
     }
 
-    private bool NeedToMoveMore(Unit unit)
+    private bool NeedToMoveMore(Unit unit, Tile tile)
     {
         if (Path.Count == 0)
+        {
+            unit.Target = tile;
             return false;
+        }
         if (unit.MovementPoints <= 1)
+        {
+            unit.Target = tile;
             return false;
+        }
+
         if (unit.OccupiedTile == Path.ElementAt(Path.Count - 1))
             return false;
         // if (unit.OccupiedTile == Path.Contains(unit.OccupiedTile))
@@ -159,7 +174,6 @@ public class GameController : MonoBehaviour
         {
             neighborUnit.OnUnitMoved(unit);
         }
-
     }
 
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)

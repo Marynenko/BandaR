@@ -23,6 +23,8 @@ public abstract class Unit : SoundsManager
 
     // Public properties
     public Image Portrait => _portrait;
+    public Tile Target;
+    public UISign Sign;
     public UnitStats Stats => _stats;
     public UnitType Type => _stats.Type;
     public string Name => Stats.Name;
@@ -52,7 +54,7 @@ public abstract class Unit : SoundsManager
         // Установка текущей ячейки для юнита
         _occupiedTile = startTile;
         UIManager.Instance.uiGroupPortraits.InitializePortrait(this, _portrait);
-        GridUI.Instance.TurnManager.HighlightPlayer(this, false);
+        GridUI.Instance.TurnManager.HighlightPlayer(this);
         _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         _occupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;

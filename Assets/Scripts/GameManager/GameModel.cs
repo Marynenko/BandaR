@@ -10,6 +10,8 @@ public class GameModel : MonoBehaviour
     [SerializeField] private Selector selector;
     [HideInInspector] public Unit activePlayer;
 
+    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
+
     private Queue<Unit> _units = new();
 
     private void Start()
@@ -17,7 +19,7 @@ public class GameModel : MonoBehaviour
         grid.StartCreating();
         StartGame();
     }
-    
+
     private void Update()
     {
         if (activePlayer == null)
@@ -30,7 +32,7 @@ public class GameModel : MonoBehaviour
             input.HandleLeftClick(mousePosition);
         }
     }
-    
+
     private void StartGame()
     {
         _units = GridUI.Instance.TurnManager.Players;
@@ -40,21 +42,58 @@ public class GameModel : MonoBehaviour
         grid.SetAvailableTiles();
     }
 
-    public void HandleEndTurnButtonClicked()
+    public bool HandleEndTurnButtonClicked(Unit unit)
+    {
+        activePlayer = unit;
+        if (activePlayer.Target == null && activePlayer.Type != UnitType.Enemy)
+            activePlayer.Target = activePlayer.OccupiedTile;
+        if (activePlayer.Type == UnitType.Player && activePlayer.Target != null)
+        {
+            if (activePlayer.transform.position ==
+                activePlayer.Target.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE)
+            {
+                MoveOn();
+                FinishMove();
+                return true;
+            }
+        }
+        else if (activePlayer.Type == UnitType.Enemy && activePlayer.Target != null)
+        {
+            if (activePlayer.transform.position ==
+                activePlayer.Target.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE)
+            {
+                MoveOn();
+                FinishMove();
+                return true;
+            }
+        }
+        // if (activePlayer.OccupiedTile == GridUI.Instance.TurnManager.AI.Target)
+            
+
+        return false;
+    }
+
+    private void MoveOn()
     {
         UIManager.Instance.MenuAction.HideMenu();
         activePlayer.Stats.MovementPoints = 0;
         selector.UnselectUnit(activePlayer);
         activePlayer.OccupiedTile.Available = false;
-        activePlayer.OccupiedTile.State = activePlayer.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
-        
-        activePlayer.Status = UnitStatus.Moved;
+        activePlayer.OccupiedTile.State = activePlayer.Type == UnitType.Player
+            ? TileState.OccupiedByPlayer
+            : TileState.OccupiedByEnemy;
 
+        activePlayer.Status = UnitStatus.Moved;
+    }
+
+    private void FinishMove()
+    {
         // Проверяем, был ли игрок перемещен в этом ходе
         if (activePlayer.Status == UnitStatus.Moved)
         {
             // Передаем ход следующему игроку
-            GridUI.Instance.TurnManager.EndTurn(ref activePlayer);    
+            GridUI.Instance.TurnManager.SetCurrentPlayer(ref activePlayer);
+            // GridUI.Instance.TurnManager.EndTurn(ref activePlayer);    
         }
     }
 }

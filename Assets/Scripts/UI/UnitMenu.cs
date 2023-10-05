@@ -87,6 +87,6 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleEndTurn()
     {
-        input.GameModel.HandleEndTurnButtonClicked();
+        input.GameModel.HandleEndTurnButtonClicked(_currentUnit);
     }
 }

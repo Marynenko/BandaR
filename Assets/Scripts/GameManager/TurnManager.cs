@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,70 +8,98 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private GameModel gameModel;
     [SerializeField] private AI ai;
     [SerializeField] private Queue<Unit> players;
-    public Queue<Unit> Players => players;
     [SerializeField] private UIGroupPortraits groupPortraits;
 
-    private Unit _currentPlayer;
+    public Queue<Unit> Players => players;
+    public AI AI => ai;
+
+    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
+    private Unit _previousPlayer;
+    private Unit _activePlayer;
+
+
+    private void Update()
+    {
+        PassMove();
+    }
+
+    private void PassMove()
+    {
+        if (_activePlayer == null) return;
+        if (_activePlayer.Status != UnitStatus.Moved) return;
+        EndTurn();
+    }
 
     public void Launch()
     {
         players = new Queue<Unit>(grid.AllUnits);
     }
 
-    public void HighlightPlayer(Unit unit, bool isMoving = false)
+    public void SetCurrentPlayer(ref Unit unit)
     {
-        _currentPlayer = unit;
-        var unitImg = groupPortraits.GetPlayerPortrait(unit);
-        var unitImgScript = groupPortraits.GetPlayerBackground(unitImg);
-        if (isMoving)
-        {
-            unitImgScript.TurnOnAlpha();
-        }
-        else
-        {
-            unitImgScript.TurnOffAlpha();
-        }
+        _activePlayer = unit;
     }
 
-    public void EndTurn(ref Unit activePlayer)
+    private void EndTurn()
     {
-        _currentPlayer = activePlayer;
-        HighlightPlayer(activePlayer);
+        _previousPlayer = _activePlayer;
+        HighlightPlayer(_previousPlayer); // off
 
-        if (players.Contains(activePlayer))
+        if (players.Contains(_activePlayer))
         {
-            if (players.Peek() == activePlayer)
+            if (players.Peek() == _activePlayer)
                 players.Dequeue();
         }
 
-        activePlayer = GetNextPlayer();
-        players.Enqueue(_currentPlayer);
-
-        HighlightPlayer(activePlayer, true);
+        _activePlayer = GetNextPlayer();
+        players.Enqueue(_previousPlayer);
 
         if (IsGameOver())
             EndGame();
 
+        HighlightPlayer(_activePlayer, true); // on
+
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
-        if (activePlayer.Type == UnitType.Player)
+        if (_activePlayer.Type == UnitType.Player)
         {
-            activePlayer.Status = UnitStatus.Available;
-            activePlayer.Stats.MovementPoints = activePlayer.MovementRange;
+            _activePlayer.Status = UnitStatus.Available;
+            _activePlayer.Stats.MovementPoints = _activePlayer.MovementRange;
         }
-        else if (activePlayer.Type == UnitType.Enemy)
+        else if (_activePlayer.Type == UnitType.Enemy)
         {
-            activePlayer.Status = UnitStatus.AIMove;
-            activePlayer.Stats.MovementPoints = activePlayer.MovementRange;
-            ai.InitializeAI(activePlayer);
+            _activePlayer.Status = UnitStatus.AIMove;
+            _activePlayer.Stats.MovementPoints = _activePlayer.MovementRange;
+            ai.InitializeAI(_activePlayer);
         }
     }
 
     private Unit GetNextPlayer()
     {
-        return players.Count > 0 ? players.Dequeue() : null;
+        return players.Count > 0 ? players.Peek() : null;
     }
-    
+
+    public void HighlightPlayer(Unit unit, bool isMoving = false)
+    {
+        _previousPlayer = unit;
+        var animator = _previousPlayer.Sign.GetComponent<Animator>();
+        var unitImg = groupPortraits.GetPlayerPortrait(_previousPlayer);
+        var unitImgScript = groupPortraits.GetPlayerBackground(unitImg);
+        if (isMoving)
+        {
+            unitImgScript.TurnOnAlpha();
+            _previousPlayer.Sign.gameObject.SetActive(true);
+            animator.enabled = true;
+        }
+        else
+        {
+            unitImgScript.TurnOffAlpha();
+            _previousPlayer.Sign.gameObject.SetActive(false);
+            animator.enabled = false;
+        }
+    }
+
     #region EndGame
+
     private bool IsGameOver()
     {
         return false;
@@ -91,5 +120,6 @@ public class TurnManager : MonoBehaviour
         // endTurnButton.interactable = false;
         // Дополнительный функционал завершения игры
     }
+
     #endregion
 }

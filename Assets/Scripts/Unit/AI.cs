@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AI : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class AI : MonoBehaviour
     private GameModel _gameModel;
     private Grid _grid;
     private Unit _currentUnit;
+
+    public Tile Target;
+
     private bool _isCoroutineRunning = false;
 
     private void OnEnable()
@@ -39,7 +43,7 @@ public class AI : MonoBehaviour
 
             if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
             {
-                _gameModel.HandleEndTurnButtonClicked();
+                if (!_gameModel.HandleEndTurnButtonClicked(_currentUnit)) return;
                 _currentUnit = null;
                 return;
             }
@@ -48,7 +52,7 @@ public class AI : MonoBehaviour
         if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
         {
             _isCoroutineRunning = true;
-            StartCoroutine(SelectUnit());    
+            StartCoroutine(SelectUnit());
         }
 
         if (!_currentUnit.UnitIsMoving) return;
@@ -66,7 +70,7 @@ public class AI : MonoBehaviour
             // _isCoroutineRunning = true;
             yield return new WaitForSeconds(1.5f);
         }
-        
+
         _currentUnit.UnitIsMoving = true;
     }
 
@@ -80,8 +84,6 @@ public class AI : MonoBehaviour
             localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
         if (targetEnemy == null) return;
-        // _currentUnit.UnitIsMoving = true;
-        var targetTile = targetEnemy.OccupiedTile;
-        _gameController.HandleTileClick(targetTile);
+        _gameController.HandleTileClick(targetEnemy.OccupiedTile);
     }
 }
