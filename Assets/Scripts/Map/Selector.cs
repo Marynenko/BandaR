@@ -29,7 +29,7 @@ public class Selector : MonoBehaviour
     public void SelectUnit(Unit unit)
     {
         SelectedUnit = unit;
-        SelectedUnit.OccupiedTile.State = SelectedUnit.Type switch
+        SelectedUnit.OccupiedTile.State = SelectedUnit.Stats.Type switch
         {
             UnitType.Player => TileState.OccupiedByPlayer,
             UnitType.Enemy => TileState.OccupiedByEnemy,
@@ -38,7 +38,7 @@ public class Selector : MonoBehaviour
         SelectedUnit.OccupiedTile.SelectTile();
         // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         SelectedUnit.AvailableMoves =
-            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementPoints));
+            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
         GridUI.Instance.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
 

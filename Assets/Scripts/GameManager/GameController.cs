@@ -29,7 +29,7 @@ public class GameController : MonoBehaviour
 
     public void HandleUnitClick(Unit unit)
     {
-        if (unit.Type == UnitType.Player && unit.Status == UnitStatus.Available)
+        if (unit.Stats.Type == UnitType.Player && unit.Status == UnitStatus.Available)
         {
             UnitSelected?.Invoke(unit);
         }
@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour
             return;
         if (selectedUnit.Status == UnitStatus.Unavailable)
             return;
-        if (targetUnit.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
+        if (targetUnit.Stats.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
         {
             selectedUnit.Attack(targetUnit);
 
@@ -60,7 +60,7 @@ public class GameController : MonoBehaviour
                 // Update available moves after attack
                 var availableMoves = new HashSet<Tile>
                 (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
-                    selectedUnit.MovementPoints));
+                    selectedUnit.Stats.MovementPoints));
                 GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement);
             }
         }
@@ -139,24 +139,14 @@ public class GameController : MonoBehaviour
             unit.Target = tile;
             return false;
         }
-        if (unit.MovementPoints <= 1)
+        if (unit.Stats.MovementPoints <= 1)
         {
             unit.Target = tile;
             return false;
         }
 
-        if (unit.OccupiedTile == Path.ElementAt(Path.Count - 1))
-            return false;
-        // if (unit.OccupiedTile == Path.Contains(unit.OccupiedTile))
-        //     return false;
-        return true;
+        return unit.OccupiedTile != Path.ElementAt(Path.Count - 1);
     }
-
-    private bool IsClickValid(Unit selectedUnit, Tile tile)
-        =>
-            IsPlayerUnitAvailable(selectedUnit) &&
-            tile != selectedUnit.OccupiedTile &&
-            selectedUnit.Status != UnitStatus.Moved;
 
     private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
     {
@@ -170,7 +160,7 @@ public class GameController : MonoBehaviour
     {
         var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighborTile);
 
-        if (neighborUnit?.Type == unit.Type)
+        if (neighborUnit?.Stats.Type == unit.Stats.Type)
         {
             neighborUnit.OnUnitMoved(unit);
         }
@@ -188,15 +178,8 @@ public class GameController : MonoBehaviour
     }
 
     private bool IsPlayerUnitAvailable(Unit unit) =>
-        unit != null && unit.Type == UnitType.Player && unit.Status == UnitStatus.Available;
-
-    // Метод проверяет, доступна ли ячейка для перемещения выбранного юнита
-    // private bool IsTileInPath(Unit unit, Tile tile, out List<Tile> path)
-    // {
-    //     path = Selector.PathConstructor.FindPathToTarget(unit.OccupiedTile, tile, out _);
-    //     return tile.UnitOn == false && unit.MovementPoints >= path.Count;
-    // }
-
+        unit != null && unit.Stats.Type == UnitType.Player && unit.Status == UnitStatus.Available;
+    
     private List<Tile> FindPath(Unit unit, Tile tile)
     {
         return Selector.PathConstructor.FindPathToTarget(unit, tile, out _);

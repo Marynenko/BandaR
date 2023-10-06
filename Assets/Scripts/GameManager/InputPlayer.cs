@@ -11,6 +11,12 @@ public class InputPlayer : MonoBehaviour
 
     private Unit _clickedUnit;
     private Tile _clickedTile;
+    private Camera _camera;
+
+    private void Start()
+    {
+        _camera = Camera.main;
+    }
 
     private void Update()
     {
@@ -22,7 +28,8 @@ public class InputPlayer : MonoBehaviour
 
     public void HandleLeftClick(Vector3 mousePosition)
     {
-        var ray = Camera.main.ScreenPointToRay(mousePosition);
+        if (_camera == null) return;
+        var ray = _camera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out var hit) && !UIManager.Instance.MenuAction.isActiveAndEnabled)
         {
             if (hit.collider.TryGetComponent(out Unit unit))

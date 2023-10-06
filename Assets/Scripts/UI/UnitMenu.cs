@@ -50,7 +50,7 @@ public class UnitMenu : MonoBehaviour
     
     private void CheckUnitType(Unit unit)
     {
-        if(unit.Type == UnitType.Player)
+        if(unit.Stats.Type == UnitType.Player)
         {
             // Открыть меню игрока и закрыть меню врага
             mainContainerPlayer.SetActive(true);

@@ -27,6 +27,7 @@ public class TurnManager : MonoBehaviour
     {
         if (_activePlayer == null) return;
         if (_activePlayer.Status != UnitStatus.Moved) return;
+        // Unit.OnMove?.Invoke(_activePlayer);
         EndTurn();
     }
 
@@ -60,15 +61,15 @@ public class TurnManager : MonoBehaviour
         HighlightPlayer(_activePlayer, true); // on
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
-        if (_activePlayer.Type == UnitType.Player)
+        if (_activePlayer.Stats.Type == UnitType.Player)
         {
             _activePlayer.Status = UnitStatus.Available;
-            _activePlayer.Stats.MovementPoints = _activePlayer.MovementRange;
+            _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
         }
-        else if (_activePlayer.Type == UnitType.Enemy)
+        else if (_activePlayer.Stats.Type == UnitType.Enemy)
         {
             _activePlayer.Status = UnitStatus.AIMove;
-            _activePlayer.Stats.MovementPoints = _activePlayer.MovementRange;
+            _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
             ai.InitializeAI(_activePlayer);
         }
     }

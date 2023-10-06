@@ -11,7 +11,6 @@ public abstract class Unit : SoundsManager
     #region Variables
 
     // Fields
-    [SerializeField] private Image _portrait;
     [SerializeField] private UnitStats _stats;
 
     // Constants
@@ -19,27 +18,25 @@ public abstract class Unit : SoundsManager
     private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
 
     // Private fields
-    private Tile _occupiedTile;
 
     // Public properties
-    public Image Portrait => _portrait;
     public Tile Target;
     public UISign Sign;
-    public int ID => _stats.ID;
+    public Image Portrait;
     public UnitStats Stats => _stats;
-    public UnitType Type => _stats.Type;
-    public string Name => Stats.Name;
-    public int MovementPoints => Stats.MovementPoints;
-    public int MovementRange => Stats.MovementRange;
-    public Tile OccupiedTile => _occupiedTile; // Можно сослать на _occupiedTile
+    public Tile OccupiedTile { get; private set; }
+
     public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
 
     // public fields
     public Vector2Int SpawnCellVector2Int;
-
-    // public List<Tile> AvailableMoves;
     public HashSet<Tile> AvailableMoves;
-    public bool UnitIsMoving = false;
+    public bool UnitIsMoving;
+    
+    // public delegate-event fields
+    public delegate void OnMoveDelegate(Unit unit);
+    public static event OnMoveDelegate OnMove;
+
 
     #endregion
 
@@ -47,17 +44,19 @@ public abstract class Unit : SoundsManager
 
     public virtual Unit GetUnitType() => this;
 
-    public void InitializeUnit(Tile[,] tiles)
+    public void InitializeUnit(Tile[,] tiles, UIGroupPortraits uiGroup)
     {
         var startTile = CompareSpawnPosToTile(tiles);
         // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
-        _occupiedTile = startTile;
-        UIManager.Instance.uiGroupPortraits.InitializePortrait(this, _portrait);
+        OccupiedTile = startTile;
+        
+        Portrait = uiGroup.GetPlayerPortrait(this);
+        
         GridUI.Instance.TurnManager.HighlightPlayer(this);
-        _occupiedTile.State = Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
-        _occupiedTile.UnitOn = true;
+        OccupiedTile.State = Stats.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
+        OccupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;
     }
 
@@ -98,7 +97,7 @@ public abstract class Unit : SoundsManager
             .SetEase(Ease.Linear)
             .OnComplete(() => { transform.position = newPosition; });
 
-        _occupiedTile = targetTile;
+        OccupiedTile = targetTile;
         _stats.MovementPoints -= 1;
 
         OnUnitMoved(this);
@@ -107,7 +106,7 @@ public abstract class Unit : SoundsManager
     public bool CanMoveMore()
     {
         // Проверяем, есть ли у персонажа еще очки передвижения
-        if (MovementPoints > 1)
+        if (Stats.MovementPoints > 1)
         {
             return true;
         }
@@ -121,7 +120,7 @@ public abstract class Unit : SoundsManager
 
     public bool CanAttack(Unit targetUnit) =>
         targetUnit != null &&
-        targetUnit.Type == UnitType.Enemy &&
+        targetUnit.Stats.Type == UnitType.Enemy &&
         Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;
 
     public void Attack(Unit target)

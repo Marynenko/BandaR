@@ -79,7 +79,7 @@ public class AI : MonoBehaviour
         var localSelector = _gameController.Selector;
 
         if (_isCoroutineRunning) return;
-        var enemies = _grid.AllUnits.Where(u => u.Type != _currentUnit.Type).ToArray();
+        var enemies = _grid.AllUnits.Where(u => u.Stats.Type != _currentUnit.Stats.Type).ToArray();
         var targetEnemy = enemies.OrderBy(e =>
             localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 

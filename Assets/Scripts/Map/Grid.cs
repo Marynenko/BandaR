@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class Grid : MonoBehaviour
 {
+    [SerializeField] private UIGroupPortraits _uiGroupPortraits;
     [SerializeField] private Transform tilesPlace;
     [SerializeField] private Tile tilePrefab;
     [SerializeField] private Vector2Int gridSize;
@@ -29,6 +30,7 @@ public class Grid : MonoBehaviour
         CreateGrid();
         LocateNeighborsTiles();
         GetAllExistedUnits();
+        _uiGroupPortraits.AddPortraits(AllUnits);
         AddUnitsToTiles();
         GridUI.Instance.TurnManager.Launch();
     }
@@ -73,7 +75,7 @@ public class Grid : MonoBehaviour
     {
         foreach (var unit in AllUnits)
         {
-            unit.InitializeUnit(Tiles);
+            unit.InitializeUnit(Tiles, _uiGroupPortraits);
         }
     }
 
@@ -106,17 +108,16 @@ public class Grid : MonoBehaviour
         //     _ => tile.State
         // };
         
-        if (tile.State == TileState.OccupiedByEnemy && unit.Type == UnitType.Enemy)
+        if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Enemy)
             return tile.State;
-        if (tile.State == TileState.OccupiedByPlayer && unit.Type == UnitType.Player)
+        if (tile.State == TileState.OccupiedByPlayer && unit.Stats.Type == UnitType.Player)
             return tile.State;
         return tile.State;
     }
     
-    
     public bool CheckTileToUnitStandOn(Unit unit, Tile tile)
     {
-        if (tile.State == TileState.OccupiedByEnemy && unit.Type == UnitType.Player)
+        if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Player)
             return true;
         return false;
     }

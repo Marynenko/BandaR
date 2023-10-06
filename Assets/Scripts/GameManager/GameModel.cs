@@ -45,33 +45,32 @@ public class GameModel : MonoBehaviour
     public bool HandleEndTurnButtonClicked(Unit unit)
     {
         activePlayer = unit;
-        if (activePlayer.Target == null && activePlayer.Type != UnitType.Enemy)
-            activePlayer.Target = activePlayer.OccupiedTile;
-        if (activePlayer.Type == UnitType.Player && activePlayer.Target != null)
-        {
-            if (activePlayer.transform.position ==
-                activePlayer.Target.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE)
-            {
-                MoveOn();
-                FinishMove();
-                return true;
-            }
-        }
-        else if (activePlayer.Type == UnitType.Enemy && activePlayer.Target != null)
-        {
-            if (activePlayer.transform.position ==
-                activePlayer.Target.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE)
-            {
-                MoveOn();
-                FinishMove();
-                return true;
-            }
-        }
-        // if (activePlayer.OccupiedTile == GridUI.Instance.TurnManager.AI.Target)
-            
+        HandlePlayerNullTarget();
 
-        return false;
+        switch (activePlayer.Stats.Type)
+        {
+            case UnitType.Player when activePlayer.Target != null && MatchPositionsPlayerAndDestination():
+                MoveOn();
+                FinishMove();
+                return true;
+            case UnitType.Enemy when activePlayer.Target != null && MatchPositionsPlayerAndDestination():
+                MoveOn();
+                FinishMove();
+                return true;
+            default:
+                return false;
+        }
     }
+
+    private void HandlePlayerNullTarget()
+    {
+        if (activePlayer.Target == null && activePlayer.Stats.Type != UnitType.Enemy)
+            activePlayer.Target = activePlayer.OccupiedTile;
+    }
+
+    private bool MatchPositionsPlayerAndDestination( ) =>
+        activePlayer.transform.position ==
+        activePlayer.Target.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
 
     private void MoveOn()
     {
@@ -79,7 +78,7 @@ public class GameModel : MonoBehaviour
         activePlayer.Stats.MovementPoints = 0;
         selector.UnselectUnit(activePlayer);
         activePlayer.OccupiedTile.Available = false;
-        activePlayer.OccupiedTile.State = activePlayer.Type == UnitType.Player
+        activePlayer.OccupiedTile.State = activePlayer.Stats.Type == UnitType.Player
             ? TileState.OccupiedByPlayer
             : TileState.OccupiedByEnemy;
 
