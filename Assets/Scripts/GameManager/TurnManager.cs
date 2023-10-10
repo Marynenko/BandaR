@@ -1,25 +1,26 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TurnManager : MonoBehaviour
 {
-    [SerializeField] private Grid grid;
-    [SerializeField] private GameModel gameModel;
-    [SerializeField] private AI ai;
-    [SerializeField] private Queue<Unit> players;
-    [SerializeField] private UIGroupPortraits groupPortraits;
+    [SerializeField] private Grid Grid;
+    [SerializeField] private GameModel GameModel;
+    [SerializeField] private AI AI;
+    [SerializeField] private Queue<Unit> Players;
+    [SerializeField] private UIGroupPortraits GroupPortraits;
 
-    public Queue<Unit> Players => players;
-    public AI AI => ai;
+    public Queue<Unit> PlayersGet => Players;
+    public AI AIGet => AI;
 
-    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
+    private const float HeightToPutUnitOnTile = 0.68f;
     private Unit _previousPlayer;
     private Unit _activePlayer;
 
 
     private void Update()
     {
+        // Call 4
         PassMove();
     }
 
@@ -33,7 +34,7 @@ public class TurnManager : MonoBehaviour
 
     public void Launch()
     {
-        players = new Queue<Unit>(grid.AllUnits);
+        Players = new Queue<Unit>(Grid.AllUnits);
     }
 
     public void SetCurrentPlayer(ref Unit unit)
@@ -46,14 +47,14 @@ public class TurnManager : MonoBehaviour
         _previousPlayer = _activePlayer;
         HighlightPlayer(_previousPlayer); // off
 
-        if (players.Contains(_activePlayer))
+        if (Players.Contains(_activePlayer))
         {
-            if (players.Peek() == _activePlayer)
-                players.Dequeue();
+            if (Players.Peek() == _activePlayer)
+                Players.Dequeue();
         }
 
         _activePlayer = GetNextPlayer();
-        players.Enqueue(_previousPlayer);
+        Players.Enqueue(_previousPlayer);
 
         if (IsGameOver())
             EndGame();
@@ -70,21 +71,21 @@ public class TurnManager : MonoBehaviour
         {
             _activePlayer.Status = UnitStatus.AIMove;
             _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
-            ai.InitializeAI(_activePlayer);
+            AI.InitializeAI(_activePlayer);
         }
     }
 
     private Unit GetNextPlayer()
     {
-        return players.Count > 0 ? players.Peek() : null;
+        return Players.Count > 0 ? Players.Peek() : null;
     }
 
     public void HighlightPlayer(Unit unit, bool isMoving = false)
     {
         _previousPlayer = unit;
         var animator = _previousPlayer.Sign.GetComponent<Animator>();
-        var unitImg = groupPortraits.GetPlayerPortrait(_previousPlayer);
-        var unitImgScript = groupPortraits.GetPlayerBackground(unitImg);
+        var unitImg = GroupPortraits.GetPlayerPortrait(_previousPlayer);
+        var unitImgScript = GroupPortraits.GetPlayerBackground(unitImg);
         if (isMoving)
         {
             unitImgScript.TurnOnAlpha();

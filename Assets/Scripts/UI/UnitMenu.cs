@@ -1,12 +1,9 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UnitMenu : MonoBehaviour
 {
     [SerializeField] private InputPlayer input;
-    public GameObject blockPanel;
     public GameObject mainContainerPlayer; // Меню игрока
     public GameObject mainContainerEnemy; // Меню врага
 
@@ -16,22 +13,9 @@ public class UnitMenu : MonoBehaviour
     public Button endTurnButton;
     
     private Unit _currentUnit;
-    private static UIManager _instance;
-
-    public static UIManager instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = FindObjectOfType<UIManager>();
-            return _instance;
-        }
-    }
 
     private void Start()
     {
-        HideMenu();
-
         moveButton.onClick.AddListener(HandleMove);
         attackButton.onClick.AddListener(HandleAttack);
         infoButton.onClick.AddListener(HandleInfo);
@@ -41,11 +25,11 @@ public class UnitMenu : MonoBehaviour
     public void ShowMenu(Unit unit)
     {
         _currentUnit = unit;
-        
-        
+
+        // input.IsMenuActive = true;
         gameObject.SetActive(true);
         CheckUnitType(unit);
-        blockPanel.SetActive(true);
+        
     }
     
     private void CheckUnitType(Unit unit)
@@ -61,28 +45,32 @@ public class UnitMenu : MonoBehaviour
             // Открыть меню врага и закрыть меню игрока
             mainContainerEnemy.SetActive(true);
             mainContainerPlayer.SetActive(false);
+            // input.IsEnemyClicked = true;
         }
     }
 
     public void HideMenu()
     {
+        // input.IsMenuActive = false;
         gameObject.SetActive(false);
-        blockPanel.SetActive(false);
     }
 
-    private void HandleMove()
+    public void HandleMove()
     {
+        // Можно в будуем сделать что бы просто IsMOving = true;
+        // input.IsMovementClicked = true;
+        input.IsTileClickable = true;
         input.GameController.HandleUnitClick(_currentUnit);
     }
 
     private void HandleAttack()
     {
-        Debug.Log("Attack action");
+        input.IsAttackClickable = true;
     }
 
     private void HandleInfo()
     {
-        Debug.Log("Info action");
+        input.IsInfoClickable = true;
     }
 
     private void HandleEndTurn()

@@ -81,6 +81,7 @@
      <Compile Include="Assets\Scripts\Unit\Unit.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
      <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+     <Compile Include="Assets\Scripts\UI\ClickHandler.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
      <Compile Include="Assets\Scripts\GameManager\GameController.cs" />

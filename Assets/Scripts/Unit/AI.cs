@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class AI : MonoBehaviour
 {
@@ -10,8 +8,7 @@ public class AI : MonoBehaviour
     private GameModel _gameModel;
     private Grid _grid;
     private Unit _currentUnit;
-
-    public Tile Target;
+    public Unit ActiveUnit => _currentUnit;
 
     private bool _isCoroutineRunning = false;
 
@@ -24,6 +21,7 @@ public class AI : MonoBehaviour
 
     private void Update()
     {
+        // Call 3
         if (_currentUnit == null) return;
         StartMove();
     }
@@ -31,10 +29,9 @@ public class AI : MonoBehaviour
     public void InitializeAI(Unit unit)
     {
         _currentUnit = unit;
-        // _currentUnit.UnitIsMoving = true;
     }
 
-    private void StartMove()
+    public void StartMove()
     {
         if (_currentUnit.Status != UnitStatus.AIMove) return;
         if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
@@ -43,7 +40,8 @@ public class AI : MonoBehaviour
 
             if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
             {
-                if (!_gameModel.HandleEndTurnButtonClicked(_currentUnit)) return;
+                var successfulFinish = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+                if (!successfulFinish) return;
                 _currentUnit = null;
                 return;
             }

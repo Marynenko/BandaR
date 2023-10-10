@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public abstract class Unit : SoundsManager
@@ -54,7 +53,7 @@ public abstract class Unit : SoundsManager
         
         Portrait = uiGroup.GetPlayerPortrait(this);
         
-        GridUI.Instance.TurnManager.HighlightPlayer(this);
+        GridUI.Instance.TurnManager.HighlightPlayer(this); // off
         OccupiedTile.State = Stats.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
         OccupiedTile.UnitOn = true;
         Status = UnitStatus.Unavailable;

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -9,9 +7,7 @@ public class GameController : MonoBehaviour
 {
     #region Variables
 
-    private Unit _lastSelectedUnit;
-    private Tile _lastSelectedTile; // TODO Переименовать в StartTile и использовать
-
+    [FormerlySerializedAs("input")] public InputPlayer Input;
     public Grid Grid;
     public Selector Selector;
 
@@ -22,8 +18,8 @@ public class GameController : MonoBehaviour
     public event SelectionUnitHandler UnitSelected;
     public event SelectionUnitHandler UnitUnselected;
 
-    private List<Tile> Path;
-    private bool PathIsFounded;
+    private List<Tile> _path;
+    private bool _pathIsFounded;
 
     #endregion
 
@@ -34,6 +30,7 @@ public class GameController : MonoBehaviour
             UnitSelected?.Invoke(unit);
         }
 
+        Input.IsMovementClickable = false;
         UIManager.Instance.MenuAction.HideMenu();
     }
 
@@ -70,11 +67,11 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (PathIsFounded == false)
+        if (_pathIsFounded == false)
         {
-            Path = FindPath(selectedUnit, tile);
+            _path = FindPath(selectedUnit, tile);
             SetUnitTarget(selectedUnit, tile);
-            PathIsFounded = true;
+            _pathIsFounded = true;
         }
 
         // if (Path.Count != 0)
@@ -84,8 +81,13 @@ public class GameController : MonoBehaviour
         {
             // _lastSelectedUnit = selectedUnit;
             // _lastSelectedTile = selectedUnit.OccupiedTile;
-            PathIsFounded = false;
+            _pathIsFounded = false;
         }
+    }
+    
+    private List<Tile> FindPath(Unit unit, Tile tile)
+    {
+        return Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
     }
 
     private void SetUnitTarget(Unit selectedUnit, Tile tile)
@@ -110,19 +112,19 @@ public class GameController : MonoBehaviour
         HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
         if (selectedUnit.UnitIsMoving) return;
-        if (Path.Count <= 1) return;
+        if (_path.Count <= 1) return;
         if (selectedUnit.CanMoveMore())
             Selector.SelectUnit(selectedUnit);
     }
 
     private void MoveUnitAlongPath(Unit unit)
     {
-        Path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
-        var nextTile = Path.FirstOrDefault();
+        _path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
+        var nextTile = _path.FirstOrDefault();
         Vector2 unitV2 = new(unit.transform.position.x, unit.transform.position.z);
         Vector2 nextTileV2 = new(nextTile.transform.position.x, nextTile.transform.position.z);
         if (unitV2 == nextTileV2)
-            Path.Remove(nextTile);
+            _path.Remove(nextTile);
 
         if (unit.CanMoveToTile(nextTile, out var distanceSqrt) && nextTile != null)
         {
@@ -134,20 +136,23 @@ public class GameController : MonoBehaviour
 
     private bool NeedToMoveMore(Unit unit, Tile tile)
     {
-        if (Path.Count == 0)
+        if (_path.Count == 0)
         {
+            Input.IsUnitClickable = true;
             unit.Target = tile;
             return false;
         }
         if (unit.Stats.MovementPoints <= 1)
         {
+            Input.IsUnitClickable = true;
             unit.Target = tile;
             return false;
         }
 
-        return unit.OccupiedTile != Path.ElementAt(Path.Count - 1);
+        return unit.OccupiedTile != _path.ElementAt(_path.Count - 1);
     }
 
+    #region  Adjacent
     private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
     {
         foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
@@ -179,11 +184,7 @@ public class GameController : MonoBehaviour
 
     private bool IsPlayerUnitAvailable(Unit unit) =>
         unit != null && unit.Stats.Type == UnitType.Player && unit.Status == UnitStatus.Available;
-    
-    private List<Tile> FindPath(Unit unit, Tile tile)
-    {
-        return Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
-    }
+    #endregion
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ
 

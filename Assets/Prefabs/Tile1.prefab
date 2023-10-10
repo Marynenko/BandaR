@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8999128372357142976}
   - component: {fileID: 514885030639072339}
   - component: {fileID: 8210557890246080385}
+  - component: {fileID: -2776731113941066579}
   m_Layer: 0
   m_Name: Tile1
   m_TagString: Untagged
@@ -126,3 +127,16 @@ MonoBehaviour:
   ColorEnemyOnTile: {r: 0.43529412, g: 0, b: 0, a: 0}
   ColorSelectedTile: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 0}
   ColorMovementTile: {r: 0.11372549, g: 0.8392157, b: 0, a: 0}
+--- !u!114 &-2776731113941066579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95563241514525333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InputPlayer: {fileID: 0}

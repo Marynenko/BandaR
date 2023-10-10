@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Selector : MonoBehaviour
 {
-    private Grid _grid;
     private GameController _gameController;
 
     public PathConstructor PathConstructor;
@@ -14,7 +13,6 @@ public class Selector : MonoBehaviour
 
     private void OnEnable()
     {
-        _grid = GetComponentInParent<Grid>();
         _gameController = GetComponentInParent<GameController>();
         _gameController.UnitSelected += SelectUnit;
         _gameController.UnitUnselected += UnselectUnit;

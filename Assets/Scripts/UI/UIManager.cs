@@ -2,10 +2,9 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private UnitMenu menuAction;
-    public  UIGroupPortraits uiGroupPortraits;
+    [SerializeField] private UnitMenu Menu;
 
-    public UnitMenu MenuAction { get => menuAction; set => menuAction = value; }
+    public UnitMenu MenuAction { get => Menu; set => Menu = value; }
 
     private static UIManager _instance;
     public static UIManager Instance
