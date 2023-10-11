@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,4 +16,3 @@ public class ClickHandler : MonoBehaviour, IPointerClickHandler
             _inputPlayer.HandleLeftClick(eventData.pressPosition);
     }
 }
- 

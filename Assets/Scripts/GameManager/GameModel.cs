@@ -18,21 +18,6 @@ public class GameModel : MonoBehaviour
         StartGame();
     }
 
-    // private void Update()
-    // {
-    //     // Call 1
-    //     if (ActivePlayer == null) return;
-    //     if (ActivePlayer.UnitIsMoving || ActivePlayer.Status == UnitStatus.AIMove)
-    //         return;
-    //     // if (UnitMenu.Instance.MenuAction.isActiveAndEnabled)
-    //     //     return;
-    //     if (Input.GetMouseButtonDown(0))
-    //     {
-    //         var mousePosition = Input.mousePosition;
-    //         InputPlayer.HandleLeftClick(mousePosition);
-    //     }
-    // }
-
     private void StartGame()
     {
         _units = GridUI.Instance.TurnManager.PlayersGet;
@@ -44,24 +29,25 @@ public class GameModel : MonoBehaviour
 
     public bool HandleEndTurnButtonClicked(Unit unit)
     {
+        bool GoOn()
+        {
+            MoveOn();
+            FinishMove();
+            InputPlayer.ClickedUnit = null;
+            InputPlayer.IsTileClickable = true;
+            InputPlayer.IsUnitClickable = true;
+            return true;
+        }
+
         ActivePlayer = unit;
         HandlePlayerNullTarget();
 
-        switch (ActivePlayer.Stats.Type)
+        return ActivePlayer.Stats.Type switch
         {
-            case UnitType.Player when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination():
-                MoveOn();
-                FinishMove();
-                InputPlayer.ClickedUnit = null;
-                return true;
-            case UnitType.Enemy when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination():
-                MoveOn();
-                FinishMove();
-                InputPlayer.ClickedUnit = null;
-                return true;
-            default:
-                return false;
-        }
+            UnitType.Player when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
+            UnitType.Enemy when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
+            _ => false
+        };
     }
 
     private void HandlePlayerNullTarget()

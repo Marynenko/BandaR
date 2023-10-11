@@ -22,19 +22,20 @@ public class UnitMenu : MonoBehaviour
         endTurnButton.onClick.AddListener(HandleEndTurn);
     }
 
-    public void ShowMenu(Unit unit)
+    public void ShowMenu(Unit unit, bool isMoving)
     {
         _currentUnit = unit;
 
         // input.IsMenuActive = true;
+        input.IsMenuActive = true;
         gameObject.SetActive(true);
-        CheckUnitType(unit);
+        CheckUnitType(unit, isMoving);
         
     }
     
-    private void CheckUnitType(Unit unit)
+    private void CheckUnitType(Unit unit, bool isMoving = false)
     {
-        if(unit.Stats.Type == UnitType.Player)
+        if(unit.Stats.Type == UnitType.Player && isMoving)
         {
             // Открыть меню игрока и закрыть меню врага
             mainContainerPlayer.SetActive(true);
@@ -51,7 +52,7 @@ public class UnitMenu : MonoBehaviour
 
     public void HideMenu()
     {
-        // input.IsMenuActive = false;
+        input.IsMenuActive = false;
         gameObject.SetActive(false);
     }
 

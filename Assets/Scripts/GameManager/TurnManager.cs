@@ -11,12 +11,9 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private UIGroupPortraits GroupPortraits;
 
     public Queue<Unit> PlayersGet => Players;
-    public AI AIGet => AI;
 
-    private const float HeightToPutUnitOnTile = 0.68f;
     private Unit _previousPlayer;
     private Unit _activePlayer;
-
 
     private void Update()
     {

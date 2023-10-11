@@ -28,14 +28,15 @@ public class InputPlayer : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape))
         {
+            Debug.Log("Input Player Update ESCAPE");
             if (IsMenuActive)
             {
-                IsMenuActive = false;
                 UIManager.Instance.MenuAction.HideMenu();
             }
 
             IsTileClickable = true;
             IsUnitClickable = true;
+            ClickedUnit = null;
 
         }
         // Call 2
@@ -61,9 +62,14 @@ public class InputPlayer : MonoBehaviour
                 if (!IsUnitClickable) return;
                 if (ClickedUnit != null)
                     if (unit != ClickedUnit) return;
+                if (GetCurrentMovingUnit() != unit)
+                {
+                    UIManager.Instance.MenuAction.ShowMenu(unit, false);
+                    return;
+                }
                 ClickedUnit = unit;
                 IsUnitClickable = false;
-                UIManager.Instance.MenuAction.ShowMenu(unit);
+                UIManager.Instance.MenuAction.ShowMenu(unit, true);
             }
             else if (hit.collider.TryGetComponent(out Tile tile) && ClickedUnit != null)
             {
@@ -82,7 +88,19 @@ public class InputPlayer : MonoBehaviour
             }
         }
     }
-    
+
+    private Unit GetCurrentMovingUnit()
+    {
+        var players = GridUI.Instance.TurnManager.PlayersGet;
+        foreach (var player in players)
+        {
+            if (player.Status == UnitStatus.Available)
+                return player;
+        }
+
+        return null;
+    }
+
 
     private void CompareAvailableMovesToTile()
     {

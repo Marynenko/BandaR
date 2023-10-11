@@ -994,7 +994,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPlayer: {fileID: 963194229}
 --- !u!114 &683644376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1342,7 +1341,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Update - 0.1.4.15.b
+  m_text: Update - 0.1.4.15.c
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1528,12 +1527,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameController: {fileID: 336726933}
   GameModel: {fileID: 336726934}
+  ClickedUnit: {fileID: 0}
   IsMenuActive: 0
   IsInfoClickable: 0
   IsAttackClickable: 0
   IsMovementClickable: 0
+  IsUnitClickable: 1
   IsEnemyClickable: 0
   IsAllyClickable: 0
+  IsTileClickable: 0
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2368,7 +2370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPlayer: {fileID: 963194229}
 --- !u!114 &1333131628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4250,7 +4251,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPlayer: {fileID: 963194229}
 --- !u!23 &8703657751913056030
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4355,7 +4355,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPlayer: {fileID: 963194229}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

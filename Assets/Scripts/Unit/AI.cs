@@ -31,7 +31,7 @@ public class AI : MonoBehaviour
         _currentUnit = unit;
     }
 
-    public void StartMove()
+    private void StartMove()
     {
         if (_currentUnit.Status != UnitStatus.AIMove) return;
         if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
