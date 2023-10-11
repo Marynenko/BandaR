@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +23,11 @@ public class GridUI : MonoBehaviour
         Instance.gameObject.SetActive(true);
     }
 
+    private void OnDisable()
+    {
+        Instance.gameObject.SetActive(false);
+    }
+
     public void HighlightAvailableMoves(HashSet<Tile> availableMoves, TileState unitState)
     {
         // Выделить первый тайл
@@ -44,6 +50,6 @@ public class GridUI : MonoBehaviour
             HighlightTile(tile, state);
     }
     
-    private void HighlightTile(Tile tile, TileState state) =>
+    public void HighlightTile(Tile tile, TileState state) =>
         tile.ChangeColor(state);
 }

@@ -55,7 +55,7 @@ public abstract class Unit : SoundsManager
         
         GridUI.Instance.TurnManager.HighlightPlayer(this); // off
         OccupiedTile.State = Stats.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
-        OccupiedTile.UnitOn = true;
+        OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
     }
 

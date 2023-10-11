@@ -123,7 +123,7 @@
      <Folder Include="Library\PackageCache\com.unity.modules.xr@1.0.0" />
      <Folder Include="Assets\TextMesh Pro\Resources\Sprite Assets" />
      <None Include="Library\PackageCache\com.unity.ext.nunit@2.0.3\package.json" />
-     <Folder Include="Library\PackageCache\com.unity.ide.rider@3.0.25\Rider" />
+     <Folder Include="Library\PackageCache\com.unity.ide.rider@3.0.26\Rider" />
      <Folder Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources" />
      <None Include="Library\PackageCache\com.unity.modules.assetbundle@1.0.0\package.json" />
      <Folder Include="Assets\Materials\Unit" />
@@ -168,7 +168,7 @@
      <Folder Include="Assets\Materials" />
      <None Include="Library\PackageCache\com.unity.modules.unityanalytics@1.0.0\package.json" />
      <Folder Include="Library\PackageCache\com.unity.modules.subsystems@1.0.0" />
-     <None Include="Library\PackageCache\com.unity.ide.rider@3.0.25\package.json" />
+     <None Include="Library\PackageCache\com.unity.ide.rider@3.0.26\package.json" />
      <Folder Include="Assets\Models and Textures" />
      <None Include="Library\PackageCache\com.unity.modules.video@1.0.0\package.json" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts" />
@@ -224,7 +224,7 @@
      <None Include="Library\PackageCache\com.unity.modules.vehicles@1.0.0\package.json" />
      <Folder Include="Library\PackageCache\com.unity.textmeshpro@3.0.6" />
      <Folder Include="Assets\Models and Textures\Ground\Stone 2" />
-     <Folder Include="Library\PackageCache\com.unity.ide.rider@3.0.25" />
+     <Folder Include="Library\PackageCache\com.unity.ide.rider@3.0.26" />
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0\package.json" />
      <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0\package.json" />

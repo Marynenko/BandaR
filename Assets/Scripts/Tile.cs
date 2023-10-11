@@ -64,7 +64,7 @@ public class Tile : MonoBehaviour
             { TileState.Movement, ColorMovementTile }
         };
     }
-
+    
     public void Initialize(int row, int column, bool isAvailable, bool unitOn)
     {
         name = $"X: {row} Y: {column}";
@@ -80,7 +80,7 @@ public class Tile : MonoBehaviour
     public void SelectTile()
     {
         UnitOn = true;
-        Available = false; //true
+        Available = false;
     }
 
     public void UnselectTile()
@@ -93,17 +93,8 @@ public class Tile : MonoBehaviour
     // public bool IsOccupied() =>
     //     State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
     
-    public bool IsAvailable()
-    {
-        return State == TileState.Standard;
-        // if (!Available)
-        //     return true;
-        // if (State == TileState.Standard)
-        //     return
-        // State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
-
-    }
-
+    public bool IsAvailable() => Available;
+    
     public void ChangeColor(TileState state)
     {
         _meshRenderer.material.color = _stateColors[state];

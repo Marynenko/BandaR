@@ -33,7 +33,10 @@ public class InputPlayer : MonoBehaviour
             {
                 UIManager.Instance.MenuAction.HideMenu();
             }
-
+            
+            if (ClickedUnit != null)
+                if (ClickedUnit.AvailableMoves != null)
+                    GridUI.Instance.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
             IsTileClickable = true;
             IsUnitClickable = true;
             ClickedUnit = null;

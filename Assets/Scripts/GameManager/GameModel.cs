@@ -24,7 +24,7 @@ public class GameModel : MonoBehaviour
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
         GridUI.Instance.TurnManager.HighlightPlayer(ActivePlayer, true);
-        Grid.SetAvailableTiles();
+        Grid.ClearColorTiles();
     }
 
     public bool HandleEndTurnButtonClicked(Unit unit)

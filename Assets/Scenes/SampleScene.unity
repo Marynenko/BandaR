@@ -1023,8 +1023,8 @@ MonoBehaviour:
   ID: 2
   Name: Bastion
   Type: 0
-  MovementPoints: 3
-  MovementRange: 3
+  MovementPoints: 2
+  MovementRange: 2
   AttackDamage: 2
   AttackRange: 2
   Health: 10
@@ -1341,7 +1341,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Update - 0.1.4.15.c
+  m_text: Update - 0.1.4.15.d
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4006,7 +4006,7 @@ MonoBehaviour:
   Target: {fileID: 0}
   Sign: {fileID: 1696642469948228034}
   Portrait: {fileID: 0}
-  SpawnCellVector2Int: {x: 5, y: 1}
+  SpawnCellVector2Int: {x: 4, y: 1}
   UnitIsMoving: 0
 --- !u!33 &6374162187554448057
 MeshFilter:

@@ -77,11 +77,14 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public void SetAvailableTiles()
+    public void ClearColorTiles()
     {
         foreach (var tile in Tiles)
             if (!tile.IsAvailable())
-                tile.SetAvailable(true);
+                GridUI.Instance.HighlightTile(tile, TileState.Standard);
+        // foreach (var tile in Tiles)
+        //     if (!tile.IsAvailable())
+        //         tile.SetAvailable(true);
     }
 
     public void RemoveUnit(Unit unit)
