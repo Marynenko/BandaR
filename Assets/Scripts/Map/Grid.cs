@@ -5,10 +5,10 @@ using UnityEngine.Serialization;
 public class Grid : MonoBehaviour
 {
     [SerializeField] private UIPortraitManager UIPortraitManager;
-    [FormerlySerializedAs("tilesPlace")] [SerializeField] private Transform TilesPlace;
-    [FormerlySerializedAs("tilePrefab")] [SerializeField] private Tile TilePrefab;
-    [FormerlySerializedAs("gridSize")] [SerializeField] private Vector2Int GridSize;
-    [FormerlySerializedAs("offset")] [SerializeField] private float Offset;
+    [SerializeField] private Transform TilesPlace;
+    [SerializeField] private Tile TilePrefab;
+    [SerializeField] private Vector2Int GridSize;
+    [SerializeField] private float Offset;
     private Selector Selector { get; set; }
 
     public List<Unit> AllUnits { get; private set; }
@@ -21,9 +21,6 @@ public class Grid : MonoBehaviour
         Tiles = new Tile[GridSizeGet.x, GridSizeGet.y];
     }
 
-    //   3842 - Готово
-
-
     public void StartCreating()
     {
         CreateGrid();
@@ -32,6 +29,13 @@ public class Grid : MonoBehaviour
         UIPortraitManager.AddPortraits(AllUnits);
         AddUnitsToTiles();
         GridUI.Instance.TurnManager.Launch();
+        TrackEnemies();
+    }
+
+    private void TrackEnemies()
+    {
+        foreach (var unit in AllUnits)
+            unit.TrackAllEnemies();
     }
 
     private void CreateGrid()
@@ -63,12 +67,12 @@ public class Grid : MonoBehaviour
         AllUnits = new List<Unit>();
 
         var players = FindObjectsOfType<Player>();
-        // var allies = FindObjectsOfType<Ally>();
+        var allies = FindObjectsOfType<Ally>();
         var enemies = FindObjectsOfType<Enemy>();
 
         // Добавить персонажей в список _allExistedUnits
         AllUnits.AddRange(players);
-        // AllUnits.AddRange(allies);
+        AllUnits.AddRange(allies);
         AllUnits.AddRange(enemies);
     }
 

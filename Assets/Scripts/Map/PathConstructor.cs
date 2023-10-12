@@ -179,13 +179,18 @@ public class PathConstructor : MonoBehaviour
             availableMoves.Add(currentTile);
 
             if (remainingMoves <= 1) continue;
-            foreach (var neighbour in GetNeighborTiles(currentTile))
-                if (!(visitedTiles.Contains(neighbour)))
+            var neighbourTiles = GetNeighborTiles(currentTile);
+            foreach (var neighbour in neighbourTiles)
+            {
+                var tileIsVisited = visitedTiles.Contains(neighbour); 
+                if (!tileIsVisited)
                 {
                     var cost = neighbour.MovementCost;
                     if (cost <= remainingMoves)
                         queue.Enqueue((neighbour, remainingMoves - cost));
                 }
+            }
+                
         }
 
         return availableMoves;

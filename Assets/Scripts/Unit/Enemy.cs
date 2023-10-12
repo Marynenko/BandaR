@@ -5,7 +5,7 @@ public class Enemy : Unit
 {
     public List<Unit> Enemies;
 
-    protected override void TrackAllEnemies()
+    public override void TrackAllEnemies()
     {
         var units = GridUI.Instance.TurnManager.PlayersGet;
         foreach (var unit in units.Where(unit => unit.Stats.Type is UnitType.Player or UnitType.Ally))

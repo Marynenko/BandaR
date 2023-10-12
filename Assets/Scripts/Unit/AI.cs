@@ -76,11 +76,30 @@ public class AI : MonoBehaviour
     private void Move()
     {
         if (_isCoroutineRunning) return;
-        var enemies = _grid.AllUnits.Where(u => u.Stats.Type != _currentUnit.Stats.Type).ToArray();
-        var targetEnemy = enemies.OrderBy(e =>
-            UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+        switch (_currentUnit.Stats.Type)
+        {
+            case UnitType.Enemy:
+            {
+                var unit = (Enemy)_currentUnit;
+                var targetEnemy = unit.Enemies.OrderBy(e =>
+                    UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+                if (targetEnemy == null) return;
+                _gameController.HandleTileClick(targetEnemy.OccupiedTile);
+                break;
+            }
+            case UnitType.Ally:
+            {
+                var unit = (Ally)_currentUnit;
+                var targetEnemy = unit.Enemies.OrderBy(e =>
+                    UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+                if (targetEnemy == null) return;
+                _gameController.HandleTileClick(targetEnemy.OccupiedTile);
+                break;
+            }
+        }
 
-        if (targetEnemy == null) return;
-        _gameController.HandleTileClick(targetEnemy.OccupiedTile);
+        // var enemies = _grid.AllUnits.Where(u => u.Stats.Type != _currentUnit.Stats.Type).ToArray();
+        // var targetEnemy = enemies.OrderBy(e =>
+        //     UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
     }
 }

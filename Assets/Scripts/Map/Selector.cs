@@ -28,6 +28,7 @@ public class Selector : MonoBehaviour
         SelectedUnit.OccupiedTile.State = SelectedUnit.Stats.Type switch
         {
             UnitType.Player => TileState.OccupiedByPlayer,
+            UnitType.Ally => TileState.OccupiedByAlly,
             UnitType.Enemy => TileState.OccupiedByEnemy,
             _ => throw new ArgumentOutOfRangeException()
         };

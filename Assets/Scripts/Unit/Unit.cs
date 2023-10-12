@@ -36,12 +36,7 @@ public abstract class Unit : SoundsManager
 
     #region Initialization
 
-    private void Start()
-    {
-        TrackAllEnemies();
-    }
-
-    protected abstract void TrackAllEnemies();
+    public abstract void TrackAllEnemies();
 
     public void InitializeUnit(Tile[,] tiles, UIPortraitManager uiGroup)
     {

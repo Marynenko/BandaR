@@ -8,7 +8,9 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private GameModel GameModel;
     [SerializeField] private AI AI;
     [SerializeField] private Queue<Unit> Players;
-    [FormerlySerializedAs("GroupPortraits")] [SerializeField] private UIPortraitManager PortraitManager;
+
+    [FormerlySerializedAs("GroupPortraits")] [SerializeField]
+    private UIPortraitManager PortraitManager;
 
     public Queue<Unit> PlayersGet => Players;
 
@@ -59,12 +61,12 @@ public class TurnManager : MonoBehaviour
         HighlightPlayer(_activePlayer, true); // on
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
-        if (_activePlayer.Stats.Type == UnitType.Player)
+        if (_activePlayer.Stats.Type is UnitType.Player)
         {
             _activePlayer.Status = UnitStatus.Available;
             _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
         }
-        else if (_activePlayer.Stats.Type == UnitType.Enemy)
+        else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
             _activePlayer.Status = UnitStatus.AIMove;
             _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;

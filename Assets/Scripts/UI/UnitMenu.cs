@@ -67,12 +67,12 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleAttack()
     {
-        InputPlayer.IsAttackClickable = true;
+        
     }
 
     private void HandleInfo()
     {
-        InputPlayer.IsInfoClickable = true;
+        
     }
 
     private void HandleEndTurn()

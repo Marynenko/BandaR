@@ -24,11 +24,8 @@ public class GameController : MonoBehaviour
     public void HandleUnitClick(Unit unit)
     {
         if (unit.Stats.Type == UnitType.Player && unit.Status == UnitStatus.Available)
-        {
             UnitSelected?.Invoke(unit);
-        }
 
-        Input.IsMovementClickable = false;
         UIManager.Instance.MenuAction.HideMenu();
     }
 
@@ -76,24 +73,18 @@ public class GameController : MonoBehaviour
         HandleTileMovement(selectedUnit);
 
         if (!selectedUnit.UnitIsMoving)
-        {
             _pathIsFounded = false;
-        }
     }
-    
-    private List<Tile> FindPath(Unit unit, Tile tile)
-    {
-        return Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
-    }
+
+    private List<Tile> FindPath(Unit unit, Tile tile) =>
+        Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
 
     private void SetUnitTarget(Unit selectedUnit, Tile tile)
     {
         var units = Grid.AllUnits;
         foreach (var unit in units)
-        {
             if (unit == selectedUnit)
                 unit.Target = tile;
-        }
     }
 
     private void HandleTileMovement(Unit selectedUnit)
@@ -105,7 +96,7 @@ public class GameController : MonoBehaviour
         MoveUnitAlongPath(selectedUnit);
         if (selectedUnit.UnitIsMoving)
             return;
-        HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
+        // HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
 
         if (selectedUnit.UnitIsMoving) return;
         if (_path.Count <= 1) return;
@@ -138,6 +129,7 @@ public class GameController : MonoBehaviour
             unit.Target = tile;
             return false;
         }
+
         if (unit.Stats.MovementPoints <= 1)
         {
             Input.IsUnitClickable = true;
@@ -148,25 +140,23 @@ public class GameController : MonoBehaviour
         return unit.OccupiedTile != _path.ElementAt(_path.Count - 1);
     }
 
-    #region  Adjacent
-    private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
-    {
-        foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
-        {
-            UpdateNeighborUnits(selectedUnit, neighborTile, allUnits);
-        }
-    }
+    #region Near units handler
 
-    private void UpdateNeighborUnits(Unit unit, Tile neighborTile, IEnumerable<Unit> units)
-    {
-        var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighborTile);
+    // private void HandleAdjacentUnits(Unit selectedUnit, IReadOnlyCollection<Unit> allUnits)
+    // {
+    //     foreach (var neighborTile in selectedUnit.OccupiedTile.Neighbors)
+    //     {
+    //         UpdateNeighborUnits(selectedUnit, neighborTile, allUnits);
+    //     }
+    // }
 
-        if (neighborUnit?.Stats.Type == unit.Stats.Type)
-        {
-            // neighborUnit.OnUnitMoved(unit);
-            Debug.Log("Adjacent!");
-        }
-    }
+    // private void UpdateNeighborUnits(Unit unit, Tile neighborTile, IEnumerable<Unit> units)
+    // {
+    //     var neighborUnit = units.FirstOrDefault(u => u.OccupiedTile == neighborTile);
+    //
+    //     if (neighborUnit.Stats.Type == unit.Stats.Type)
+    //         Debug.Log("Adjacent!");
+    // }
 
     private bool IsUnitAdjacentTo(Unit unit1, Unit unit2)
     {
@@ -181,6 +171,7 @@ public class GameController : MonoBehaviour
 
     private bool IsPlayerUnitAvailable(Unit unit) =>
         unit != null && unit.Stats.Type == UnitType.Player && unit.Status == UnitStatus.Available;
+
     #endregion
 
     #region Ветка проверок клеток НЕ РАБОТАЕТ

@@ -40,6 +40,7 @@ public class Tile : MonoBehaviour
 
     public Color TileColorStandard;
     public Color ColorPlayerOnTile;
+    public Color ColorAllyOnTile;
     public Color ColorEnemyOnTile;
     public Color ColorSelectedTile;
     public Color ColorMovementTile;
@@ -59,6 +60,7 @@ public class Tile : MonoBehaviour
         {
             { TileState.Standard, TileColorStandard },
             { TileState.OccupiedByPlayer, ColorPlayerOnTile },
+            { TileState.OccupiedByAlly, ColorAllyOnTile },
             { TileState.OccupiedByEnemy, ColorEnemyOnTile },
             { TileState.Selected, ColorSelectedTile },
             { TileState.Movement, ColorMovementTile }
@@ -90,9 +92,6 @@ public class Tile : MonoBehaviour
         GridUI.Instance.HighlightTiles(Neighbors, TileState.Standard);
     }
 
-    // public bool IsOccupied() =>
-    //     State == TileState.OccupiedByEnemy || State == TileState.OccupiedByPlayer || !_available || UnitOn;
-    
     public bool IsAvailable() => Available;
     
     public void ChangeColor(TileState state)

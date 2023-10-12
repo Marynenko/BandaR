@@ -124,6 +124,7 @@ MonoBehaviour:
   UnitOn: 0
   TileColorStandard: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 0}
   ColorPlayerOnTile: {r: 0.047058824, g: 0.3019608, b: 0.003921569, a: 0}
+  ColorAllyOnTile: {r: 0, g: 0.0043114405, b: 0.6132076, a: 0}
   ColorEnemyOnTile: {r: 0.43529412, g: 0, b: 0, a: 0}
   ColorSelectedTile: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 0}
   ColorMovementTile: {r: 0.11372549, g: 0.8392157, b: 0, a: 0}
@@ -139,4 +140,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb6ca8869fe37d4c9d23a1b6b192ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPlayer: {fileID: 0}
