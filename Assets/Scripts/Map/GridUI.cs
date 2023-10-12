@@ -40,6 +40,9 @@ public class GridUI : MonoBehaviour
         var occupiedByPlayerTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.OccupiedByPlayer);
         HighlightTiles(occupiedByPlayerTiles, TileState.OccupiedByPlayer);
 
+        // var occupiedByAlliesTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.OccupiedByEnemy);
+        // HighlightTiles(occupiedByAlliesTiles, TileState.OccupiedByAlly);
+        
         var occupiedByEnemyTiles = availableMoves.Skip(1).Where(tile => tile.State == TileState.OccupiedByEnemy);
         HighlightTiles(occupiedByEnemyTiles, TileState.OccupiedByEnemy);
     }

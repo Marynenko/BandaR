@@ -14,6 +14,7 @@ public class UnitStats : MonoBehaviour
 public enum UnitType
 {
     Player,
+    Ally,
     Enemy
 }
 
@@ -24,7 +25,7 @@ public enum UnitStatus
     Moved,
     Available,
     Unavailable,
-    Waiting,
-    AIMove
+    AIMove,
+    AIAllyMove
 }
 

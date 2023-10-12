@@ -1,11 +1,17 @@
-﻿public class Enemy : Unit
+﻿using System.Collections.Generic;
+using System.Linq;
+
+public class Enemy : Unit
 {
-    public override Unit GetUnitType() => this;
-    //public override void Initialize(Tile cell)
-    //{
-    //    base.Initialize(cell);
-    //    _playersInRange = new List<Unit>();
-    //}
+    public List<Unit> Enemies;
+
+    protected override void TrackAllEnemies()
+    {
+        var units = GridUI.Instance.TurnManager.PlayersGet;
+        foreach (var unit in units.Where(unit => unit.Stats.Type is UnitType.Player or UnitType.Ally))
+            Enemies.Add(unit);
+    }
+    
 
     //protected override void Update()
     //{
@@ -57,4 +63,3 @@
     //    }
     //}
 }
-

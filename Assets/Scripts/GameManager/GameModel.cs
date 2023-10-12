@@ -45,6 +45,7 @@ public class GameModel : MonoBehaviour
         return ActivePlayer.Stats.Type switch
         {
             UnitType.Player when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
+            UnitType.Ally when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
             UnitType.Enemy when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
             _ => false
         };
@@ -55,7 +56,7 @@ public class GameModel : MonoBehaviour
         if (ActivePlayer.Target == null && ActivePlayer.Stats.Type != UnitType.Enemy)
             ActivePlayer.Target = ActivePlayer.OccupiedTile;
     }
-
+    
     private bool MatchPositionsPlayerAndDestination() =>
         ActivePlayer.transform.position ==
         ActivePlayer.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;
@@ -66,9 +67,15 @@ public class GameModel : MonoBehaviour
         ActivePlayer.Stats.MovementPoints = 0;
         Selector.UnselectUnit(ActivePlayer);
         ActivePlayer.OccupiedTile.Available = false;
-        ActivePlayer.OccupiedTile.State = ActivePlayer.Stats.Type == UnitType.Player
-            ? TileState.OccupiedByPlayer
-            : TileState.OccupiedByEnemy;
+
+
+        ActivePlayer.OccupiedTile.State = ActivePlayer.Stats.Type switch
+        {
+            UnitType.Player => TileState.OccupiedByPlayer,
+            UnitType.Ally => TileState.OccupiedByAlly,
+            UnitType.Enemy => TileState.OccupiedByEnemy,
+            _ => ActivePlayer.OccupiedTile.State
+        };
 
         ActivePlayer.Status = UnitStatus.Moved;
     }

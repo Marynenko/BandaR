@@ -221,7 +221,6 @@ RectTransform:
   - {fileID: 2051135678}
   - {fileID: 13491673}
   - {fileID: 935803484}
-  - {fileID: 1169534510}
   m_Father: {fileID: 838970640}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -278,9 +277,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a520c25829ad541a0045a7228af0d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiPlayerPrefab: {fileID: 2677446142269322470, guid: acf45ee842d412a48a1f7d8b16778865,
+  UIPlayerPrefab: {fileID: 2219597260204887854, guid: 830d315929ae8444b9a67fa332d66399,
     type: 3}
-  uiEnemyPrefab: {fileID: 7773438011785891508, guid: 9a65a50107176c94894b0175e9631761,
+  UIEnemyPrefab: {fileID: 2985605895277528381, guid: 8f836d8a4f5bcd943b64a2609fc717c9,
+    type: 3}
+  UIAllyPrefab: {fileID: 1690548367301645115, guid: 281e3009a103a1b41aee8f3037a77bd1,
     type: 3}
 --- !u!114 &13491675
 MonoBehaviour:
@@ -555,7 +556,7 @@ MonoBehaviour:
   Grid: {fileID: 1624328206}
   GameModel: {fileID: 336726934}
   AI: {fileID: 1132630096}
-  GroupPortraits: {fileID: 13491674}
+  PortraitManager: {fileID: 13491674}
 --- !u!1 &488196656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1023,8 +1024,8 @@ MonoBehaviour:
   ID: 2
   Name: Bastion
   Type: 0
-  MovementPoints: 2
-  MovementRange: 2
+  MovementPoints: 4
+  MovementRange: 4
   AttackDamage: 2
   AttackRange: 2
   Health: 10
@@ -1048,6 +1049,7 @@ MonoBehaviour:
   Portrait: {fileID: 0}
   SpawnCellVector2Int: {x: 3, y: 1}
   UnitIsMoving: 0
+  Enemies: []
 --- !u!65 &683644379
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1341,7 +1343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Update - 0.1.4.15.d
+  m_text: Update - 0.1.4.15.e
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1738,94 +1740,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cab617fe77aa603438fe400d2d1ce7f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &1169534509
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1169534510}
-  - component: {fileID: 1169534512}
-  - component: {fileID: 1169534511}
-  - component: {fileID: 1169534513}
-  m_Layer: 5
-  m_Name: Anticlicker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1169534510
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169534509}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -32.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5216327}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1169534511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169534509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1169534512
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169534509}
-  m_CullTransparentMesh: 1
---- !u!114 &1169534513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169534509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acbfc93108fce2b49ae210efc7e57f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1203233630
@@ -2397,7 +2311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 4
   Name: Enemy
-  Type: 1
+  Type: 2
   MovementPoints: 3
   MovementRange: 3
   AttackDamage: 2
@@ -2423,6 +2337,7 @@ MonoBehaviour:
   Portrait: {fileID: 0}
   SpawnCellVector2Int: {x: 3, y: 4}
   UnitIsMoving: 0
+  Enemies: []
 --- !u!65 &1333131631
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2742,12 +2657,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d9c44afcc0dd99499150110e80d5ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiGroupPortraits: {fileID: 13491674}
-  tilesPlace: {fileID: 1203233631}
-  tilePrefab: {fileID: 8210557890246080385, guid: e2450c32e686a99429395f9ce04d3ff5,
+  UIPortraitManager: {fileID: 13491674}
+  TilesPlace: {fileID: 1203233631}
+  TilePrefab: {fileID: 8210557890246080385, guid: e2450c32e686a99429395f9ce04d3ff5,
     type: 3}
-  gridSize: {x: 6, y: 6}
-  offset: 0.01
+  GridSize: {x: 6, y: 6}
+  Offset: 0.01
 --- !u!114 &1624328207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2915,6 +2830,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1688690142}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1688690144 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1473208740159530018, guid: 58deee289551f0a4da9601dae61ef296,
+    type: 3}
+  m_PrefabInstance: {fileID: 1688690142}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771362889
 GameObject:
   m_ObjectHideFlags: 0
@@ -3224,13 +3151,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e6390f8d60c7f245bfcfe332ef63d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 963194229}
-  mainContainerPlayer: {fileID: 246999308}
-  mainContainerEnemy: {fileID: 488196656}
-  moveButton: {fileID: 7613765103257788637}
-  attackButton: {fileID: 1392847539}
-  infoButton: {fileID: 536399936}
-  endTurnButton: {fileID: 1778553231}
+  InputPlayer: {fileID: 963194229}
+  MainContainerPlayer: {fileID: 246999308}
+  MainContainerEnemy: {fileID: 488196656}
+  MoveButton: {fileID: 7613765103257788637}
+  AttackButton: {fileID: 1392847539}
+  InfoPlayerButton: {fileID: 536399936}
+  InfoButton: {fileID: 1688690144}
+  EndTurnButton: {fileID: 1778553231}
 --- !u!65 &32912952120907413
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3669,6 +3597,7 @@ MonoBehaviour:
   Portrait: {fileID: 0}
   SpawnCellVector2Int: {x: 0, y: 1}
   UnitIsMoving: 0
+  Enemies: []
 --- !u!1001 &3713072364834576840
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4008,6 +3937,7 @@ MonoBehaviour:
   Portrait: {fileID: 0}
   SpawnCellVector2Int: {x: 4, y: 1}
   UnitIsMoving: 0
+  Enemies: []
 --- !u!33 &6374162187554448057
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -4171,7 +4101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 3
   Name: Enemy
-  Type: 1
+  Type: 2
   MovementPoints: 3
   MovementRange: 3
   AttackDamage: 2

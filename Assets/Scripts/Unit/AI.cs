@@ -23,7 +23,8 @@ public class AI : MonoBehaviour
     {
         // Call 3
         if (_currentUnit == null) return;
-        StartMove();
+        if (_currentUnit.Stats.Type is UnitType.Ally or UnitType.Enemy)
+            StartMove();
     }
 
     public void InitializeAI(Unit unit)
@@ -74,12 +75,10 @@ public class AI : MonoBehaviour
 
     private void Move()
     {
-        var localSelector = _gameController.Selector;
-
         if (_isCoroutineRunning) return;
         var enemies = _grid.AllUnits.Where(u => u.Stats.Type != _currentUnit.Stats.Type).ToArray();
         var targetEnemy = enemies.OrderBy(e =>
-            localSelector.PathConstructor.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+            UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
 
         if (targetEnemy == null) return;
         _gameController.HandleTileClick(targetEnemy.OccupiedTile);

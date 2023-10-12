@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameController : MonoBehaviour
 {
     #region Variables
 
-    [FormerlySerializedAs("input")] public InputPlayer Input;
+    public InputPlayer Input;
     public Grid Grid;
     public Selector Selector;
 
@@ -16,7 +15,6 @@ public class GameController : MonoBehaviour
 
     // Определение событий
     public event SelectionUnitHandler UnitSelected;
-    public event SelectionUnitHandler UnitUnselected;
 
     private List<Tile> _path;
     private bool _pathIsFounded;
@@ -34,34 +32,34 @@ public class GameController : MonoBehaviour
         UIManager.Instance.MenuAction.HideMenu();
     }
 
-    private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
-    {
-        if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
-            return;
-        if (selectedUnit.Status == UnitStatus.Unavailable)
-            return;
-        if (targetUnit.Stats.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
-        {
-            selectedUnit.Attack(targetUnit);
-
-            if (targetUnit.Stats.Health <= 0)
-                Grid.RemoveUnit(targetUnit);
-            // else
-            //     Selector.UpdateUnit(targetUnit);
-
-            // Selector.UnselectUnit(selectedUnit);
-            UnitUnselected?.Invoke(selectedUnit);
-
-            if (selectedUnit.IsAlive())
-            {
-                // Update available moves after attack
-                var availableMoves = new HashSet<Tile>
-                (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
-                    selectedUnit.Stats.MovementPoints));
-                GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement);
-            }
-        }
-    }
+    // private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
+    // {
+    //     if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
+    //         return;
+    //     if (selectedUnit.Status == UnitStatus.Unavailable)
+    //         return;
+    //     if (targetUnit.Stats.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
+    //     {
+    //         selectedUnit.Attack(targetUnit);
+    //
+    //         if (targetUnit.Stats.Health <= 0)
+    //             Grid.RemoveUnit(targetUnit);
+    //         // else
+    //         //     Selector.UpdateUnit(targetUnit);
+    //
+    //         // Selector.UnselectUnit(selectedUnit);
+    //         UnitUnselected?.Invoke(selectedUnit);
+    //
+    //         if (selectedUnit.IsAlive())
+    //         {
+    //             // Update available moves after attack
+    //             var availableMoves = new HashSet<Tile>
+    //             (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
+    //                 selectedUnit.Stats.MovementPoints));
+    //             GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement);
+    //         }
+    //     }
+    // }
 
     public void HandleTileClick(Tile tile)
     {
@@ -79,8 +77,6 @@ public class GameController : MonoBehaviour
 
         if (!selectedUnit.UnitIsMoving)
         {
-            // _lastSelectedUnit = selectedUnit;
-            // _lastSelectedTile = selectedUnit.OccupiedTile;
             _pathIsFounded = false;
         }
     }
@@ -167,7 +163,8 @@ public class GameController : MonoBehaviour
 
         if (neighborUnit?.Stats.Type == unit.Stats.Type)
         {
-            neighborUnit.OnUnitMoved(unit);
+            // neighborUnit.OnUnitMoved(unit);
+            Debug.Log("Adjacent!");
         }
     }
 

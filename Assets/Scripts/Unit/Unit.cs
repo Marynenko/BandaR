@@ -19,51 +19,59 @@ public abstract class Unit : SoundsManager
     // Private fields
 
     // Public properties
+    public UnitStats Stats => _stats;
+    public UnitStatus Status { get; set; }
+    public Tile OccupiedTile { get; private set; }
+
+    // public fields
     public Tile Target;
     public UISign Sign;
     public Image Portrait;
-    public UnitStats Stats => _stats;
-    public Tile OccupiedTile { get; private set; }
 
-    public UnitStatus Status { get; set; } = UnitStatus.Available; // Initialize to Waiting
-
-    // public fields
     public Vector2Int SpawnCellVector2Int;
     public HashSet<Tile> AvailableMoves;
     public bool UnitIsMoving;
-    
-    // public delegate-event fields
-    public delegate void OnMoveDelegate(Unit unit);
-    public static event OnMoveDelegate OnMove;
-
 
     #endregion
 
     #region Initialization
 
-    public virtual Unit GetUnitType() => this;
+    private void Start()
+    {
+        TrackAllEnemies();
+    }
 
-    public void InitializeUnit(Tile[,] tiles, UIGroupPortraits uiGroup)
+    protected abstract void TrackAllEnemies();
+
+    public void InitializeUnit(Tile[,] tiles, UIPortraitManager uiGroup)
     {
         var startTile = CompareSpawnPosToTile(tiles);
         // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         // Установка текущей ячейки для юнита
         OccupiedTile = startTile;
-        
+
         Portrait = uiGroup.GetPlayerPortrait(this);
-        
+
         GridUI.Instance.TurnManager.HighlightPlayer(this); // off
-        OccupiedTile.State = Stats.Type == UnitType.Player ? TileState.OccupiedByPlayer : TileState.OccupiedByEnemy;
+        // OccupiedTile.State = Stats.Type switch
+        // {
+        //     UnitType.Player => TileState.OccupiedByPlayer,
+        //     // UnitType.Ally => TileState.OccupiedByAlly,
+        //     _ => TileState.OccupiedByEnemy
+        // };
+
+        OccupiedTile.State = Stats.Type == UnitType.Player
+            ? TileState.OccupiedByPlayer
+            : TileState.OccupiedByEnemy;
+
         OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
     }
 
-    private Tile CompareSpawnPosToTile(Tile[,] tiles)
-    {
-        return tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
-                                                         && tile.Coordinates.y == SpawnCellVector2Int.y);
-    }
+    private Tile CompareSpawnPosToTile(Tile[,] tiles) =>
+        tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
+                                                  && tile.Coordinates.y == SpawnCellVector2Int.y);
 
     #endregion
 
@@ -98,26 +106,15 @@ public abstract class Unit : SoundsManager
 
         OccupiedTile = targetTile;
         _stats.MovementPoints -= 1;
-
-        OnUnitMoved(this);
     }
 
-    public bool CanMoveMore()
-    {
-        // Проверяем, есть ли у персонажа еще очки передвижения
-        if (Stats.MovementPoints > 1)
-        {
-            return true;
-        }
-
-        return false;
-    }
+    public bool CanMoveMore() => Stats.MovementPoints > 1;
 
     #endregion
 
     #region Action ATTACK
 
-    public bool CanAttack(Unit targetUnit) =>
+    private bool CanAttack(Unit targetUnit) =>
         targetUnit != null &&
         targetUnit.Stats.Type == UnitType.Enemy &&
         Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;
@@ -147,26 +144,6 @@ public abstract class Unit : SoundsManager
         // Доработать
         Destroy(gameObject);
         return delegate { };
-    }
-
-    #endregion
-
-    #region Part of unusable code
-
-    public void UpdateVisuals()
-    {
-        //healthBar.fillAmount = (float)Health / MaxHealth;
-    }
-
-    public void OnUnitMoved(Unit movedUnit)
-    {
-        // Действия, которые должны произойти при перемещении другого юнита на соседнюю клетку
-    }
-
-    public void SetAvailability()
-    {
-        _stats.MovementPoints = _stats.MovementRange;
-        Status = UnitStatus.Moved;
     }
 
     #endregion

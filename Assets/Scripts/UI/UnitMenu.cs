@@ -1,36 +1,37 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UnitMenu : MonoBehaviour
 {
-    [SerializeField] private InputPlayer input;
-    public GameObject mainContainerPlayer; // Меню игрока
-    public GameObject mainContainerEnemy; // Меню врага
-
-    public Button moveButton;
-    public Button attackButton;
-    public Button infoButton;
-    public Button endTurnButton;
-    
+    [SerializeField] private InputPlayer InputPlayer;
     private Unit _currentUnit;
+    
+    public GameObject MainContainerPlayer; // Меню игрока
+    public GameObject MainContainerEnemy; // Меню врага
+
+    public Button MoveButton;
+    public Button AttackButton;
+    public Button InfoPlayerButton;
+    public Button InfoButton;
+    public Button EndTurnButton;
 
     private void Start()
     {
-        moveButton.onClick.AddListener(HandleMove);
-        attackButton.onClick.AddListener(HandleAttack);
-        infoButton.onClick.AddListener(HandleInfo);
-        endTurnButton.onClick.AddListener(HandleEndTurn);
+        MoveButton.onClick.AddListener(HandleMove);
+        AttackButton.onClick.AddListener(HandleAttack);
+        InfoPlayerButton.onClick.AddListener(HandleInfo);
+        InfoButton.onClick.AddListener(HandleInfo);
+        EndTurnButton.onClick.AddListener(HandleEndTurn);
     }
 
     public void ShowMenu(Unit unit, bool isMoving)
     {
         _currentUnit = unit;
 
-        // input.IsMenuActive = true;
-        input.IsMenuActive = true;
+        InputPlayer.IsMenuActive = true;
         gameObject.SetActive(true);
         CheckUnitType(unit, isMoving);
-        
     }
     
     private void CheckUnitType(Unit unit, bool isMoving = false)
@@ -38,21 +39,21 @@ public class UnitMenu : MonoBehaviour
         if(unit.Stats.Type == UnitType.Player && isMoving)
         {
             // Открыть меню игрока и закрыть меню врага
-            mainContainerPlayer.SetActive(true);
-            mainContainerEnemy.SetActive(false);
+            MainContainerPlayer.SetActive(true);
+            MainContainerEnemy.SetActive(false);
         }
         else
         {
             // Открыть меню врага и закрыть меню игрока
-            mainContainerEnemy.SetActive(true);
-            mainContainerPlayer.SetActive(false);
+            MainContainerEnemy.SetActive(true);
+            MainContainerPlayer.SetActive(false);
             // input.IsEnemyClicked = true;
         }
     }
 
     public void HideMenu()
     {
-        input.IsMenuActive = false;
+        InputPlayer.IsMenuActive = false;
         gameObject.SetActive(false);
     }
 
@@ -60,22 +61,22 @@ public class UnitMenu : MonoBehaviour
     {
         // Можно в будуем сделать что бы просто IsMOving = true;
         // input.IsMovementClicked = true;
-        input.IsTileClickable = true;
-        input.GameController.HandleUnitClick(_currentUnit);
+        InputPlayer.IsTileClickable = true;
+        InputPlayer.GameController.HandleUnitClick(_currentUnit);
     }
 
     private void HandleAttack()
     {
-        input.IsAttackClickable = true;
+        InputPlayer.IsAttackClickable = true;
     }
 
     private void HandleInfo()
     {
-        input.IsInfoClickable = true;
+        InputPlayer.IsInfoClickable = true;
     }
 
     private void HandleEndTurn()
     {
-        input.GameModel.HandleEndTurnButtonClicked(_currentUnit);
+        InputPlayer.GameModel.HandleEndTurnButtonClicked(_currentUnit);
     }
 }

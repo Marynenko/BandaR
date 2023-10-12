@@ -15,13 +15,11 @@ public class Selector : MonoBehaviour
     {
         _gameController = GetComponentInParent<GameController>();
         _gameController.UnitSelected += SelectUnit;
-        _gameController.UnitUnselected += UnselectUnit;
     }
 
     private void OnDisable()
     {
         _gameController.UnitSelected -= SelectUnit;
-        _gameController.UnitUnselected -= UnselectUnit;
     }
 
     public void SelectUnit(Unit unit)

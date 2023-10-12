@@ -26,4 +26,13 @@ public class UIManager : MonoBehaviour
     {
         Instance.gameObject.SetActive(false);
     }
+    
+    public static float GetDistance(Tile tileFrom, Tile tileTo)
+    {
+        if (tileFrom == tileTo)
+            return 0;
+        var dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
+        var dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
+        return Mathf.Sqrt(dx * dx + dy * dy);
+    }
 }

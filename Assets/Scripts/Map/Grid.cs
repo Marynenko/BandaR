@@ -1,25 +1,26 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Grid : MonoBehaviour
 {
-    [SerializeField] private UIGroupPortraits _uiGroupPortraits;
-    [SerializeField] private Transform tilesPlace;
-    [SerializeField] private Tile tilePrefab;
-    [SerializeField] private Vector2Int gridSize;
-    [SerializeField] private float offset;
+    [SerializeField] private UIPortraitManager UIPortraitManager;
+    [FormerlySerializedAs("tilesPlace")] [SerializeField] private Transform TilesPlace;
+    [FormerlySerializedAs("tilePrefab")] [SerializeField] private Tile TilePrefab;
+    [FormerlySerializedAs("gridSize")] [SerializeField] private Vector2Int GridSize;
+    [FormerlySerializedAs("offset")] [SerializeField] private float Offset;
     private Selector Selector { get; set; }
-    
+
     public List<Unit> AllUnits { get; private set; }
     public Tile[,] Tiles { get; private set; }
-    public Vector2Int GridSize => gridSize;
+    public Vector2Int GridSizeGet => GridSize;
 
     private void Awake()
     {
         Selector = GetComponentInChildren<Selector>();
-        Tiles = new Tile[gridSize.x, gridSize.y];
+        Tiles = new Tile[GridSizeGet.x, GridSizeGet.y];
     }
-    
+
     //   3842 - Готово
 
 
@@ -28,22 +29,22 @@ public class Grid : MonoBehaviour
         CreateGrid();
         LocateNeighborsTiles();
         GetAllExistedUnits();
-        _uiGroupPortraits.AddPortraits(AllUnits);
+        UIPortraitManager.AddPortraits(AllUnits);
         AddUnitsToTiles();
         GridUI.Instance.TurnManager.Launch();
     }
 
     private void CreateGrid()
     {
-        var tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
+        var tileSize = TilePrefab.GetComponent<MeshRenderer>().bounds.size;
 
-        for (var x = 0; x < gridSize.x; x++)
-        for (var y = 0; y < gridSize.y; y++)
+        for (var x = 0; x < GridSizeGet.x; x++)
+        for (var y = 0; y < GridSizeGet.y; y++)
         {
             // Чтобы сгенерировать клетку, нужно знать ее позицию.
-            var position = new Vector3(x * (tileSize.x + offset), 0, y * (tileSize.z + offset));
+            var position = new Vector3(x * (tileSize.x + Offset), 0, y * (tileSize.z + Offset));
 
-            var tile = Instantiate(tilePrefab, position, Quaternion.identity, tilesPlace);
+            var tile = Instantiate(TilePrefab, position, Quaternion.identity, TilesPlace);
             tile.Initialize(x, y, true, false); // тут передается Grid
 
             Tiles[x, y] = tile;
@@ -62,10 +63,12 @@ public class Grid : MonoBehaviour
         AllUnits = new List<Unit>();
 
         var players = FindObjectsOfType<Player>();
+        // var allies = FindObjectsOfType<Ally>();
         var enemies = FindObjectsOfType<Enemy>();
 
         // Добавить персонажей в список _allExistedUnits
         AllUnits.AddRange(players);
+        // AllUnits.AddRange(allies);
         AllUnits.AddRange(enemies);
     }
 
@@ -73,7 +76,7 @@ public class Grid : MonoBehaviour
     {
         foreach (var unit in AllUnits)
         {
-            unit.InitializeUnit(Tiles, _uiGroupPortraits);
+            unit.InitializeUnit(Tiles, UIPortraitManager);
         }
     }
 
@@ -82,9 +85,6 @@ public class Grid : MonoBehaviour
         foreach (var tile in Tiles)
             if (!tile.IsAvailable())
                 GridUI.Instance.HighlightTile(tile, TileState.Standard);
-        // foreach (var tile in Tiles)
-        //     if (!tile.IsAvailable())
-        //         tile.SetAvailable(true);
     }
 
     public void RemoveUnit(Unit unit)
@@ -108,14 +108,14 @@ public class Grid : MonoBehaviour
         //     TileState.OccupiedByPlayer when unit.Type == UnitType.Player => tile.State,
         //     _ => tile.State
         // };
-        
+
         if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Enemy)
             return tile.State;
         if (tile.State == TileState.OccupiedByPlayer && unit.Stats.Type == UnitType.Player)
             return tile.State;
         return tile.State;
     }
-    
+
     public bool CheckTileToUnitStandOn(Unit unit, Tile tile)
     {
         if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Player)

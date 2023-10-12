@@ -15,7 +15,7 @@ public class Tile : MonoBehaviour
 
     #region Variable -> Available
     public bool Available { get => _available; set => SetAvailable(value); }
-    public void SetAvailable(bool isAvailable)
+    private void SetAvailable(bool isAvailable)
     {
         _available = isAvailable;
         UnitOn = !_available;
@@ -106,6 +106,7 @@ public enum TileState
     Standard, 
     Selected, 
     Movement, 
-    OccupiedByPlayer, 
+    OccupiedByPlayer,
+    OccupiedByAlly,
     OccupiedByEnemy
 }

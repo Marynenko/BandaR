@@ -78,7 +78,7 @@ public class PathConstructor : MonoBehaviour
             {
                 if (currentTile != null)
                 {
-                    var tentativeScore = gScore[currentTile] + GetDistance(currentTile, neighborTile);
+                    var tentativeScore = gScore[currentTile] + UIManager.GetDistance(currentTile, neighborTile);
 
                     fScore.TryAdd(neighborTile, float.MaxValue);
 
@@ -137,7 +137,7 @@ public class PathConstructor : MonoBehaviour
         // var tileOccupied = _grid.CheckTileToUnitStandOn(_currentUnit, tile);
         // if (tileOccupied)
         //     return nearbyTiles;
-            
+
         foreach (var direction in _direction)
         {
             var coordinate = new Vector2Int(Convert.ToInt32(tile.Coordinates.x + direction.X),
@@ -193,8 +193,8 @@ public class PathConstructor : MonoBehaviour
 
     private bool TryGetTile(Vector2Int coordinate, out Tile tile)
     {
-        if (coordinate.x >= 0 && coordinate.x < _grid.GridSize.x && coordinate.y >= 0 &&
-            coordinate.y < _grid.GridSize.y)
+        if (coordinate.x >= 0 && coordinate.x < _grid.GridSizeGet.x && coordinate.y >= 0 &&
+            coordinate.y < _grid.GridSizeGet.y)
         {
             tile = _grid.Tiles[coordinate.x, coordinate.y];
             return true;
@@ -206,16 +206,12 @@ public class PathConstructor : MonoBehaviour
         }
     }
 
-    public float GetDistance(Tile tileFrom, Tile tileTo)
-    {
-        // ???? ?????? ?????, ?? ?????????? ????? ???? ????? 0
-        if (tileFrom == tileTo)
-            return 0;
-
-        // ????? ?? ????? ???????????? ????? ???????? ??? ?????????? ?????????? ????? ????????.
-        // ????????, ????? ???????????? ????????? ??????????:
-        var dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
-        var dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
-        return Mathf.Sqrt(dx * dx + dy * dy);
-    }
+    // public float GetDistance(Tile tileFrom, Tile tileTo)
+    // {
+    //     if (tileFrom == tileTo)
+    //         return 0;
+    //     var dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
+    //     var dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
+    //     return Mathf.Sqrt(dx * dx + dy * dy);
+    // }
 }

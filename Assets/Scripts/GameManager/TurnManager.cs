@@ -8,7 +8,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private GameModel GameModel;
     [SerializeField] private AI AI;
     [SerializeField] private Queue<Unit> Players;
-    [SerializeField] private UIGroupPortraits GroupPortraits;
+    [FormerlySerializedAs("GroupPortraits")] [SerializeField] private UIPortraitManager PortraitManager;
 
     public Queue<Unit> PlayersGet => Players;
 
@@ -81,8 +81,8 @@ public class TurnManager : MonoBehaviour
     {
         _previousPlayer = unit;
         var animator = _previousPlayer.Sign.GetComponent<Animator>();
-        var unitImg = GroupPortraits.GetPlayerPortrait(_previousPlayer);
-        var unitImgScript = GroupPortraits.GetPlayerBackground(unitImg);
+        var unitImg = PortraitManager.GetPlayerPortrait(_previousPlayer);
+        var unitImgScript = PortraitManager.GetPlayerBackground(unitImg);
         if (isMoving)
         {
             unitImgScript.TurnOnAlpha();

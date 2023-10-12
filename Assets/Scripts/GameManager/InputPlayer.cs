@@ -50,8 +50,6 @@ public class InputPlayer : MonoBehaviour
         }
     }
 
-    private bool IsMouseOverUI() => EventSystem.current.IsPointerOverGameObject();
-    
     public void HandleLeftClick(Vector3 mousePosition)
     {
         if (_camera == null) return;
@@ -59,7 +57,6 @@ public class InputPlayer : MonoBehaviour
         var ray = _camera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out var hit))
         {
-            
             if (hit.collider.TryGetComponent(out Unit unit))
             {
                 if (!IsUnitClickable) return;
