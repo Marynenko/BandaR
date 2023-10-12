@@ -81,7 +81,6 @@ public class Tile : MonoBehaviour
 
     public void SelectTile()
     {
-        UnitOn = true;
         Available = false;
     }
 

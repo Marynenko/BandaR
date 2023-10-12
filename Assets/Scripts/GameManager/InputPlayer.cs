@@ -54,6 +54,8 @@ public class InputPlayer : MonoBehaviour
                 if (ClickedUnit != null)
                     if (unit != ClickedUnit)
                         return;
+                if (GetCurrentMovingUnit() == null)
+                    return;
                 if (GetCurrentMovingUnit() != unit)
                 {
                     UIManager.Instance.MenuAction.ShowMenu(unit, false);
@@ -81,6 +83,14 @@ public class InputPlayer : MonoBehaviour
     private Unit GetCurrentMovingUnit()
     {
         var players = GridUI.Instance.TurnManager.PlayersGet;
+        //
+        // foreach (var player in players)
+        // {
+        //     if (player.Status is UnitStatus.AIMove or UnitStatus.AIAllyMove)
+        //         return null;
+        //     if (player.Status == UnitStatus.Available)
+        //         return player;
+        // }
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
 

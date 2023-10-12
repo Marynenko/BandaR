@@ -179,6 +179,7 @@ public class PathConstructor : MonoBehaviour
             availableMoves.Add(currentTile);
 
             if (remainingMoves <= 1) continue;
+            
             var neighbourTiles = GetNeighborTiles(currentTile);
             foreach (var neighbour in neighbourTiles)
             {

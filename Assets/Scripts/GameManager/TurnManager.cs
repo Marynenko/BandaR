@@ -17,6 +17,8 @@ public class TurnManager : MonoBehaviour
     private Unit _previousPlayer;
     private Unit _activePlayer;
 
+    private delegate void OffSign(); 
+        
     private void Update()
     {
         // Call 4
