@@ -47,11 +47,11 @@
   <ItemGroup>
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModulePhysics2D.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
-     <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleSprite.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModulePhysics.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleEPOOutline.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUtils.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleAudio.cs" />
+     <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleSprite.cs" />
      <Compile Include="Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs" />
      <Folder Include="Assets\Plugins" />
      <Folder Include="Assets\Plugins\Demigiant\DOTween\Modules" />
@@ -702,6 +702,10 @@
       <Project>{b3bc003b-6959-ed48-0225-c7b86b175e6a}</Project>
       <Name>Unity.VisualScripting.SettingsProvider.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="com.unity.cinemachine.editor.csproj">
+      <Project>{8fccde88-c0a4-d852-2f58-4daa8cc0f434}</Project>
+      <Name>com.unity.cinemachine.editor</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
       <Project>{ce34e510-948f-f073-5398-310da501cb99}</Project>
       <Name>Unity.VisualScripting.State.Editor</Name>
@@ -741,6 +745,10 @@
     <ProjectReference Include="Unity.VisualScripting.State.csproj">
       <Project>{e6c43b5a-2e9a-f829-7d9b-976e20a6e4e0}</Project>
       <Name>Unity.VisualScripting.State</Name>
+    </ProjectReference>
+    <ProjectReference Include="Cinemachine.csproj">
+      <Project>{e562e727-1a19-8680-a023-ada42aa36496}</Project>
+      <Name>Cinemachine</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEngine.UI.csproj">
       <Project>{b409d01f-1dab-f8b0-d58b-bed87b17638a}</Project>
