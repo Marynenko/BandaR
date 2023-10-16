@@ -6,17 +6,15 @@ public class AI : MonoBehaviour
 {
     private GameController _gameController;
     private GameModel _gameModel;
-    private Grid _grid;
     private Unit _currentUnit;
-    public Unit ActiveUnit => _currentUnit;
-
     private bool _isCoroutineRunning = false;
+    
+    public Unit ActiveUnit => _currentUnit;
 
     private void OnEnable()
     {
         _gameController = gameObject.GetComponentInParent<GameController>();
         _gameModel = gameObject.GetComponentInParent<GameModel>();
-        _grid = _gameController.Grid;
     }
 
     private void Update()

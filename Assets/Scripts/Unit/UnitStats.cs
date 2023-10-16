@@ -26,6 +26,5 @@ public enum UnitStatus
     Available,
     Unavailable,
     AIMove,
-    AIAllyMove
 }
 

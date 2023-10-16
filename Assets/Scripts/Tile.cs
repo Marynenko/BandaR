@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Tile : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class Tile : MonoBehaviour
     private readonly int _distance;
 
     // Public Properties fields
-    public IEnumerable<Tile> Neighbors { get; set; }
+    public List<Tile> Neighbors { get; set; }
 
     #region Variable -> Available
     public bool Available { get => _available; set => SetAvailable(value); }
@@ -38,12 +39,13 @@ public class Tile : MonoBehaviour
     public TileState State; // Состояние клетки.
     public bool UnitOn; // Юнит на клетке или нет.
 
-    public Color TileColorStandard;
+    public Color ColorTileStandard;
     public Color ColorPlayerOnTile;
     public Color ColorAllyOnTile;
     public Color ColorEnemyOnTile;
     public Color ColorSelectedTile;
     public Color ColorMovementTile;
+    public Color ColorPossibleAttack;
 
     // Static fields
     private static Dictionary<TileState, Color> _stateColors;
@@ -58,12 +60,13 @@ public class Tile : MonoBehaviour
         
         _stateColors ??= new Dictionary<TileState, Color>()
         {
-            { TileState.Standard, TileColorStandard },
+            { TileState.Standard, ColorTileStandard },
             { TileState.OccupiedByPlayer, ColorPlayerOnTile },
             { TileState.OccupiedByAlly, ColorAllyOnTile },
             { TileState.OccupiedByEnemy, ColorEnemyOnTile },
             { TileState.Selected, ColorSelectedTile },
-            { TileState.Movement, ColorMovementTile }
+            { TileState.Movement, ColorMovementTile },
+            { TileState.AttackTarget, ColorPossibleAttack}
         };
     }
     
@@ -106,5 +109,6 @@ public enum TileState
     Movement, 
     OccupiedByPlayer,
     OccupiedByAlly,
-    OccupiedByEnemy
+    OccupiedByEnemy,
+    AttackTarget
 }

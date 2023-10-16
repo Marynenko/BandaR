@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameModel : MonoBehaviour
@@ -9,6 +14,8 @@ public class GameModel : MonoBehaviour
     [HideInInspector] public Unit ActivePlayer;
 
     private const float HeightToPutUnitOnTile = 0.68f;
+    private bool _isCoroutineOn;
+    private bool _attackIsFinished;
 
     private Queue<Unit> _units = new();
 
@@ -23,32 +30,96 @@ public class GameModel : MonoBehaviour
         _units = GridUI.Instance.TurnManager.PlayersGet;
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
-        GridUI.Instance.TurnManager.HighlightPlayer(ActivePlayer, true);
-        Grid.ClearColorTiles();
+        GridUI.Instance.TurnManager.ShowPortrait(ActivePlayer, true);
+        GridUI.Instance.ClearColorTiles(Grid.Tiles);
     }
 
     public bool HandleEndTurnButtonClicked(Unit unit)
     {
-        bool GoOn()
+        ActivePlayer = unit;
+        HandlePlayerNullTarget();
+
+        return ActivePlayer.Stats.Type switch
+        {
+            UnitType.Player when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(unit),
+            UnitType.Ally when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(unit),
+            UnitType.Enemy when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(unit),
+            _ => false
+        };
+    }
+
+    private bool GoOn(Unit unit)
+    {        
+        void LocalMoveOn()
         {
             MoveOn();
             FinishMove();
             InputPlayer.ClickedUnit = null;
             InputPlayer.IsTileClickable = true;
             InputPlayer.IsUnitClickable = true;
-            return true;
         }
 
-        ActivePlayer = unit;
-        HandlePlayerNullTarget();
-
-        return ActivePlayer.Stats.Type switch
+        if (unit.Stats.Type != UnitType.Player)
         {
-            UnitType.Player when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
-            UnitType.Ally when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
-            UnitType.Enemy when ActivePlayer.Target != null && MatchPositionsPlayerAndDestination() => GoOn(),
-            _ => false
-        };
+            if (_attackIsFinished)
+            {
+                LocalMoveOn();
+                _attackIsFinished = false;
+                return true;
+            }
+
+            if (!_isCoroutineOn)
+            {
+                StartCoroutine(AIAttack(unit));
+            }
+            if (_isCoroutineOn)
+                return false;
+        }
+        else
+        {
+            LocalMoveOn();
+            return true;    
+        }
+
+        return true;
+    }
+
+    private IEnumerator AIAttack(Unit unit)
+    {
+        _isCoroutineOn = true;
+        UIManager.Instance.AttackManager.HandleAttackButtonClicked(ActivePlayer);
+        yield return new WaitForSeconds(1.5f);
+        _isCoroutineOn = false;
+        var enemies = GetEnemyFromNeighbours(unit.Stats.Type);
+        var enemy = LocateBestEnemyToHit(enemies);
+        UIManager.Instance.AttackManager.LaunchAttack(ActivePlayer, enemy);
+        _attackIsFinished = true;
+    }
+
+    private Unit LocateBestEnemyToHit(List<Unit> enemies)
+    {
+        var playerWithLeastHp = enemies.OrderBy(player => player.Stats.Health).FirstOrDefault();
+        return playerWithLeastHp;
+    }
+
+    private List<Unit> GetEnemyFromNeighbours(UnitType type)
+    {
+        var neighbours = Selector.PathConstructor.GetNeighbours(ActivePlayer.OccupiedTile);
+
+        if (type == UnitType.Enemy)
+            return (from neighbour in neighbours
+                where !neighbour.Available
+                where neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly
+                select GetUnitFromNeighbour(neighbour)).ToList();
+        return (from neighbour in neighbours
+            where !neighbour.Available
+            where neighbour.State is TileState.OccupiedByEnemy
+            select GetUnitFromNeighbour(neighbour)).ToList();
+    }
+
+    private Unit GetUnitFromNeighbour(Tile neighbour)
+    {
+        return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
     }
 
     private void HandlePlayerNullTarget()
@@ -56,7 +127,7 @@ public class GameModel : MonoBehaviour
         if (ActivePlayer.Target == null && ActivePlayer.Stats.Type != UnitType.Enemy)
             ActivePlayer.Target = ActivePlayer.OccupiedTile;
     }
-    
+
     private bool MatchPositionsPlayerAndDestination() =>
         ActivePlayer.transform.position ==
         ActivePlayer.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;

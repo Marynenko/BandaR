@@ -435,3 +435,8 @@ Library/TerrainTools/PaintTexture
 *.dll
 *.dll
 Library/ScriptAssemblies/Assembly-CSharp-firstpass.dll
+Library/ArtifactDB
+Library/ArtifactDB
+Library/Bee/1900b0aEDbg-inputdata.json
+*.dag
+Library/Bee/1900b0aEDbg.dag.json

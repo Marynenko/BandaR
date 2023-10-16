@@ -58,7 +58,7 @@ public class Grid : MonoBehaviour
     private void LocateNeighborsTiles()
     {
         foreach (var tile in Tiles)
-            tile.Neighbors = Selector.PathConstructor.GetNeighborTiles(tile); // Добавили левую часть.
+            tile.Neighbors = Selector.PathConstructor.GetAvailableNeighbourTiles(tile); // Добавили левую часть.
     }
 
     private void GetAllExistedUnits()
@@ -82,13 +82,6 @@ public class Grid : MonoBehaviour
         {
             unit.InitializeUnit(Tiles, UIPortraitManager);
         }
-    }
-
-    public void ClearColorTiles()
-    {
-        foreach (var tile in Tiles)
-            if (!tile.IsAvailable())
-                GridUI.Instance.HighlightTile(tile, TileState.Standard);
     }
 
     public void RemoveUnit(Unit unit)

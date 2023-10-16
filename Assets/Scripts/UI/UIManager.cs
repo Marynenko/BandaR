@@ -3,7 +3,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private UnitMenu Menu;
-
+    public AttackManager AttackManager;
     public UnitMenu MenuAction { get => Menu; set => Menu = value; }
 
     private static UIManager _instance;

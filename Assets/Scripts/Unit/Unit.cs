@@ -48,18 +48,15 @@ public abstract class Unit : SoundsManager
 
         Portrait = uiGroup.GetPlayerPortrait(this);
 
-        GridUI.Instance.TurnManager.HighlightPlayer(this); // off
-        // OccupiedTile.State = Stats.Type switch
-        // {
-        //     UnitType.Player => TileState.OccupiedByPlayer,
-        //     // UnitType.Ally => TileState.OccupiedByAlly,
-        //     _ => TileState.OccupiedByEnemy
-        // };
-
-        OccupiedTile.State = Stats.Type == UnitType.Player
-            ? TileState.OccupiedByPlayer
-            : TileState.OccupiedByEnemy;
-
+        GridUI.Instance.TurnManager.ShowPortrait(this); // off
+        
+        OccupiedTile.State = Stats.Type switch
+        {
+            UnitType.Player => TileState.OccupiedByPlayer,
+            UnitType.Ally => TileState.OccupiedByAlly,
+            _ => TileState.OccupiedByEnemy
+        };
+        
         OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
     }

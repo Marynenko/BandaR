@@ -55,4 +55,11 @@ public class GridUI : MonoBehaviour
     
     public void HighlightTile(Tile tile, TileState state) =>
         tile.ChangeColor(state);
+    
+    public void ClearColorTiles(Tile[,] tiles)
+    {
+        foreach (var tile in tiles)
+            if (!tile.IsAvailable())
+                HighlightTile(tile, TileState.Standard);
+    }
 }

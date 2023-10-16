@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UnitMenu : MonoBehaviour
 {
     [SerializeField] private InputPlayer InputPlayer;
+    
     private Unit _currentUnit;
     
     public GameObject MainContainerPlayer; // Меню игрока
@@ -67,7 +67,11 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleAttack()
     {
-        
+        HideMenu();
+        InputPlayer.IsTileClickable = false;
+        InputPlayer.IsAttackActive = true;
+        InputPlayer.IsUnitClickable = true;
+        UIManager.Instance.AttackManager.HandleAttackButtonClicked(_currentUnit);
     }
 
     private void HandleInfo()

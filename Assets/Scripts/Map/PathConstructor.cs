@@ -73,7 +73,7 @@ public class PathConstructor : MonoBehaviour
                 openList.Remove(openList.First().Key);
             closedList.Add(currentTile);
 
-            foreach (var neighborTile in GetNeighborTiles(currentTile)
+            foreach (var neighborTile in GetAvailableNeighbourTiles(currentTile)
                          .Where(neighborTile => !closedList.Contains(neighborTile)))
             {
                 if (currentTile != null)
@@ -131,7 +131,7 @@ public class PathConstructor : MonoBehaviour
         return path;
     }
 
-    public IEnumerable<Tile> GetNeighborTiles(Tile tile)
+    public List<Tile> GetAvailableNeighbourTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
         // var tileOccupied = _grid.CheckTileToUnitStandOn(_currentUnit, tile);
@@ -163,6 +163,25 @@ public class PathConstructor : MonoBehaviour
         return nearbyTiles;
     }
 
+    public List<Tile> GetNeighbours(Tile tile)
+    {
+        List<Tile> nearbyTiles = new();
+
+        foreach (var direction in _direction)
+        {
+            var coordinate = new Vector2Int(Convert.ToInt32(tile.Coordinates.x + direction.X),
+                Convert.ToInt32(tile.Coordinates.y + direction.Y));
+
+            if (TryGetTile(coordinate, out var neighbor) && neighbor != tile)
+            {
+                nearbyTiles.Add(neighbor);
+            }
+        }
+
+        tile.Neighbors = nearbyTiles;
+        return nearbyTiles;
+    }
+
     public IEnumerable<Tile> GetAvailableMoves(Tile tile, int maxMoves)
     {
         var visitedTiles = new HashSet<Tile>();
@@ -179,11 +198,11 @@ public class PathConstructor : MonoBehaviour
             availableMoves.Add(currentTile);
 
             if (remainingMoves <= 1) continue;
-            
-            var neighbourTiles = GetNeighborTiles(currentTile);
+
+            var neighbourTiles = GetAvailableNeighbourTiles(currentTile);
             foreach (var neighbour in neighbourTiles)
             {
-                var tileIsVisited = visitedTiles.Contains(neighbour); 
+                var tileIsVisited = visitedTiles.Contains(neighbour);
                 if (!tileIsVisited)
                 {
                     var cost = neighbour.MovementCost;
@@ -191,7 +210,6 @@ public class PathConstructor : MonoBehaviour
                         queue.Enqueue((neighbour, remainingMoves - cost));
                 }
             }
-                
         }
 
         return availableMoves;

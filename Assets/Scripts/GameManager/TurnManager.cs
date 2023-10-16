@@ -46,7 +46,7 @@ public class TurnManager : MonoBehaviour
     private void EndTurn()
     {
         _previousPlayer = _activePlayer;
-        HighlightPlayer(_previousPlayer); // off
+        ShowPortrait(_previousPlayer); // off
 
         if (Players.Contains(_activePlayer))
         {
@@ -60,7 +60,7 @@ public class TurnManager : MonoBehaviour
         if (IsGameOver())
             EndGame();
 
-        HighlightPlayer(_activePlayer, true); // on
+        ShowPortrait(_activePlayer, true); // on
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
         if (_activePlayer.Stats.Type is UnitType.Player)
@@ -81,7 +81,7 @@ public class TurnManager : MonoBehaviour
         return Players.Count > 0 ? Players.Peek() : null;
     }
 
-    public void HighlightPlayer(Unit unit, bool isMoving = false)
+    public void ShowPortrait(Unit unit, bool isMoving = false)
     {
         _previousPlayer = unit;
         var animator = _previousPlayer.Sign.GetComponent<Animator>();

@@ -122,12 +122,13 @@ MonoBehaviour:
   Coordinates: {x: 0, y: 0}
   State: 0
   UnitOn: 0
-  TileColorStandard: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 0}
+  ColorTileStandard: {r: 0.37783396, g: 0.4433962, b: 0.37019402, a: 0}
   ColorPlayerOnTile: {r: 0.047058824, g: 0.3019608, b: 0.003921569, a: 0}
   ColorAllyOnTile: {r: 0, g: 0.0043114405, b: 0.6132076, a: 0}
-  ColorEnemyOnTile: {r: 0.43529412, g: 0, b: 0, a: 0}
+  ColorEnemyOnTile: {r: 1, g: 0.023584902, b: 0.023584902, a: 0}
   ColorSelectedTile: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 0}
   ColorMovementTile: {r: 0.11372549, g: 0.8392157, b: 0, a: 0}
+  ColorPossibleAttack: {r: 0.41509432, g: 0.06069775, b: 0.06069775, a: 0}
 --- !u!114 &-2776731113941066579
 MonoBehaviour:
   m_ObjectHideFlags: 0

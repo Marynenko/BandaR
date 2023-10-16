@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,9 +11,11 @@ public class InputPlayer : MonoBehaviour
 
     public Unit ClickedUnit;
     private Tile _clickedTile;
+    private Tile _startTile;
     private Camera _camera;
 
     public bool IsMenuActive = false;
+    public bool IsAttackActive = false;
     public bool IsUnitClickable = true;
     public bool IsTileClickable = false;
 
@@ -28,10 +32,17 @@ public class InputPlayer : MonoBehaviour
             if (IsMenuActive)
                 UIManager.Instance.MenuAction.HideMenu();
             if (ClickedUnit != null)
+            {
                 if (ClickedUnit.AvailableMoves != null)
                     GridUI.Instance.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
+                if (ClickedUnit.OccupiedTile.Neighbors != null)
+                    GridUI.Instance.HighlightTiles(ClickedUnit.OccupiedTile.Neighbors, TileState.Standard);
+            }
+
             IsTileClickable = true;
             IsUnitClickable = true;
+            IsAttackActive = false;
+            _startTile = null;
             ClickedUnit = null;
         }
 
@@ -50,6 +61,11 @@ public class InputPlayer : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out Unit unit))
             {
+                if (IsAttackActive)
+                {
+                    UIManager.Instance.AttackManager.LaunchAttack(ClickedUnit, unit);
+                    return;
+                }
                 if (!IsUnitClickable) return;
                 if (ClickedUnit != null)
                     if (unit != ClickedUnit)
@@ -64,6 +80,7 @@ public class InputPlayer : MonoBehaviour
 
                 ClickedUnit = unit;
                 IsUnitClickable = false;
+                _startTile = ClickedUnit.OccupiedTile;
                 UIManager.Instance.MenuAction.ShowMenu(unit, true);
             }
             else if (hit.collider.TryGetComponent(out Tile tile) && ClickedUnit != null)
@@ -80,17 +97,11 @@ public class InputPlayer : MonoBehaviour
                 IsUnitClickable = true;
     }
 
+    
+
     private Unit GetCurrentMovingUnit()
     {
         var players = GridUI.Instance.TurnManager.PlayersGet;
-        //
-        // foreach (var player in players)
-        // {
-        //     if (player.Status is UnitStatus.AIMove or UnitStatus.AIAllyMove)
-        //         return null;
-        //     if (player.Status == UnitStatus.Available)
-        //         return player;
-        // }
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
 
