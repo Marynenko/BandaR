@@ -7,6 +7,8 @@ public class UnitStats : MonoBehaviour
     public UnitType Type;
     public int Health;
     public int Energy;
+    public int EnergyForMove;
+    public int EnergyForAttack;
     public int StateFatigue;
     public int MovementPoints;
     public int MovementRange;

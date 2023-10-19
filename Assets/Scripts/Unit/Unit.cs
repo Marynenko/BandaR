@@ -26,7 +26,6 @@ public abstract class Unit : SoundsManager
     // public fields
     public Tile Target;
     public UISign Sign;
-    public Image Portrait;
 
     public Vector2Int SpawnCellVector2Int;
     public HashSet<Tile> AvailableMoves;
@@ -46,19 +45,25 @@ public abstract class Unit : SoundsManager
         // Установка текущей ячейки для юнита
         OccupiedTile = startTile;
 
-        Portrait = uiGroup.GetPlayerPortrait(this);
-
         GridUI.Instance.TurnManager.ShowPortrait(this); // off
-        
+
         OccupiedTile.State = Stats.Type switch
         {
             UnitType.Player => TileState.OccupiedByPlayer,
             UnitType.Ally => TileState.OccupiedByAlly,
             _ => TileState.OccupiedByEnemy
         };
-        
+
         OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
+
+        GetEnergy();
+    }
+
+    private void GetEnergy()
+    {
+        _stats.EnergyForMove = 40;
+        _stats.EnergyForAttack = _stats.Energy - 40;
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles) =>
@@ -98,6 +103,21 @@ public abstract class Unit : SoundsManager
 
         OccupiedTile = targetTile;
         _stats.MovementPoints -= 1;
+
+        var ui = UIManager.Instance.AttackManager.AttackIndicators;
+        _stats.Energy -= 20;
+        _stats.EnergyForMove -= 20;
+
+        if (_stats.Type == UnitType.Player)
+        {
+            ui.ModifyEnergy(-20f);
+            // UIManager.Instance.AttackManager.AttackIndicators.Launch(_stats.Energy, _stats.StateFatigue);
+        }
+
+        if (_stats.EnergyForMove <= 0 || _stats.Energy <= 0)
+        {
+            Debug.Log("Энергия для хода закончилась и = " + _stats.EnergyForMove);
+        }
     }
 
     public bool CanMoveMore() => Stats.MovementPoints > 1;

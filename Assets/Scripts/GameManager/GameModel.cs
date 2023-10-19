@@ -29,6 +29,9 @@ public class GameModel : MonoBehaviour
         ActivePlayer.Status = UnitStatus.Available;
         GridUI.Instance.TurnManager.ShowPortrait(ActivePlayer, true);
         GridUI.Instance.ClearColorTiles(Grid.Tiles);
+        UIManager.Instance.CameraManager.IsActive = true;
+        UIManager.Instance.AttackManager.AttackIndicators.Launch(ActivePlayer.Stats.Energy,
+            ActivePlayer.Stats.StateFatigue);
     }
 
     public bool HandleEndTurnButtonClicked(Unit unit)
@@ -46,7 +49,7 @@ public class GameModel : MonoBehaviour
     }
 
     private bool GoOn(Unit unit)
-    {        
+    {
         void LocalMoveOn()
         {
             MoveOn();
@@ -69,13 +72,14 @@ public class GameModel : MonoBehaviour
             {
                 StartCoroutine(AIAttack(unit));
             }
+
             if (_isCoroutineOn)
                 return false;
         }
         else
         {
             LocalMoveOn();
-            return true;    
+            return true;
         }
 
         return true;

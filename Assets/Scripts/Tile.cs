@@ -6,9 +6,12 @@ public class Tile : MonoBehaviour
 {
     #region Variables
 
+    public int CostEnergy;
+    
     // Private fields
     private MeshRenderer _meshRenderer;
     private bool _available;
+    
     private readonly int _distance;
 
     // Public Properties fields
@@ -78,6 +81,7 @@ public class Tile : MonoBehaviour
         State = TileState.Standard;
         Coordinates = new Vector2Int(row, column);
         Neighbors = new List<Tile>(4);
+        CostEnergy = 20;
 
         ChangeColor(State);
     }

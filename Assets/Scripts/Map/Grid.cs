@@ -86,37 +86,28 @@ public class Grid : MonoBehaviour
 
     public void RemoveUnit(Unit unit)
     {
-        var unitToRemove = unit;
-        var currentTile = unitToRemove.OccupiedTile;
+        var currentTile = unit.OccupiedTile;
 
         if (currentTile != null)
         {
             //currentTile.ClearUnit();
-            AllUnits.Remove(unitToRemove);
-            Destroy(unitToRemove.gameObject);
+            AllUnits.Remove(unit);
+            Destroy(unit.gameObject);
         }
     }
 
     public TileState GetStateAndCheckUnitOn(Unit unit, Tile tile)
     {
-        // return tile.State switch
-        // {
-        //     TileState.OccupiedByEnemy when unit.Type == UnitType.Enemy => tile.State,
-        //     TileState.OccupiedByPlayer when unit.Type == UnitType.Player => tile.State,
-        //     _ => tile.State
-        // };
-
-        if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Enemy)
-            return tile.State;
-        if (tile.State == TileState.OccupiedByPlayer && unit.Stats.Type == UnitType.Player)
-            return tile.State;
-        return tile.State;
+        return tile.State switch
+        {
+            TileState.OccupiedByEnemy when unit.Stats.Type == UnitType.Enemy => tile.State,
+            TileState.OccupiedByPlayer when unit.Stats.Type == UnitType.Player => tile.State,
+            _ => tile.State
+        };
     }
 
     public bool CheckTileToUnitStandOn(Unit unit, Tile tile)
     {
-        if (tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Player)
-            return true;
-        return false;
+        return tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Player;
     }
 }

@@ -26,30 +26,59 @@ public class InputPlayer : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("Input Player Update ESCAPE");
-            if (IsMenuActive)
-                UIManager.Instance.MenuAction.HideMenu();
-            if (ClickedUnit != null)
-            {
-                if (ClickedUnit.AvailableMoves != null)
-                    GridUI.Instance.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
-                if (ClickedUnit.OccupiedTile.Neighbors != null)
-                    GridUI.Instance.HighlightTiles(ClickedUnit.OccupiedTile.Neighbors, TileState.Standard);
-            }
-
-            IsTileClickable = true;
-            IsUnitClickable = true;
-            IsAttackActive = false;
-            _startTile = null;
-            ClickedUnit = null;
+            if (EscHandler()) return;
         }
 
         // Call 2
         if (ClickedUnit == null) return;
         if (_clickedTile != null && ClickedUnit.UnitIsMoving)
             GameController.HandleTileClick(_clickedTile);
+    }
+
+    public bool EscHandler()
+    {
+        var ui = UIManager.Instance.AttackManager;
+
+        Debug.Log("Input Player Update ESCAPE");
+        if (IsMenuActive)
+            UIManager.Instance.MenuAction.HideMenu();
+        AttackMenuChecker(ui);
+
+        if (ui.AttackMenu.gameObject.activeSelf) return true;
+        if (ClickedUnit != null)
+        {
+            if (ClickedUnit.AvailableMoves != null)
+                GridUI.Instance.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
+            if (ClickedUnit.OccupiedTile.Neighbors != null)
+                GridUI.Instance.HighlightTiles(ClickedUnit.OccupiedTile.Neighbors, TileState.Standard);
+        }
+
+        IsTileClickable = true;
+        IsUnitClickable = true;
+        IsAttackActive = false;
+        _startTile = null;
+        ClickedUnit = null;
+        return false;
+    }
+
+    private void AttackMenuChecker(AttackManager ui)
+    {
+        if (IsAttackActive)
+        {
+            if (!ui.Attacks.PanelAskSure.activeSelf)
+            {
+                ui.AttackIndicators.Energy = ui.AttackIndicators.EnergyTransparent;
+                ui.AttackIndicators.Ustalost = ui.AttackIndicators.UstalostTransparent;
+                ui.AttackIndicators.ModifyEnergy(0);
+                ui.AttackIndicators.ModifyUstalost(0);
+                ui.AttackMenu.gameObject.SetActive(false);
+            }
+
+            if (ui.Attacks.PanelAskSure.gameObject.activeSelf)
+                ui.Attacks.PanelAskSure.SetActive(false);
+        }
     }
 
     public void HandleLeftClick(Vector3 mousePosition)
@@ -98,14 +127,11 @@ public class InputPlayer : MonoBehaviour
                 IsUnitClickable = true;
     }
 
-    
-
     private Unit GetCurrentMovingUnit()
     {
         var players = GridUI.Instance.TurnManager.PlayersGet;
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
-
 
     private void CompareAvailableMovesToTile()
     {
