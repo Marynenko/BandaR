@@ -63,6 +63,7 @@ public class InputPlayer : MonoBehaviour
             {
                 if (IsAttackActive)
                 {
+                    UIManager.Instance.CameraManager.IsActive = false;
                     UIManager.Instance.AttackManager.LaunchAttack(ClickedUnit, unit);
                     return;
                 }

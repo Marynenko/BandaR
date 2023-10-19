@@ -5,11 +5,13 @@ public class UnitStats : MonoBehaviour
     public int ID;
     public string Name;
     public UnitType Type;
+    public int Health;
+    public int Energy;
+    public int StateFatigue;
     public int MovementPoints;
     public int MovementRange;
     public int AttackDamage;
     public float AttackRange;
-    public int Health;
 }
 public enum UnitType
 {

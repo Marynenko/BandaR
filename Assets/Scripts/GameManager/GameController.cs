@@ -29,35 +29,6 @@ public class GameController : MonoBehaviour
         UIManager.Instance.MenuAction.HideMenu();
     }
 
-    // private void HandleUnitAttack(Unit selectedUnit, Unit targetUnit)
-    // {
-    //     if (selectedUnit.Status != UnitStatus.Moved) // Изменил из Selected на Moved
-    //         return;
-    //     if (selectedUnit.Status == UnitStatus.Unavailable)
-    //         return;
-    //     if (targetUnit.Stats.Type == UnitType.Enemy && selectedUnit.CanAttack(targetUnit))
-    //     {
-    //         selectedUnit.Attack(targetUnit);
-    //
-    //         if (targetUnit.Stats.Health <= 0)
-    //             Grid.RemoveUnit(targetUnit);
-    //         // else
-    //         //     Selector.UpdateUnit(targetUnit);
-    //
-    //         // Selector.UnselectUnit(selectedUnit);
-    //         UnitUnselected?.Invoke(selectedUnit);
-    //
-    //         if (selectedUnit.IsAlive())
-    //         {
-    //             // Update available moves after attack
-    //             var availableMoves = new HashSet<Tile>
-    //             (Selector.PathConstructor.GetAvailableMoves(selectedUnit.OccupiedTile,
-    //                 selectedUnit.Stats.MovementPoints));
-    //             GridUI.Instance.HighlightAvailableMoves(availableMoves, TileState.Movement);
-    //         }
-    //     }
-    // }
-
     public void HandleTileClick(Tile tile)
     {
         var selectedUnit = Selector.SelectedUnit;
