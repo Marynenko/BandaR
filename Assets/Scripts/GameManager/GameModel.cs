@@ -32,6 +32,8 @@ public class GameModel : MonoBehaviour
         UIManager.Instance.CameraManager.IsActive = true;
         UIManager.Instance.AttackManager.AttackIndicators.Launch(ActivePlayer.Stats.Energy,
             ActivePlayer.Stats.StateFatigue);
+        UIManager.Instance.AttackManager.Attacks.AttacksPrefab = ActivePlayer.AttacksPrefab;
+        
     }
 
     public bool HandleEndTurnButtonClicked(Unit unit)

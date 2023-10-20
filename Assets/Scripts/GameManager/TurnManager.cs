@@ -67,11 +67,14 @@ public class TurnManager : MonoBehaviour
         {
             _activePlayer.Status = UnitStatus.Available;
             _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
+            UIManager.Instance.AttackManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
+
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
             _activePlayer.Status = UnitStatus.AIMove;
             _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
+            UIManager.Instance.AttackManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
             AI.InitializeAI(_activePlayer);
         }
     }

@@ -13,8 +13,6 @@ public class UnitStats : MonoBehaviour
     public int StateFatigue;
     public int MovementPoints;
     public int MovementRange;
-    public int AttackDamage;
-    public float AttackRange;
 }
 public enum UnitType
 {
@@ -25,8 +23,6 @@ public enum UnitType
 
 public enum UnitStatus
 {
-    //Selected,
-    //Unselected,
     Moved,
     Available,
     Unavailable,

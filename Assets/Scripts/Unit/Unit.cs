@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public abstract class Unit : SoundsManager
 {
     #region Variables
+    public List<GameObject> AttacksPrefab;
 
     // Fields
     [SerializeField] private UnitStats _stats;
