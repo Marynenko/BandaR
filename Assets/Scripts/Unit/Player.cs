@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : Unit
 {
+    // public List<GameObject> AttacksPrefab;
     public List<Unit> Enemies;
     public new UnitStats Stats { get; private set; }
 

@@ -80,7 +80,7 @@ public class Grid : MonoBehaviour
     {
         foreach (var unit in AllUnits)
         {
-            unit.InitializeUnit(Tiles, UIPortraitManager);
+            unit.InitializeUnit(Tiles);
         }
     }
 

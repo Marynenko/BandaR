@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
 {
     #region Variables
 
+    public MovementManager MovementManager;
     public InputPlayer Input;
     public Grid Grid;
     public Selector Selector;
@@ -71,7 +72,7 @@ public class GameController : MonoBehaviour
 
         if (selectedUnit.UnitIsMoving) return;
         if (_path.Count <= 1) return;
-        if (selectedUnit.CanMoveMore())
+        if (Selector.CanMoveMore(selectedUnit))
             Selector.SelectUnit(selectedUnit);
     }
 
@@ -84,9 +85,9 @@ public class GameController : MonoBehaviour
         if (unitV2 == nextTileV2)
             _path.Remove(nextTile);
 
-        if (unit.CanMoveToTile(nextTile, out var distanceSqrt) && nextTile != null)
+        if (MovementManager.CanMoveToTile(unit, nextTile, out var distanceSqrt) && nextTile != null)
         {
-            unit.MoveToTile(nextTile, distanceSqrt);
+            MovementManager.MoveToTile(unit, nextTile, distanceSqrt);
         }
 
         unit.UnitIsMoving = NeedToMoveMore(unit, nextTile);

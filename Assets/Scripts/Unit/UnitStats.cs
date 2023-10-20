@@ -5,10 +5,11 @@ public class UnitStats : MonoBehaviour
     public int ID;
     public string Name;
     public UnitType Type;
-    public int Health;
+    public float Health;
     public int Energy;
     public int EnergyForMove;
     public int EnergyForAttack;
+    public int CountAttacks;
     public int StateFatigue;
     public int MovementPoints;
     public int MovementRange;

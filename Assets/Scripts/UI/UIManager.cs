@@ -4,6 +4,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private UnitMenu Menu;
     public CameraManager CameraManager;
+    // public MovementManager MovementManager;
     public AttackManager AttackManager;
 
     public UnitMenu MenuAction { get => Menu; set => Menu = value; }

@@ -4,9 +4,9 @@ using UnityEngine.UI;
 public class UnitMenu : MonoBehaviour
 {
     [SerializeField] private InputPlayer InputPlayer;
-    
+
     private Unit _currentUnit;
-    
+
     public GameObject MainContainerPlayer; // Меню игрока
     public GameObject MainContainerEnemy; // Меню врага
 
@@ -31,12 +31,13 @@ public class UnitMenu : MonoBehaviour
 
         InputPlayer.IsMenuActive = true;
         gameObject.SetActive(true);
+        AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
         CheckUnitType(unit, isMoving);
     }
-    
+
     private void CheckUnitType(Unit unit, bool isMoving = false)
     {
-        if(unit.Stats.Type == UnitType.Player && isMoving)
+        if (unit.Stats.Type == UnitType.Player && isMoving)
         {
             // Открыть меню игрока и закрыть меню врага
             MainContainerPlayer.SetActive(true);
@@ -76,11 +77,17 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleInfo()
     {
-        
     }
 
     private void HandleEndTurn()
     {
         InputPlayer.GameModel.HandleEndTurnButtonClicked(_currentUnit);
+        UpdateUnitUI();
+    }
+
+    private void UpdateUnitUI()
+    {
+        var updateIndicators = UIManager.Instance.AttackManager.AttackIndicators;
+        updateIndicators.Launch(updateIndicators.EnergyMax, -30);
     }
 }

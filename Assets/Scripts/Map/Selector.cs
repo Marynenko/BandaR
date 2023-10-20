@@ -45,8 +45,10 @@ public class Selector : MonoBehaviour
         if (SelectedUnit.AvailableMoves != null)
             GridUI.Instance.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
-        if (SelectedUnit.CanMoveMore())
+        if (CanMoveMore(SelectedUnit))
             SelectUnit(SelectedUnit);
         SelectedUnit = null;
     }
+
+    public bool CanMoveMore(Unit unit) => unit.Stats.MovementPoints > 1;
 }

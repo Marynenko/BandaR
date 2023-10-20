@@ -44,9 +44,10 @@ public class InputPlayer : MonoBehaviour
         Debug.Log("Input Player Update ESCAPE");
         if (IsMenuActive)
             UIManager.Instance.MenuAction.HideMenu();
+        
         AttackMenuChecker(ui);
-
-        if (ui.AttackMenu.gameObject.activeSelf) return true;
+        if (ui.AttackMenu.isActiveAndEnabled) return true;
+        
         if (ClickedUnit != null)
         {
             if (ClickedUnit.AvailableMoves != null)

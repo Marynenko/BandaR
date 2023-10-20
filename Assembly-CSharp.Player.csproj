@@ -71,6 +71,7 @@
      <Compile Include="Assets\Scripts\Unit\Enemy.cs" />
      <Compile Include="Assets\Scripts\Unit\UISign.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
+     <Compile Include="Assets\Scripts\UI\UIPreviewResultAttack.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\ContrastStretch.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -136,6 +137,7 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\ColorCorrectionRamp.cs" />
      <Compile Include="Assets\Scripts\GameManager\GameController.cs" />
+     <Compile Include="Assets\Scripts\GameManager\MovementManager.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\BloomOptimized.cs" />
      <Compile Include="Assets\Scripts\GameManager\TurnManager.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />

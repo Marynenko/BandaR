@@ -22,6 +22,10 @@ public abstract class Unit : SoundsManager
     public UnitStats Stats => _stats;
     public UnitStatus Status { get; set; }
     public Tile OccupiedTile { get; private set; }
+    public Tile OccupiedTileSet
+    {
+        set => OccupiedTile = value;
+    }
 
     // public fields
     public Tile Target;
@@ -37,12 +41,10 @@ public abstract class Unit : SoundsManager
 
     public abstract void TrackAllEnemies();
 
-    public void InitializeUnit(Tile[,] tiles, UIPortraitManager uiGroup)
+    public void InitializeUnit(Tile[,] tiles)
     {
         var startTile = CompareSpawnPosToTile(tiles);
-        // Установка позиции юнита на центр ячейки с учетом высоты модели
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
-        // Установка текущей ячейки для юнита
         OccupiedTile = startTile;
 
         GridUI.Instance.TurnManager.ShowPortrait(this); // off
@@ -57,106 +59,13 @@ public abstract class Unit : SoundsManager
         OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
 
-        GetEnergy();
-    }
-
-    private void GetEnergy()
-    {
         _stats.EnergyForMove = 40;
         _stats.EnergyForAttack = _stats.Energy - 40;
+        _stats.CountAttacks = 1;
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles) =>
         tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
                                                   && tile.Coordinates.y == SpawnCellVector2Int.y);
-
-    #endregion
-
-    #region Action Movement
-
-    public bool CanMoveToTile(Tile targetTile, out float distanceSq)
-    {
-        distanceSq = (OccupiedTile.transform.position - targetTile.transform.position).sqrMagnitude;
-
-        return OccupiedTile != targetTile &&
-               distanceSq <= MAX_DISTANCE &&
-               Status != UnitStatus.Moved &&
-               Stats.MovementPoints > 1 &&
-               !targetTile.UnitOn &&
-               Stats.MovementPoints >= targetTile.MovementCost;
-    }
-
-    public void MoveToTile(Tile targetTile, float distanceSq)
-    {
-        // Вычисляем позицию для перемещения с учетом высоты юнита
-        Vector3 newPosition = new(targetTile.transform.position.x, transform.position.y,
-            targetTile.transform.position.z);
-
-        const float movementSpeed = 2.5f;
-        //Запускаем анимацию перемещения
-
-        // var sound = GetComponentInParent<SoundsManager>();
-        // PlaySound(Sounds[0]);            
-        transform.DOMove(newPosition, Mathf.Sqrt(distanceSq) / MAX_DISTANCE * movementSpeed)
-            .SetEase(Ease.Linear)
-            .OnComplete(() => { transform.position = newPosition; });
-
-        OccupiedTile = targetTile;
-        _stats.MovementPoints -= 1;
-
-        var ui = UIManager.Instance.AttackManager.AttackIndicators;
-        _stats.Energy -= 20;
-        _stats.EnergyForMove -= 20;
-
-        if (_stats.Type == UnitType.Player)
-        {
-            ui.ModifyEnergy(-20f);
-            // UIManager.Instance.AttackManager.AttackIndicators.Launch(_stats.Energy, _stats.StateFatigue);
-        }
-
-        if (_stats.EnergyForMove <= 0 || _stats.Energy <= 0)
-        {
-            Debug.Log("Энергия для хода закончилась и = " + _stats.EnergyForMove);
-        }
-    }
-
-    public bool CanMoveMore() => Stats.MovementPoints > 1;
-
-    #endregion
-
-    #region Action ATTACK
-
-    private bool CanAttack(Unit targetUnit) =>
-        targetUnit != null &&
-        targetUnit.Stats.Type == UnitType.Enemy &&
-        Vector3.Distance(transform.position, targetUnit.transform.position) <= _stats.AttackRange;
-
-    public void Attack(Unit target)
-    {
-        if (CanAttack(target))
-        {
-            target.TakeDamage(_stats.AttackDamage);
-        }
-    }
-
-    private void TakeDamage(int damage)
-    {
-        _stats.Health = -damage; // используем метод SetHealth() для изменения здоровья
-        if (_stats.Health <= 0)
-        {
-            _stats.Health = 0;
-            Die();
-        }
-    }
-
-    public bool IsAlive() => _stats.Health > 0;
-
-    private Action Die()
-    {
-        // Доработать
-        Destroy(gameObject);
-        return delegate { };
-    }
-
     #endregion
 }
