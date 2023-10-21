@@ -14,7 +14,7 @@ public abstract class Unit : SoundsManager
     [SerializeField] private UnitStats _stats;
 
     // Constants
-    private const float MAX_DISTANCE = 4f;
+    // private const float MAX_DISTANCE = 4f;
     private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
 
     // Private fields
@@ -62,6 +62,7 @@ public abstract class Unit : SoundsManager
 
         _stats.EnergyForMove = 40;
         _stats.EnergyForAttack = _stats.Energy - 40;
+        _stats.StateFatigue = 0;
         _stats.CountAttacks = 1;
     }
 

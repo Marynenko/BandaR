@@ -7,9 +7,9 @@ public class AI : MonoBehaviour
     private GameController _gameController;
     private GameModel _gameModel;
     private Unit _currentUnit;
-    private bool _isCoroutineRunning = false;
-    
-    public Unit ActiveUnit => _currentUnit;
+
+    private bool _isCoroutineRunning;
+    private bool _isFinishMoveActive;
 
     private void OnEnable()
     {
@@ -22,7 +22,25 @@ public class AI : MonoBehaviour
         // Call 3
         if (_currentUnit == null) return;
         if (_currentUnit.Stats.Type is UnitType.Ally or UnitType.Enemy)
-            StartMove();
+        {
+            // if (_currentUnit.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
+            // {
+            //     Debug.Log($"{_currentUnit.Stats.Name} won't move!");
+            //     StartCoroutine(FinishMove(2f));
+            //     return;
+            // }
+            //
+            // if (_currentUnit.Stats.StateFatigue < 80)
+                StartMove();
+        }
+    }
+
+    private IEnumerator FinishMove(float waitTime)
+    {
+        _isFinishMoveActive = true;
+        yield return new WaitForSeconds(waitTime);
+        _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+        _isFinishMoveActive = false;
     }
 
     public void InitializeAI(Unit unit)
@@ -59,9 +77,8 @@ public class AI : MonoBehaviour
 
     private IEnumerator SelectUnit()
     {
-        var localSelector = _gameController.Selector;
-        if (localSelector.SelectedUnit == null)
-            localSelector.SelectUnit(_currentUnit);
+        if (_gameController.Selector.SelectedUnit == null)
+            _gameController.Selector.SelectUnit(_currentUnit);
         if (!_currentUnit.UnitIsMoving)
         {
             // _isCoroutineRunning = true;

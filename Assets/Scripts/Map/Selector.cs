@@ -50,5 +50,8 @@ public class Selector : MonoBehaviour
         SelectedUnit = null;
     }
 
-    public bool CanMoveMore(Unit unit) => unit.Stats.MovementPoints > 1;
+    public bool CanMoveMore(Unit unit)
+    {
+        return unit.Stats.MovementPoints > 1 && unit.Stats.EnergyForMove > 20f;
+    } 
 }

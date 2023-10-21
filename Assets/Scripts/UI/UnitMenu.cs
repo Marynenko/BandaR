@@ -31,8 +31,8 @@ public class UnitMenu : MonoBehaviour
 
         InputPlayer.IsMenuActive = true;
         gameObject.SetActive(true);
-        AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
-        CheckUnitType(unit, isMoving);
+        
+        CheckUnitType(unit, isMoving);   
     }
 
     private void CheckUnitType(Unit unit, bool isMoving = false)
@@ -41,6 +41,7 @@ public class UnitMenu : MonoBehaviour
         {
             // Открыть меню игрока и закрыть меню врага
             MainContainerPlayer.SetActive(true);
+            AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
             MainContainerEnemy.SetActive(false);
         }
         else
@@ -88,6 +89,6 @@ public class UnitMenu : MonoBehaviour
     private void UpdateUnitUI()
     {
         var updateIndicators = UIManager.Instance.AttackManager.AttackIndicators;
-        updateIndicators.Launch(updateIndicators.EnergyMax, -30);
+        updateIndicators.Launch(updateIndicators.EnergyMax, _currentUnit.Stats.StateFatigue);
     }
 }

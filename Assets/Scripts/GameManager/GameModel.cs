@@ -63,6 +63,14 @@ public class GameModel : MonoBehaviour
 
         if (unit.Stats.Type != UnitType.Player)
         {
+            var enemies = GetEnemyFromNeighbours(unit.Stats.Type);
+            if (enemies.Count == 0)
+            {
+                LocalMoveOn();
+                return true;
+            }
+            var enemy = LocateBestEnemyToHit(enemies);
+            
             if (_attackIsFinished)
             {
                 LocalMoveOn();
@@ -72,7 +80,7 @@ public class GameModel : MonoBehaviour
 
             if (!_isCoroutineOn)
             {
-                StartCoroutine(AIAttack(unit));
+                StartCoroutine(AIAttack(enemy));
             }
 
             if (_isCoroutineOn)
@@ -93,9 +101,8 @@ public class GameModel : MonoBehaviour
         UIManager.Instance.AttackManager.HandleAttackButtonClicked(ActivePlayer);
         yield return new WaitForSeconds(1.5f);
         _isCoroutineOn = false;
-        var enemies = GetEnemyFromNeighbours(unit.Stats.Type);
-        var enemy = LocateBestEnemyToHit(enemies);
-        UIManager.Instance.AttackManager.LaunchAttack(ActivePlayer, enemy);
+
+        UIManager.Instance.AttackManager.LaunchAttack(ActivePlayer, unit);
         _attackIsFinished = true;
     }
 
@@ -127,8 +134,10 @@ public class GameModel : MonoBehaviour
 
     private void HandlePlayerNullTarget()
     {
-        if (ActivePlayer.Target == null && ActivePlayer.Stats.Type != UnitType.Enemy)
+        if (ActivePlayer.Target == null)
             ActivePlayer.Target = ActivePlayer.OccupiedTile;
+        // if (ActivePlayer.Target == null && ActivePlayer.Stats.Type != UnitType.Enemy)
+        //     ActivePlayer.Target = ActivePlayer.OccupiedTile;
     }
 
     private bool MatchPositionsPlayerAndDestination() =>
@@ -160,7 +169,9 @@ public class GameModel : MonoBehaviour
         if (ActivePlayer.Status == UnitStatus.Moved)
         {
             // Передаем ход следующему игроку
+            GridUI.Instance.HighlightTiles(ActivePlayer.OccupiedTile.Neighbors, TileState.Standard);
             GridUI.Instance.TurnManager.SetCurrentPlayer(ref ActivePlayer);
+
             // GridUI.Instance.TurnManager.EndTurn(ref activePlayer);    
         }
     }

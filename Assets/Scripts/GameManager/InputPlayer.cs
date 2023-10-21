@@ -14,10 +14,10 @@ public class InputPlayer : MonoBehaviour
     private Tile _startTile;
     private Camera _camera;
 
-    public bool IsMenuActive = false;
-    public bool IsAttackActive = false;
+    public bool IsMenuActive;
+    public bool IsAttackActive;
     public bool IsUnitClickable = true;
-    public bool IsTileClickable = false;
+    public bool IsTileClickable;
 
     private void Start()
     {
@@ -41,7 +41,7 @@ public class InputPlayer : MonoBehaviour
     {
         var ui = UIManager.Instance.AttackManager;
 
-        Debug.Log("Input Player Update ESCAPE");
+        // Debug.Log("Input Player Update ESCAPE");
         if (IsMenuActive)
             UIManager.Instance.MenuAction.HideMenu();
         

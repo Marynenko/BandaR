@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ClickHandler : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
+public class ClickHandler : MonoBehaviour, IPointerClickHandler
 {
     private InputPlayer _inputPlayer;
 
@@ -11,14 +11,7 @@ public class ClickHandler : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Clicked!");
         if (!UIManager.Instance.MenuAction.isActiveAndEnabled)
             _inputPlayer.HandleLeftClick(eventData.pressPosition);
-    }
-    
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        // Debug.Log("Навёл!");
-        // UIManager.Instance.AttackManager.AttackIndicators.ModifyEnergyOnTime();
     }
 }

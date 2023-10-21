@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour
         selectedUnit.OccupiedTile.UnselectTile();
         GridUI.Instance.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
 
-        MoveUnitAlongPath(selectedUnit);
+        MovementManager.MoveUnitAlongPath(selectedUnit, _path, ref Input.IsUnitClickable);
         if (selectedUnit.UnitIsMoving)
             return;
         // HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
@@ -76,39 +76,5 @@ public class GameController : MonoBehaviour
             Selector.SelectUnit(selectedUnit);
     }
 
-    private void MoveUnitAlongPath(Unit unit)
-    {
-        _path.RemoveAll(tile => !unit.AvailableMoves.Contains(tile));
-        var nextTile = _path.FirstOrDefault();
-        Vector2 unitV2 = new(unit.transform.position.x, unit.transform.position.z);
-        Vector2 nextTileV2 = new(nextTile.transform.position.x, nextTile.transform.position.z);
-        if (unitV2 == nextTileV2)
-            _path.Remove(nextTile);
-
-        if (MovementManager.CanMoveToTile(unit, nextTile, out var distanceSqrt) && nextTile != null)
-        {
-            MovementManager.MoveToTile(unit, nextTile, distanceSqrt);
-        }
-
-        unit.UnitIsMoving = NeedToMoveMore(unit, nextTile);
-    }
-
-    private bool NeedToMoveMore(Unit unit, Tile tile)
-    {
-        if (_path.Count == 0)
-        {
-            Input.IsUnitClickable = true;
-            unit.Target = tile;
-            return false;
-        }
-
-        if (unit.Stats.MovementPoints <= 1)
-        {
-            Input.IsUnitClickable = true;
-            unit.Target = tile;
-            return false;
-        }
-
-        return unit.OccupiedTile != _path.ElementAt(_path.Count - 1);
-    }
+    
 }

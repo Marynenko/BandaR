@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -17,8 +19,8 @@ public class TurnManager : MonoBehaviour
     private Unit _previousPlayer;
     private Unit _activePlayer;
 
-    private delegate void OffSign(); 
-        
+    private bool _isFinishMoveActive;
+
     private void Update()
     {
         // Call 4
@@ -54,7 +56,9 @@ public class TurnManager : MonoBehaviour
                 Players.Dequeue();
         }
 
-        _activePlayer = GetNextPlayer();
+        SetUnitStats();
+
+        _activePlayer = GetNextPlayer(); // —ледующий игрок
         Players.Enqueue(_previousPlayer);
 
         if (IsGameOver())
@@ -65,18 +69,61 @@ public class TurnManager : MonoBehaviour
         // ≈сли следующий игрок - игрок, делаем его доступным и обновл€ем доступные ходы
         if (_activePlayer.Stats.Type is UnitType.Player)
         {
-            _activePlayer.Status = UnitStatus.Available;
-            _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
-            UIManager.Instance.AttackManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
+            if (_activePlayer.Stats.StateFatigue >= 100 && !_isFinishMoveActive)
+            {
+                Debug.Log($"{_activePlayer.Stats.Name} won't move!");
+                StartCoroutine(FinishMove(2f));
+                return;
+            }
 
+            _activePlayer.Status = UnitStatus.Available;
+            UIManager.Instance.AttackManager.AttackIndicators
+                .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
+            // _isFinishMoveActive = false;
+
+            // SetUnitStats(uiManager);
+            // uiManager.AttackIndicators.Launch(uiManager.AttackIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
+            if (_activePlayer.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
+            {
+                Debug.Log($"{_activePlayer.Stats.Name}#{_activePlayer.Stats.ID.ToString()} won't move!");
+                StartCoroutine(FinishMove(2f));
+                return;
+            }
+
             _activePlayer.Status = UnitStatus.AIMove;
-            _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
-            UIManager.Instance.AttackManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
             AI.InitializeAI(_activePlayer);
         }
+    }
+
+
+    private IEnumerator FinishMove(float waitTime)
+    {
+        _isFinishMoveActive = true;
+        yield return new WaitForSeconds(waitTime);
+        // GameModel.HandleEndTurnButtonClicked(_activePlayer);
+        _isFinishMoveActive = false;
+        EndTurn();
+    }
+
+    private void SetUnitStats()
+    {
+        var uiManager = UIManager.Instance.AttackManager;
+        _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
+        if (_activePlayer.Stats.CountAttacks != _activePlayer.Stats.MaxCountAttacks)
+            _activePlayer.Stats.StateFatigue -= Mathf.Round(60f * 0.4f);
+        else _activePlayer.Stats.StateFatigue -= 60f;
+        _activePlayer.Stats.CountAttacks = _activePlayer.Stats.MaxCountAttacks;
+        _activePlayer.Stats.Energy = uiManager.AttackIndicators.EnergyMax;
+        _activePlayer.Stats.EnergyForMove = 40f;
+        _activePlayer.Stats.EnergyForAttack = 60f;
+        _activePlayer.Stats.StateFatigue = Mathf.Clamp(_activePlayer.Stats.StateFatigue, 0, 100);
+        uiManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
+
+        if (_activePlayer.Stats.Type is UnitType.Player)
+            uiManager.AttackIndicators.Launch(uiManager.AttackIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
     }
 
     private Unit GetNextPlayer()
