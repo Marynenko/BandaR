@@ -24,16 +24,16 @@ public class GameModel : MonoBehaviour
 
     private void StartGame()
     {
-        _units = GridUI.Instance.TurnManager.PlayersGet;
+        var ui = UIManager.Instance;
+        _units = ui.TurnManager.PlayersGet;
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
-        GridUI.Instance.TurnManager.ShowPortrait(ActivePlayer, true);
-        GridUI.Instance.ClearColorTiles(Grid.Tiles);
-        UIManager.Instance.CameraManager.IsActive = true;
-        UIManager.Instance.AttackManager.AttackIndicators.Launch(ActivePlayer.Stats.Energy,
+        ui.TurnManager.ShowPortrait(ActivePlayer, true);
+        ui.GridUI.ClearColorTiles(Grid.Tiles);
+        ui.CameraManager.IsActive = true;
+        ui.AttackManager.AttackIndicators.Launch(ActivePlayer.Stats.Energy,
             ActivePlayer.Stats.StateFatigue);
-        UIManager.Instance.AttackManager.Attacks.AttacksPrefab = ActivePlayer.AttacksPrefab;
-        
+        ui.AttackManager.Attacks.InitializeAttacks(ActivePlayer.AttacksPrefab);
     }
 
     public bool HandleEndTurnButtonClicked(Unit unit)
@@ -63,14 +63,15 @@ public class GameModel : MonoBehaviour
 
         if (unit.Stats.Type != UnitType.Player)
         {
-            var enemies = GetEnemyFromNeighbours(unit.Stats.Type);
+            var enemies = GetEnemyFromNeighbours(unit);
             if (enemies.Count == 0)
             {
                 LocalMoveOn();
                 return true;
             }
+
             var enemy = LocateBestEnemyToHit(enemies);
-            
+
             if (_attackIsFinished)
             {
                 LocalMoveOn();
@@ -112,10 +113,10 @@ public class GameModel : MonoBehaviour
         return playerWithLeastHp;
     }
 
-    private List<Unit> GetEnemyFromNeighbours(UnitType type)
+    public List<Unit> GetEnemyFromNeighbours(Unit unit)
     {
-        var neighbours = Selector.PathConstructor.GetNeighbours(ActivePlayer.OccupiedTile);
-
+        var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
+        var type = unit.Stats.Type;
         if (type == UnitType.Enemy)
             return (from neighbour in neighbours
                 where !neighbour.Available
@@ -169,8 +170,8 @@ public class GameModel : MonoBehaviour
         if (ActivePlayer.Status == UnitStatus.Moved)
         {
             // Передаем ход следующему игроку
-            GridUI.Instance.HighlightTiles(ActivePlayer.OccupiedTile.Neighbors, TileState.Standard);
-            GridUI.Instance.TurnManager.SetCurrentPlayer(ref ActivePlayer);
+            UIManager.Instance.GridUI.HighlightTiles(ActivePlayer.OccupiedTile.Neighbors, TileState.Standard);
+            UIManager.Instance.TurnManager.SetCurrentPlayer(ref ActivePlayer);
 
             // GridUI.Instance.TurnManager.EndTurn(ref activePlayer);    
         }

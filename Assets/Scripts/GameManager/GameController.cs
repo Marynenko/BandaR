@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -63,7 +62,7 @@ public class GameController : MonoBehaviour
     {
         // UnitMenu.Instance.MenuAction._blockPanel.SetActive(true);
         selectedUnit.OccupiedTile.UnselectTile();
-        GridUI.Instance.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
+        UIManager.Instance.GridUI.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
 
         MovementManager.MoveUnitAlongPath(selectedUnit, _path, ref Input.IsUnitClickable);
         if (selectedUnit.UnitIsMoving)
@@ -75,6 +74,4 @@ public class GameController : MonoBehaviour
         if (Selector.CanMoveMore(selectedUnit))
             Selector.SelectUnit(selectedUnit);
     }
-
-    
 }

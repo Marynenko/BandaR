@@ -15,7 +15,7 @@ public class Player : Unit
 
     public override void TrackAllEnemies()
     {
-        var units = GridUI.Instance.TurnManager.PlayersGet;
+        var units = UIManager.Instance.TurnManager.PlayersGet;
         foreach (var unit in units.Where(unit => unit.Stats.Type is UnitType.Enemy))
         {
             Enemies.Add(unit);

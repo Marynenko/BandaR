@@ -23,15 +23,15 @@ public class AI : MonoBehaviour
         if (_currentUnit == null) return;
         if (_currentUnit.Stats.Type is UnitType.Ally or UnitType.Enemy)
         {
-            // if (_currentUnit.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
-            // {
-            //     Debug.Log($"{_currentUnit.Stats.Name} won't move!");
-            //     StartCoroutine(FinishMove(2f));
-            //     return;
-            // }
-            //
-            // if (_currentUnit.Stats.StateFatigue < 80)
-                StartMove();
+            if (_currentUnit.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
+            {
+                Debug.Log($"{_currentUnit.Stats.Name} won't move!");
+                StartCoroutine(FinishMove(2f));
+                return;
+            }
+            if (_isFinishMoveActive) return;
+
+            StartMove();
         }
     }
 
@@ -39,8 +39,12 @@ public class AI : MonoBehaviour
     {
         _isFinishMoveActive = true;
         yield return new WaitForSeconds(waitTime);
-        _gameModel.HandleEndTurnButtonClicked(_currentUnit);
         _isFinishMoveActive = false;
+        _currentUnit.UnitIsMoving = false;
+        _currentUnit.Status = UnitStatus.Moved;
+        UIManager.Instance.TurnManager.EndTurn();
+        // todo TurnManager in UIManager.Instance from GridUI.Instance
+        // _gameModel.HandleEndTurnButtonClicked(_currentUnit);
     }
 
     public void InitializeAI(Unit unit)

@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class PathConstructor : MonoBehaviour
 {
-    private Grid _grid;
-    private Unit _currentUnit;
+    [SerializeField] private Grid _grid;
     private Tile _destinationTile;
 
     private readonly struct Direction
@@ -29,16 +28,10 @@ public class PathConstructor : MonoBehaviour
         new Direction(1, 0) // right
     };
 
-    private void OnEnable()
-    {
-        _grid = GetComponentInParent<Grid>();
-    }
-
     public List<Tile> FindPathToTarget(Unit unit, Tile endTile, out List<Tile> path)
     {
         path = new List<Tile>();
         var startTile = unit.OccupiedTile;
-        _currentUnit = unit;
         _destinationTile = endTile;
 
 

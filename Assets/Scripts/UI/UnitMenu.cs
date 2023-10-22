@@ -41,7 +41,12 @@ public class UnitMenu : MonoBehaviour
         {
             // Открыть меню игрока и закрыть меню врага
             MainContainerPlayer.SetActive(true);
-            AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
+            
+            var enemies = InputPlayer.GameModel.GetEnemyFromNeighbours(unit);
+            if (_currentUnit.Stats.CountAttacks == 0 || enemies.Count == 0)
+                AttackButton.interactable = false;
+            else AttackButton.interactable = true;
+            // AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
             MainContainerEnemy.SetActive(false);
         }
         else
@@ -49,7 +54,6 @@ public class UnitMenu : MonoBehaviour
             // Открыть меню врага и закрыть меню игрока
             MainContainerEnemy.SetActive(true);
             MainContainerPlayer.SetActive(false);
-            // input.IsEnemyClicked = true;
         }
     }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,32 +5,22 @@ using UnityEngine.Serialization;
 
 public class TurnManager : MonoBehaviour
 {
-    [SerializeField] private Grid Grid;
-    [SerializeField] private GameModel GameModel;
-    [SerializeField] private AI AI;
-    [SerializeField] private Queue<Unit> Players;
-
-    [FormerlySerializedAs("GroupPortraits")] [SerializeField]
-    private UIPortraitManager PortraitManager;
+    [FormerlySerializedAs("_grid")] [SerializeField] private Grid Grid;
+    [FormerlySerializedAs("_gameModel")] [SerializeField] private GameModel GameModel;
+    [FormerlySerializedAs("_ai")] [SerializeField] private AI AI;
+    [FormerlySerializedAs("_players")] [SerializeField] private Queue<Unit> Players;
+    [FormerlySerializedAs("_portraitManager")] [SerializeField] private UIPortraitManager PortraitManager;
 
     public Queue<Unit> PlayersGet => Players;
-
     private Unit _previousPlayer;
     private Unit _activePlayer;
-
     private bool _isFinishMoveActive;
 
     private void Update()
     {
         // Call 4
-        PassMove();
-    }
-
-    private void PassMove()
-    {
         if (_activePlayer == null) return;
         if (_activePlayer.Status != UnitStatus.Moved) return;
-        // Unit.OnMove?.Invoke(_activePlayer);
         EndTurn();
     }
 
@@ -45,7 +34,7 @@ public class TurnManager : MonoBehaviour
         _activePlayer = unit;
     }
 
-    private void EndTurn()
+    public void EndTurn()
     {
         _previousPlayer = _activePlayer;
         ShowPortrait(_previousPlayer); // off
@@ -66,6 +55,7 @@ public class TurnManager : MonoBehaviour
 
         ShowPortrait(_activePlayer, true); // on
 
+
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
         if (_activePlayer.Stats.Type is UnitType.Player)
         {
@@ -76,7 +66,9 @@ public class TurnManager : MonoBehaviour
                 return;
             }
 
+
             _activePlayer.Status = UnitStatus.Available;
+            UIManager.Instance.AttackManager.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
             UIManager.Instance.AttackManager.AttackIndicators
                 .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
             // _isFinishMoveActive = false;
@@ -86,13 +78,6 @@ public class TurnManager : MonoBehaviour
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
-            if (_activePlayer.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
-            {
-                Debug.Log($"{_activePlayer.Stats.Name}#{_activePlayer.Stats.ID.ToString()} won't move!");
-                StartCoroutine(FinishMove(2f));
-                return;
-            }
-
             _activePlayer.Status = UnitStatus.AIMove;
             AI.InitializeAI(_activePlayer);
         }
@@ -120,7 +105,7 @@ public class TurnManager : MonoBehaviour
         _activePlayer.Stats.EnergyForMove = 40f;
         _activePlayer.Stats.EnergyForAttack = 60f;
         _activePlayer.Stats.StateFatigue = Mathf.Clamp(_activePlayer.Stats.StateFatigue, 0, 100);
-        uiManager.Attacks.AttacksPrefab = _activePlayer.AttacksPrefab;
+        // uiManager._attacks._attacksPrefab = _activePlayer.AttacksPrefab;
 
         if (_activePlayer.Stats.Type is UnitType.Player)
             uiManager.AttackIndicators.Launch(uiManager.AttackIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);

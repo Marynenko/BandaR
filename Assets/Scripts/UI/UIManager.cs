@@ -4,12 +4,21 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private UnitMenu Menu;
     public CameraManager CameraManager;
-    // public MovementManager MovementManager;
     public AttackManager AttackManager;
+    public TurnManager TurnManager;
+    public GridUI GridUI;
+    
+    // public MovementManager MovementManager;
 
-    public UnitMenu MenuAction { get => Menu; set => Menu = value; }
+
+    public UnitMenu MenuAction
+    {
+        get => Menu;
+        set => Menu = value;
+    }
 
     private static UIManager _instance;
+
     public static UIManager Instance
     {
         get
@@ -29,7 +38,7 @@ public class UIManager : MonoBehaviour
     {
         Instance.gameObject.SetActive(false);
     }
-    
+
     public static float GetDistance(Tile tileFrom, Tile tileTo)
     {
         if (tileFrom == tileTo)

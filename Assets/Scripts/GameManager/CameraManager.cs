@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using Cursor = UnityEngine.Cursor;
 
 public class CameraManager : MonoBehaviour
@@ -7,7 +8,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Camera MainCamera; // Можно класть камеру
     public float Speed = 5f; // Скорость движение
     public bool IsActive = true;
-    
+
     private float _speedMouse = 2; // Скорость движения на мыши.
     private bool _isRotateCam; // bool для проверки врощение мышки
     private bool _isMovingCam; // bool для проверки движение мышки
@@ -23,7 +24,7 @@ public class CameraManager : MonoBehaviour
         ChangeMove(); // Запуск ChangeMove()
         MouseRotate(); // Запуск MouseRotate()
     }
-    
+
     private void ChangeMove()
     {
         if (Input.GetKeyDown(KeyCode.G)) // при нажатии на кнупку G меняется вид движение
@@ -89,9 +90,11 @@ public class CameraManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None; // Показывает курсор
         }
 
-        if (_isRotateCam) // Врощяет камеру по X
+        if (_isRotateCam) // Вращает камеру по X
         {
             var mouseX = Input.GetAxis("Mouse X");
+            // var newPos = System.Convert.ToFloat(Vector3.up * (_speedMouse * mouseX);
+            // transform.RotateAround(transform.position, newPos..);
             transform.Rotate(Vector3.up * (_speedMouse * mouseX));
         }
     }

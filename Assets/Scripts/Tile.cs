@@ -95,7 +95,7 @@ public class Tile : MonoBehaviour
     {
         UnitOn = false;
         Available = true;
-        GridUI.Instance.HighlightTiles(Neighbors, TileState.Standard);
+        UIManager.Instance.GridUI.HighlightTiles(Neighbors, TileState.Standard);
     }
 
     public bool IsAvailable() => Available;

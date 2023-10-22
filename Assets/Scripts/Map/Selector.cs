@@ -36,14 +36,14 @@ public class Selector : MonoBehaviour
         // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         SelectedUnit.AvailableMoves =
             new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
-        GridUI.Instance.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
+        UIManager.Instance.GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
 
     public void UnselectUnit(Unit unit)
     {
         SelectedUnit = unit;
         if (SelectedUnit.AvailableMoves != null)
-            GridUI.Instance.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
+            UIManager.Instance.GridUI.HighlightTiles(SelectedUnit.AvailableMoves, TileState.Standard);
         SelectedUnit.OccupiedTile.UnselectTile();
         if (CanMoveMore(SelectedUnit))
             SelectUnit(SelectedUnit);

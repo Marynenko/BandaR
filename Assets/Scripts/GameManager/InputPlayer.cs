@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class InputPlayer : MonoBehaviour
 {
@@ -10,14 +7,16 @@ public class InputPlayer : MonoBehaviour
     public GameModel GameModel;
 
     public Unit ClickedUnit;
-    private Tile _clickedTile;
-    private Tile _startTile;
-    private Camera _camera;
-
+    
     public bool IsMenuActive;
     public bool IsAttackActive;
     public bool IsUnitClickable = true;
     public bool IsTileClickable;
+    
+    private Tile _clickedTile;
+    private Tile _startTile;
+    private Camera _camera;
+    
 
     private void Start()
     {
@@ -44,16 +43,16 @@ public class InputPlayer : MonoBehaviour
         // Debug.Log("Input Player Update ESCAPE");
         if (IsMenuActive)
             UIManager.Instance.MenuAction.HideMenu();
-        
+
         AttackMenuChecker(ui);
         if (ui.AttackMenu.isActiveAndEnabled) return true;
-        
+
         if (ClickedUnit != null)
         {
             if (ClickedUnit.AvailableMoves != null)
-                GridUI.Instance.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
+                UIManager.Instance.GridUI.HighlightTiles(ClickedUnit.AvailableMoves, TileState.Standard);
             if (ClickedUnit.OccupiedTile.Neighbors != null)
-                GridUI.Instance.HighlightTiles(ClickedUnit.OccupiedTile.Neighbors, TileState.Standard);
+                UIManager.Instance.GridUI.HighlightTiles(ClickedUnit.OccupiedTile.Neighbors, TileState.Standard);
         }
 
         IsTileClickable = true;
@@ -97,6 +96,7 @@ public class InputPlayer : MonoBehaviour
                     UIManager.Instance.AttackManager.LaunchAttack(ClickedUnit, unit);
                     return;
                 }
+
                 if (!IsUnitClickable) return;
                 if (ClickedUnit != null)
                     if (unit != ClickedUnit)
@@ -130,7 +130,7 @@ public class InputPlayer : MonoBehaviour
 
     private Unit GetCurrentMovingUnit()
     {
-        var players = GridUI.Instance.TurnManager.PlayersGet;
+        var players = UIManager.Instance.TurnManager.PlayersGet;
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
 

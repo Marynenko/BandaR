@@ -48,7 +48,7 @@ public abstract class Unit : SoundsManager
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         OccupiedTile = startTile;
 
-        GridUI.Instance.TurnManager.ShowPortrait(this); // off
+        UIManager.Instance.TurnManager.ShowPortrait(this); // off
 
         OccupiedTile.State = Stats.Type switch
         {

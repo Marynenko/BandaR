@@ -4,12 +4,12 @@ using UnityEngine.Serialization;
 
 public class Grid : MonoBehaviour
 {
+    [SerializeField] private Selector Selector;
     [SerializeField] private UIPortraitManager UIPortraitManager;
     [SerializeField] private Transform TilesPlace;
     [SerializeField] private Tile TilePrefab;
     [SerializeField] private Vector2Int GridSize;
     [SerializeField] private float Offset;
-    private Selector Selector { get; set; }
 
     public List<Unit> AllUnits { get; private set; }
     public Tile[,] Tiles { get; private set; }
@@ -17,7 +17,6 @@ public class Grid : MonoBehaviour
 
     private void Awake()
     {
-        Selector = GetComponentInChildren<Selector>();
         Tiles = new Tile[GridSizeGet.x, GridSizeGet.y];
     }
 
@@ -28,7 +27,7 @@ public class Grid : MonoBehaviour
         GetAllExistedUnits();
         UIPortraitManager.AddPortraits(AllUnits);
         AddUnitsToTiles();
-        GridUI.Instance.TurnManager.Launch();
+        UIManager.Instance.TurnManager.Launch();
         TrackEnemies();
     }
 
