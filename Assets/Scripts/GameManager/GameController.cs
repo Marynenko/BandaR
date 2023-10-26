@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
     public event SelectionUnitHandler UnitSelected;
 
     private List<Tile> _path;
-    private bool _pathIsFounded;
+    private bool _pathIsFound;
 
     #endregion
 
@@ -33,18 +33,17 @@ public class GameController : MonoBehaviour
     {
         var selectedUnit = Selector.SelectedUnit;
 
-        if (_pathIsFounded == false)
+        if (!_pathIsFound)
         {
             _path = FindPath(selectedUnit, tile);
             SetUnitTarget(selectedUnit, tile);
-            _pathIsFounded = true;
+            _pathIsFound = true;
         }
 
-        // if (Path.Count != 0)
         HandleTileMovement(selectedUnit);
 
         if (!selectedUnit.UnitIsMoving)
-            _pathIsFounded = false;
+            _pathIsFound = false;
     }
 
     private List<Tile> FindPath(Unit unit, Tile tile) =>
@@ -58,20 +57,15 @@ public class GameController : MonoBehaviour
                 unit.Target = tile;
     }
 
-    private void HandleTileMovement(Unit selectedUnit)
+    private void HandleTileMovement(Unit unit)
     {
-        // UnitMenu.Instance.MenuAction._blockPanel.SetActive(true);
-        selectedUnit.OccupiedTile.UnselectTile();
-        UIManager.Instance.GridUI.HighlightTiles(selectedUnit.AvailableMoves, TileState.Standard);
+        unit.OccupiedTile.UnselectTile();
+        UIManager.Instance.GridUI.HighlightTiles(unit.AvailableMoves, TileState.Standard);
 
-        MovementManager.MoveUnitAlongPath(selectedUnit, _path, ref Input.IsUnitClickable);
-        if (selectedUnit.UnitIsMoving)
-            return;
-        // HandleAdjacentUnits(selectedUnit, Grid.AllUnits);
-
-        if (selectedUnit.UnitIsMoving) return;
+        MovementManager.MoveUnitAlongPath(unit, _path, ref Input.IsUnitClickable);
+        if (unit.UnitIsMoving) return;
         if (_path.Count <= 1) return;
-        if (Selector.CanMoveMore(selectedUnit))
-            Selector.SelectUnit(selectedUnit);
+        if (Selector.CanMoveMore(unit))
+            Selector.SelectUnit(unit);
     }
 }

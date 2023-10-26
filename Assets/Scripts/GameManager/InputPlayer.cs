@@ -7,16 +7,16 @@ public class InputPlayer : MonoBehaviour
     public GameModel GameModel;
 
     public Unit ClickedUnit;
-    
+
     public bool IsMenuActive;
     public bool IsAttackActive;
     public bool IsUnitClickable = true;
     public bool IsTileClickable;
-    
+
     private Tile _clickedTile;
     private Tile _startTile;
     private Camera _camera;
-    
+
 
     private void Start()
     {
@@ -83,7 +83,8 @@ public class InputPlayer : MonoBehaviour
 
     public void HandleLeftClick(Vector3 mousePosition)
     {
-        if (_camera == null) return;
+        if (_camera == null) 
+            return;
 
         var ray = _camera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out var hit))
@@ -97,12 +98,15 @@ public class InputPlayer : MonoBehaviour
                     return;
                 }
 
-                if (!IsUnitClickable) return;
-                if (ClickedUnit != null)
-                    if (unit != ClickedUnit)
-                        return;
-                if (GetCurrentMovingUnit() == null)
+                if (!IsUnitClickable) 
                     return;
+                
+                if (ClickedUnit != null && unit != ClickedUnit) 
+                    return;
+                
+                if (GetCurrentMovingUnit() == null) 
+                    return;
+                
                 if (GetCurrentMovingUnit() != unit)
                 {
                     UIManager.Instance.MenuAction.ShowMenu(unit, false);
@@ -116,16 +120,18 @@ public class InputPlayer : MonoBehaviour
             }
             else if (hit.collider.TryGetComponent(out Tile tile) && ClickedUnit != null)
             {
-                if (!IsTileClickable) return;
-                _clickedTile = tile;
-                CompareAvailableMovesToTile();
+                if (!IsTileClickable)
+                    return;
+                
+                if (!TileIsNotAvailable(tile)) 
+                    return;
+                    
                 IsTileClickable = false;
             }
         }
 
-        if (ClickedUnit != null)
-            if (ClickedUnit.Stats.MovementPoints > 1)
-                IsUnitClickable = true;
+        if (ClickedUnit != null && ClickedUnit.Stats.MovementPoints > 1)
+            IsUnitClickable = true;
     }
 
     private Unit GetCurrentMovingUnit()
@@ -134,11 +140,16 @@ public class InputPlayer : MonoBehaviour
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
 
-    private void CompareAvailableMovesToTile()
+    private bool TileIsNotAvailable(Tile clickedTile)
     {
-        if (ClickedUnit == null) return;
-        if (!ClickedUnit.AvailableMoves.Contains(_clickedTile))
-            return;
+        if (ClickedUnit == null) 
+            return false;
+        
+        if (!ClickedUnit.AvailableMoves.Contains(clickedTile))
+            return false;
+        
+        _clickedTile = clickedTile;
         ClickedUnit.UnitIsMoving = true;
+        return true;
     }
 }

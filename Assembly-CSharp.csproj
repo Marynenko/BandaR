@@ -233,7 +233,6 @@
      <None Include="Library\PackageCache\com.unity.visualscripting@1.9.1\package.json" />
      <None Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\TwirlEffect.shader" />
      <Folder Include="Assets\Models and Textures\Ground\Green Lawn\OBJ" />
-     <Folder Include="Assets\Scripts\Deniel" />
      <Folder Include="Library\PackageCache\com.unity.timeline@1.8.5" />
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch" />
      <Folder Include="Library\PackageCache\com.unity.modules.cloth@1.0.0" />

@@ -43,24 +43,14 @@ public class UIPortraitManager : MonoBehaviour
     {
         foreach (var unit in units)
         {
-            GameObject prefab;
-
-            switch (unit.Stats.Type)
+            var prefab = unit.Stats.Type switch
             {
-                // Выбираем нужный префаб в зависимости от типа юнита
-                case UnitType.Player:
-                    prefab = UIPlayerPrefab;
-                    break;
-                case UnitType.Enemy:
-                    prefab = UIEnemyPrefab;
-                    break;
-                case UnitType.Ally:
-                    prefab = UIAllyPrefab;
-                    break;
-                default:
-                    continue;
-            }
-
+                UnitType.Player => UIPlayerPrefab,
+                UnitType.Ally => UIPlayerPrefab,
+                UnitType.Enemy => UIEnemyPrefab,
+                _ => null
+            };
+            
             // Создаем экземпляр префаба и добавляем его в иерархию
             var instance = Instantiate(prefab, transform);
             var childTransform = instance.transform.GetChild(0);

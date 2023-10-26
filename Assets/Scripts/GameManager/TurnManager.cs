@@ -65,19 +65,16 @@ public class TurnManager : MonoBehaviour
                 StartCoroutine(FinishMove(2f));
                 return;
             }
-
-
+            
+            UIManager.Instance.AttackManager.AttackIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(true);
             _activePlayer.Status = UnitStatus.Available;
             UIManager.Instance.AttackManager.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
             UIManager.Instance.AttackManager.AttackIndicators
                 .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
-            // _isFinishMoveActive = false;
-
-            // SetUnitStats(uiManager);
-            // uiManager.AttackIndicators.Launch(uiManager.AttackIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
+            UIManager.Instance.AttackManager.AttackIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             _activePlayer.Status = UnitStatus.AIMove;
             AI.InitializeAI(_activePlayer);
         }
@@ -88,7 +85,6 @@ public class TurnManager : MonoBehaviour
     {
         _isFinishMoveActive = true;
         yield return new WaitForSeconds(waitTime);
-        // GameModel.HandleEndTurnButtonClicked(_activePlayer);
         _isFinishMoveActive = false;
         EndTurn();
     }

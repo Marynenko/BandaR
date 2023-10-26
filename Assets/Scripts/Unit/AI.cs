@@ -67,13 +67,13 @@ public class AI : MonoBehaviour
                 return;
             }
         }
-
+        
         if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
         {
             _isCoroutineRunning = true;
             StartCoroutine(SelectUnit());
         }
-
+        
         if (!_currentUnit.UnitIsMoving) return;
         _isCoroutineRunning = false;
         _currentUnit.UnitIsMoving = true;
@@ -95,30 +95,17 @@ public class AI : MonoBehaviour
     private void Move()
     {
         if (_isCoroutineRunning) return;
-        switch (_currentUnit.Stats.Type)
-        {
-            case UnitType.Enemy:
-            {
-                var unit = (Enemy)_currentUnit;
-                var targetEnemy = unit.Enemies.OrderBy(e =>
-                    UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
-                if (targetEnemy == null) return;
-                _gameController.HandleTileClick(targetEnemy.OccupiedTile);
-                break;
-            }
-            case UnitType.Ally:
-            {
-                var unit = (Ally)_currentUnit;
-                var targetEnemy = unit.Enemies.OrderBy(e =>
-                    UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
-                if (targetEnemy == null) return;
-                _gameController.HandleTileClick(targetEnemy.OccupiedTile);
-                break;
-            }
-        }
 
-        // var enemies = _grid.AllUnits.Where(u => u.Stats.Type != _currentUnit.Stats.Type).ToArray();
-        // var targetEnemy = enemies.OrderBy(e =>
-        //     UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault();
+        var targetEnemy = _currentUnit switch
+        {
+            Enemy unit => unit.Enemies.OrderBy(e =>
+                UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
+            Ally unit => unit.Enemies.OrderBy(e =>
+                UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
+            _ => null
+        };
+        
+        if (targetEnemy != null)
+            _gameController.HandleTileClick(targetEnemy.OccupiedTile);
     }
 }

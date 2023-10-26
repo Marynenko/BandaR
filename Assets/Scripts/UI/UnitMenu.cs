@@ -40,14 +40,10 @@ public class UnitMenu : MonoBehaviour
         if (unit.Stats.Type == UnitType.Player && isMoving)
         {
             // Открыть меню игрока и закрыть меню врага
-            MainContainerPlayer.SetActive(true);
-            
             var enemies = InputPlayer.GameModel.GetEnemyFromNeighbours(unit);
-            if (_currentUnit.Stats.CountAttacks == 0 || enemies.Count == 0)
-                AttackButton.interactable = false;
-            else AttackButton.interactable = true;
-            // AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0;
+            AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0 && enemies.Count > 0;
             MainContainerEnemy.SetActive(false);
+            MainContainerPlayer.SetActive(true);
         }
         else
         {

@@ -54,7 +54,8 @@ public class Tile : MonoBehaviour
     private static Dictionary<TileState, Color> _stateColors;
 
     // Other variables
-    internal readonly int MovementCost = 1;
+    internal const int MovementCost = 1;
+
     #endregion
 
     private void Awake()

@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PathConstructor : MonoBehaviour
 {
-    [SerializeField] private Grid _grid;
+    [SerializeField] private Grid Grid;
     private Tile _destinationTile;
 
     private readonly struct Direction
@@ -99,7 +100,6 @@ public class PathConstructor : MonoBehaviour
         _destinationTile = null;
         return new List<Tile>();
     }
-
 
     private float Heuristic(Tile currentTile, Tile endTile)
     {
@@ -198,7 +198,7 @@ public class PathConstructor : MonoBehaviour
                 var tileIsVisited = visitedTiles.Contains(neighbour);
                 if (!tileIsVisited)
                 {
-                    var cost = neighbour.MovementCost;
+                    var cost = Tile.MovementCost;
                     if (cost <= remainingMoves)
                         queue.Enqueue((neighbour, remainingMoves - cost));
                 }
@@ -210,10 +210,10 @@ public class PathConstructor : MonoBehaviour
 
     private bool TryGetTile(Vector2Int coordinate, out Tile tile)
     {
-        if (coordinate.x >= 0 && coordinate.x < _grid.GridSizeGet.x && coordinate.y >= 0 &&
-            coordinate.y < _grid.GridSizeGet.y)
+        if (coordinate.x >= 0 && coordinate.x < Grid.GridSizeGet.x && coordinate.y >= 0 &&
+            coordinate.y < Grid.GridSizeGet.y)
         {
-            tile = _grid.Tiles[coordinate.x, coordinate.y];
+            tile = Grid.Tiles[coordinate.x, coordinate.y];
             return true;
         }
         else

@@ -52,21 +52,12 @@ public class GameModel : MonoBehaviour
 
     private bool GoOn(Unit unit)
     {
-        void LocalMoveOn()
-        {
-            MoveOn();
-            FinishMove();
-            InputPlayer.ClickedUnit = null;
-            InputPlayer.IsTileClickable = true;
-            InputPlayer.IsUnitClickable = true;
-        }
-
         if (unit.Stats.Type != UnitType.Player)
         {
             var enemies = GetEnemyFromNeighbours(unit);
             if (enemies.Count == 0)
             {
-                LocalMoveOn();
+                ResetPlayerState();
                 return true;
             }
 
@@ -74,7 +65,7 @@ public class GameModel : MonoBehaviour
 
             if (_attackIsFinished)
             {
-                LocalMoveOn();
+                ResetPlayerState();
                 _attackIsFinished = false;
                 return true;
             }
@@ -84,16 +75,25 @@ public class GameModel : MonoBehaviour
                 StartCoroutine(AIAttack(enemy));
             }
 
-            if (_isCoroutineOn)
-                return false;
+            return false;
         }
-        else
-        {
-            LocalMoveOn();
-            return true;
-        }
-
+        
+        ResetPlayerState();
         return true;
+    }
+
+    private void ResetPlayerState()
+    {
+        MoveOn();
+        FinishMove();
+        ResetInputPlayer();
+    }
+
+    private void ResetInputPlayer()
+    {
+        InputPlayer.ClickedUnit = null;
+        InputPlayer.IsTileClickable = true;
+        InputPlayer.IsUnitClickable = true;
     }
 
     private IEnumerator AIAttack(Unit unit)
@@ -172,8 +172,6 @@ public class GameModel : MonoBehaviour
             // Передаем ход следующему игроку
             UIManager.Instance.GridUI.HighlightTiles(ActivePlayer.OccupiedTile.Neighbors, TileState.Standard);
             UIManager.Instance.TurnManager.SetCurrentPlayer(ref ActivePlayer);
-
-            // GridUI.Instance.TurnManager.EndTurn(ref activePlayer);    
         }
     }
 }
