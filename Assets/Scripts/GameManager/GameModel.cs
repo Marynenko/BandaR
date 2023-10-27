@@ -28,10 +28,10 @@ public class GameModel : MonoBehaviour
         _units = ui.TurnManager.PlayersGet;
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
-        ui.TurnManager.ShowPortrait(ActivePlayer, true);
+        ui.TurnManager.HighlightPortrait(ActivePlayer, true);
         ui.GridUI.ClearColorTiles(Grid.Tiles);
         ui.CameraManager.IsActive = true;
-        ui.AttackManager.AttackIndicators.Launch(ActivePlayer.Stats.Energy,
+        ui.AttackManager.MovementIndicators.Launch(ActivePlayer.Stats.Energy,
             ActivePlayer.Stats.StateFatigue);
         ui.AttackManager.Attacks.InitializeAttacks(ActivePlayer.AttacksPrefab);
     }

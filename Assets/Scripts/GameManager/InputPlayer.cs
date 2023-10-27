@@ -69,10 +69,10 @@ public class InputPlayer : MonoBehaviour
         {
             if (!ui.Attacks.PanelAskSure.activeSelf)
             {
-                ui.AttackIndicators.Energy = ui.AttackIndicators.EnergyTransparent;
-                ui.AttackIndicators.Ustalost = ui.AttackIndicators.UstalostTransparent;
-                ui.AttackIndicators.ModifyEnergy(0);
-                ui.AttackIndicators.ModifyUstalost(0);
+                ui.MovementIndicators.Energy = ui.MovementIndicators.EnergyTransparent;
+                ui.MovementIndicators.Ustalost = ui.MovementIndicators.UstalostTransparent;
+                ui.MovementIndicators.ModifyEnergy(0);
+                ui.MovementIndicators.ModifyUstalost(0);
                 ui.AttackMenu.gameObject.SetActive(false);
             }
 

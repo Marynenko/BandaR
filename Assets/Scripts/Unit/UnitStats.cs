@@ -30,3 +30,12 @@ public enum UnitStatus
     AIMove,
 }
 
+public enum UnitAttackSite
+{
+    Front,
+    Back,
+    Left,
+    Right,
+    None
+}
+

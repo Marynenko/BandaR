@@ -88,7 +88,7 @@ public class UnitMenu : MonoBehaviour
 
     private void UpdateUnitUI()
     {
-        var updateIndicators = UIManager.Instance.AttackManager.AttackIndicators;
+        var updateIndicators = UIManager.Instance.AttackManager.MovementIndicators;
         updateIndicators.Launch(updateIndicators.EnergyMax, _currentUnit.Stats.StateFatigue);
     }
 }

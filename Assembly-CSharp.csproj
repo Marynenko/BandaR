@@ -116,6 +116,7 @@
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\ScreenSpaceAmbientObscurance.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\Blur.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\CreaseShading.cs" />
+     <Compile Include="Assets\Scripts\GameManager\Attack\MovementIndicators.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\Bloom.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\NoiseAndGrain.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
@@ -146,7 +147,6 @@
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\PostEffectsHelper.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\Triangles.cs" />
-     <Compile Include="Assets\Scripts\GameManager\Attack\AttackIndicators.cs" />
      <Compile Include="Assets\Scripts\GameManager\InputPlayer.cs" />
      <Folder Include="Assets" />
      <None Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\Tonemapper.shader" />

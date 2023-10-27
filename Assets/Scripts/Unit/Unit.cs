@@ -1,20 +1,18 @@
-﻿using DG.Tweening;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class Unit : SoundsManager
 {
     #region Variables
+
+    public List<GameObject> Sites;
     public List<GameObject> AttacksPrefab;
 
     // Fields
     [SerializeField] private UnitStats _stats;
 
     // Constants
-    // private const float MAX_DISTANCE = 4f;
     private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
 
     // Private fields
@@ -22,6 +20,7 @@ public abstract class Unit : SoundsManager
     // Public properties
     public UnitStats Stats => _stats;
     public UnitStatus Status { get; set; }
+    public UnitAttackSite AttackSite { get; set; }
     public Tile OccupiedTile { get; private set; }
     public Tile OccupiedTileSet
     {
@@ -48,7 +47,7 @@ public abstract class Unit : SoundsManager
         transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
         OccupiedTile = startTile;
 
-        UIManager.Instance.TurnManager.ShowPortrait(this); // off
+        UIManager.Instance.TurnManager.HighlightPortrait(this); // off
 
         OccupiedTile.State = Stats.Type switch
         {
@@ -59,6 +58,7 @@ public abstract class Unit : SoundsManager
 
         OccupiedTile.Available = false;
         Status = UnitStatus.Unavailable;
+        AttackSite = UnitAttackSite.None;
 
         _stats.EnergyForMove = 40;
         _stats.EnergyForAttack = _stats.Energy - 40;

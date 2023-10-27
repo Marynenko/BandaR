@@ -37,7 +37,7 @@ public class TurnManager : MonoBehaviour
     public void EndTurn()
     {
         _previousPlayer = _activePlayer;
-        ShowPortrait(_previousPlayer); // off
+        HighlightPortrait(_previousPlayer); // off
 
         if (Players.Contains(_activePlayer))
         {
@@ -53,7 +53,7 @@ public class TurnManager : MonoBehaviour
         if (IsGameOver())
             EndGame();
 
-        ShowPortrait(_activePlayer, true); // on
+        HighlightPortrait(_activePlayer, true); // on
 
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
@@ -66,15 +66,15 @@ public class TurnManager : MonoBehaviour
                 return;
             }
             
-            UIManager.Instance.AttackManager.AttackIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(true);
+            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(true);
             _activePlayer.Status = UnitStatus.Available;
             UIManager.Instance.AttackManager.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
-            UIManager.Instance.AttackManager.AttackIndicators
+            UIManager.Instance.AttackManager.MovementIndicators
                 .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
-            UIManager.Instance.AttackManager.AttackIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             _activePlayer.Status = UnitStatus.AIMove;
             AI.InitializeAI(_activePlayer);
         }
@@ -85,6 +85,7 @@ public class TurnManager : MonoBehaviour
     {
         _isFinishMoveActive = true;
         yield return new WaitForSeconds(waitTime);
+        
         _isFinishMoveActive = false;
         EndTurn();
     }
@@ -97,14 +98,14 @@ public class TurnManager : MonoBehaviour
             _activePlayer.Stats.StateFatigue -= Mathf.Round(60f * 0.4f);
         else _activePlayer.Stats.StateFatigue -= 60f;
         _activePlayer.Stats.CountAttacks = _activePlayer.Stats.MaxCountAttacks;
-        _activePlayer.Stats.Energy = uiManager.AttackIndicators.EnergyMax;
+        _activePlayer.Stats.Energy = uiManager.MovementIndicators.EnergyMax;
         _activePlayer.Stats.EnergyForMove = 40f;
         _activePlayer.Stats.EnergyForAttack = 60f;
         _activePlayer.Stats.StateFatigue = Mathf.Clamp(_activePlayer.Stats.StateFatigue, 0, 100);
         // uiManager._attacks._attacksPrefab = _activePlayer.AttacksPrefab;
 
         if (_activePlayer.Stats.Type is UnitType.Player)
-            uiManager.AttackIndicators.Launch(uiManager.AttackIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
+            uiManager.MovementIndicators.Launch(uiManager.MovementIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
     }
 
     private Unit GetNextPlayer()
@@ -112,7 +113,7 @@ public class TurnManager : MonoBehaviour
         return Players.Count > 0 ? Players.Peek() : null;
     }
 
-    public void ShowPortrait(Unit unit, bool isMoving = false)
+    public void HighlightPortrait(Unit unit, bool isMoving = false)
     {
         _previousPlayer = unit;
         var animator = _previousPlayer.Sign.GetComponent<Animator>();

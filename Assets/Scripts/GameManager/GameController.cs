@@ -62,9 +62,16 @@ public class GameController : MonoBehaviour
         unit.OccupiedTile.UnselectTile();
         UIManager.Instance.GridUI.HighlightTiles(unit.AvailableMoves, TileState.Standard);
 
+        // MovementManager.MoveUnitAlongPath(unit, _path, ref Input.IsUnitClickable);
+        // MovementManager.SetUnitClickable(ref Input.IsUnitClickable);
         MovementManager.MoveUnitAlongPath(unit, _path, ref Input.IsUnitClickable);
-        if (unit.UnitIsMoving) return;
-        if (_path.Count <= 1) return;
+
+        if (unit.UnitIsMoving) 
+            return;
+        
+        if (_path.Count <= 1) 
+            return;
+        
         if (Selector.CanMoveMore(unit))
             Selector.SelectUnit(unit);
     }
