@@ -6,7 +6,7 @@ public class Tile : MonoBehaviour
 {
     #region Variables
 
-    public int CostEnergy;
+    // public int CostEnergy;
     
     // Private fields
     private MeshRenderer _meshRenderer;
@@ -55,6 +55,7 @@ public class Tile : MonoBehaviour
 
     // Other variables
     internal const int MovementCost = 1;
+    internal const int EnergyCost = 15;
 
     #endregion
 
@@ -82,7 +83,7 @@ public class Tile : MonoBehaviour
         State = TileState.Standard;
         Coordinates = new Vector2Int(row, column);
         Neighbors = new List<Tile>(4);
-        CostEnergy = 20;
+        // CostEnergy = 20;
 
         ChangeColor(State);
     }

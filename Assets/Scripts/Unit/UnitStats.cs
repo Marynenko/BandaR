@@ -8,7 +8,6 @@ public class UnitStats : MonoBehaviour
     public float Health;
     public float Energy;
     public float EnergyForMove;
-    public float EnergyForAttack;
     public int CountAttacks;
     public int MaxCountAttacks;
     public float StateFatigue;

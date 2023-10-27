@@ -127,9 +127,6 @@ public class PathConstructor : MonoBehaviour
     public List<Tile> GetAvailableNeighbourTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
-        // var tileOccupied = _grid.CheckTileToUnitStandOn(_currentUnit, tile);
-        // if (tileOccupied)
-        //     return nearbyTiles;
 
         foreach (var direction in _direction)
         {
@@ -180,7 +177,7 @@ public class PathConstructor : MonoBehaviour
         var visitedTiles = new HashSet<Tile>();
         var availableMoves = new List<Tile>();
 
-        var queue = new Queue<(Tile, int)>();
+        var queue = new Queue<(Tile, float)>();
         queue.Enqueue((tile, maxMoves));
 
         while (queue.Count > 0)
@@ -190,17 +187,18 @@ public class PathConstructor : MonoBehaviour
             visitedTiles.Add(currentTile);
             availableMoves.Add(currentTile);
 
-            if (remainingMoves <= 1) continue;
+            if (remainingMoves <= 1)
+                continue;
 
             var neighbourTiles = GetAvailableNeighbourTiles(currentTile);
             foreach (var neighbour in neighbourTiles)
             {
                 var tileIsVisited = visitedTiles.Contains(neighbour);
+
                 if (!tileIsVisited)
                 {
-                    var cost = Tile.MovementCost;
-                    if (cost <= remainingMoves)
-                        queue.Enqueue((neighbour, remainingMoves - cost));
+                    if (Tile.MovementCost <= remainingMoves)
+                        queue.Enqueue((neighbour, remainingMoves - Tile.MovementCost));
                 }
             }
         }
@@ -216,19 +214,8 @@ public class PathConstructor : MonoBehaviour
             tile = Grid.Tiles[coordinate.x, coordinate.y];
             return true;
         }
-        else
-        {
-            tile = null;
-            return false;
-        }
-    }
 
-    // public float GetDistance(Tile tileFrom, Tile tileTo)
-    // {
-    //     if (tileFrom == tileTo)
-    //         return 0;
-    //     var dx = tileFrom.Coordinates.x - tileTo.Coordinates.x;
-    //     var dy = tileFrom.Coordinates.y - tileTo.Coordinates.y;
-    //     return Mathf.Sqrt(dx * dx + dy * dy);
-    // }
+        tile = null;
+        return false;
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -60,14 +61,14 @@ public abstract class Unit : SoundsManager
         Status = UnitStatus.Unavailable;
         AttackSite = UnitAttackSite.None;
 
-        _stats.EnergyForMove = 40;
-        _stats.EnergyForAttack = _stats.Energy - 40;
-        _stats.StateFatigue = 0;
-        _stats.CountAttacks = 1;
+        var energyConsumption = Convert.ToInt16(Math.Round(_stats.EnergyForMove / Tile.EnergyCost)) + 1;
+        _stats.MovementPoints = energyConsumption;
+        _stats.MovementRange = energyConsumption;
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles) =>
         tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
                                                   && tile.Coordinates.y == SpawnCellVector2Int.y);
+
     #endregion
 }

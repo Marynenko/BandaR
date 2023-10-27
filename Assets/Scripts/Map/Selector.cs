@@ -33,7 +33,6 @@ public class Selector : MonoBehaviour
             _ => throw new ArgumentOutOfRangeException()
         };
         SelectedUnit.OccupiedTile.SelectTile();
-        // SelectedUnit.AvailableMoves = PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.MovementRange);
         SelectedUnit.AvailableMoves =
             new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
         UIManager.Instance.GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);

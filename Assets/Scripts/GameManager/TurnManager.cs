@@ -5,11 +5,20 @@ using UnityEngine.Serialization;
 
 public class TurnManager : MonoBehaviour
 {
-    [FormerlySerializedAs("_grid")] [SerializeField] private Grid Grid;
-    [FormerlySerializedAs("_gameModel")] [SerializeField] private GameModel GameModel;
-    [FormerlySerializedAs("_ai")] [SerializeField] private AI AI;
-    [FormerlySerializedAs("_players")] [SerializeField] private Queue<Unit> Players;
-    [FormerlySerializedAs("_portraitManager")] [SerializeField] private UIPortraitManager PortraitManager;
+    [FormerlySerializedAs("_grid")] [SerializeField]
+    private Grid Grid;
+
+    [FormerlySerializedAs("_gameModel")] [SerializeField]
+    private GameModel GameModel;
+
+    [FormerlySerializedAs("_ai")] [SerializeField]
+    private AI AI;
+
+    [FormerlySerializedAs("_players")] [SerializeField]
+    private Queue<Unit> Players;
+
+    [FormerlySerializedAs("_portraitManager")] [SerializeField]
+    private UIPortraitManager PortraitManager;
 
     public Queue<Unit> PlayersGet => Players;
     private Unit _previousPlayer;
@@ -65,17 +74,19 @@ public class TurnManager : MonoBehaviour
                 StartCoroutine(FinishMove(2f));
                 return;
             }
-            
-            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(true);
+
             _activePlayer.Status = UnitStatus.Available;
+            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+                .SetActive(true);
             UIManager.Instance.AttackManager.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
             UIManager.Instance.AttackManager.MovementIndicators
                 .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
-            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             _activePlayer.Status = UnitStatus.AIMove;
+            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+                .SetActive(false);
             AI.InitializeAI(_activePlayer);
         }
     }
@@ -85,7 +96,7 @@ public class TurnManager : MonoBehaviour
     {
         _isFinishMoveActive = true;
         yield return new WaitForSeconds(waitTime);
-        
+
         _isFinishMoveActive = false;
         EndTurn();
     }
@@ -99,13 +110,13 @@ public class TurnManager : MonoBehaviour
         else _activePlayer.Stats.StateFatigue -= 60f;
         _activePlayer.Stats.CountAttacks = _activePlayer.Stats.MaxCountAttacks;
         _activePlayer.Stats.Energy = uiManager.MovementIndicators.EnergyMax;
-        _activePlayer.Stats.EnergyForMove = 40f;
-        _activePlayer.Stats.EnergyForAttack = 60f;
+        _activePlayer.Stats.EnergyForMove = _activePlayer.Stats.MovementRange * Tile.EnergyCost - Tile.EnergyCost;
         _activePlayer.Stats.StateFatigue = Mathf.Clamp(_activePlayer.Stats.StateFatigue, 0, 100);
         // uiManager._attacks._attacksPrefab = _activePlayer.AttacksPrefab;
 
         if (_activePlayer.Stats.Type is UnitType.Player)
-            uiManager.MovementIndicators.Launch(uiManager.MovementIndicators.EnergyMax, _activePlayer.Stats.StateFatigue);
+            uiManager.MovementIndicators.Launch(uiManager.MovementIndicators.EnergyMax,
+                _activePlayer.Stats.StateFatigue);
     }
 
     private Unit GetNextPlayer()

@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
     public CameraManager CameraManager;
     public AttackManager AttackManager;
     public TurnManager TurnManager;
+    public MovementManager MovementManager;
     public GridUI GridUI;
     
     // public MovementManager MovementManager;
@@ -28,7 +29,7 @@ public class UIManager : MonoBehaviour
             return _instance;
         }
     }
-
+    
     private void OnEnable()
     {
         Instance.gameObject.SetActive(true);
