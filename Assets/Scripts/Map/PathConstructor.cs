@@ -29,9 +29,13 @@ public class PathConstructor : MonoBehaviour
         new Direction(1, 0) // right
     };
 
-    public List<Tile> FindPathToTarget(Unit unit, Tile endTile, out List<Tile> path)
+    public List<Tile> FindPathToTarget(Unit unit, Tile endTile)
     {
-        path = new List<Tile>();
+        if (unit == null)
+        {
+            return null;
+        }
+
         var startTile = unit.OccupiedTile;
         _destinationTile = endTile;
 
@@ -54,9 +58,10 @@ public class PathConstructor : MonoBehaviour
         while (openList.Count > 0)
         {
             var currentTile = openList.First().Value[0];
+            
             if (currentTile == endTile)
             {
-                path = ReconstructPath(cameFrom, endTile);
+                var path = ReconstructPath(cameFrom, endTile);
                 _destinationTile = null;
                 return path;
             }

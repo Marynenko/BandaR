@@ -232,6 +232,7 @@
      <Folder Include="Library\PackageCache\com.unity.modules.screencapture@1.0.0" />
      <None Include="Library\PackageCache\com.unity.visualscripting@1.9.1\package.json" />
      <None Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\TwirlEffect.shader" />
+     <None Include="Library\PackageCache\com.unity.collab-proxy@2.1.0\package.json" />
      <Folder Include="Assets\Models and Textures\Ground\Green Lawn\OBJ" />
      <Folder Include="Library\PackageCache\com.unity.timeline@1.8.5" />
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch" />
@@ -364,6 +365,7 @@
      <None Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\TessellationShaders\Shaders\BumpedSpecularDisplacement.shader" />
      <None Include="Library\PackageCache\com.unity.modules.physics@1.0.0\package.json" />
      <None Include="Assets\Scripts\GameManager\ClassDiagram1.cd" />
+     <Folder Include="Library\PackageCache\com.unity.collab-proxy@2.1.0" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Resources\Sprite Assets" />
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Animations" />
      <Folder Include="Assets\Resources\Portraits" />
@@ -388,6 +390,7 @@
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\Projectors" />
      <None Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources\Shaders\TMP_SDF_SSD.cginc" />
      <None Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
+     <None Include="Library\PackageCache\com.unity.collab-proxy@2.1.0\ValidationConfig.json" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Scenes" />
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\GlassRefraction\Materials" />
      <Folder Include="Assets\Models and Textures\NatureStarterKit2\Nature\tree01_Textures" />
@@ -408,6 +411,7 @@
      <Folder Include="Library\PackageCache\com.unity.cinemachine@2.9.7\Presets" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0" />
+     <Folder Include="Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib" />
      <None Include="Library\PackageCache\com.unity.modules.director@1.0.0\package.json" />
      <Folder Include="Assets\Materials\Cell" />
      <Folder Include="Library\PackageCache\com.unity.modules.jsonserialize@1.0.0" />
@@ -1113,6 +1117,10 @@
     <ProjectReference Include="com.unity.cinemachine.editor.csproj">
       <Project>{8fccde88-c0a4-d852-2f58-4daa8cc0f434}</Project>
       <Name>com.unity.cinemachine.editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
+      <Project>{27b9d440-cc6c-ab04-20ba-4187a813266b}</Project>
+      <Name>Unity.PlasticSCM.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
       <Project>{ce34e510-948f-f073-5398-310da501cb99}</Project>

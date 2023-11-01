@@ -20,19 +20,35 @@ public class AI : MonoBehaviour
     private void Update()
     {
         // Call 3
-        if (_currentUnit == null) return;
-        if (_currentUnit.Stats.Type is UnitType.Ally or UnitType.Enemy)
-        {
-            if (_currentUnit.Stats.StateFatigue >= 80 && !_isFinishMoveActive)
-            {
-                Debug.Log($"{_currentUnit.Stats.Name} won't move!");
-                StartCoroutine(FinishMove(2f));
-                return;
-            }
-            if (_isFinishMoveActive) return;
+        if (_currentUnit == null)
+            return;
 
-            StartMove();
+        if (_currentUnit.Stats.Type == UnitType.Player)
+            return;
+
+        if (_currentUnit.Status != UnitStatus.AIMove)
+            return;
+
+        // if (_gameModel._attackIsFinished)
+        // {
+        //     _currentUnit.UnitIsMoving = false;
+        //     _gameModel._attackIsFinished = false;
+        //     UIManager.Instance.TurnManager.EndTurn();
+        //     return;
+        // }
+
+        if (!_isFinishMoveActive && _currentUnit.Stats.StateFatigue >= 80)
+        {
+            Debug.Log($"{_currentUnit.Stats.Name} won't move!");
+            StartCoroutine(FinishMove(1.5f));
+            return;
         }
+
+        if (_isFinishMoveActive)
+            return;
+
+
+        StartMove();
     }
 
     private IEnumerator FinishMove(float waitTime)
@@ -40,11 +56,11 @@ public class AI : MonoBehaviour
         _isFinishMoveActive = true;
         yield return new WaitForSeconds(waitTime);
         _isFinishMoveActive = false;
+
         _currentUnit.UnitIsMoving = false;
+        _isCoroutineRunning = false;
         _currentUnit.Status = UnitStatus.Moved;
         UIManager.Instance.TurnManager.EndTurn();
-        // todo TurnManager in UIManager.Instance from GridUI.Instance
-        // _gameModel.HandleEndTurnButtonClicked(_currentUnit);
     }
 
     public void InitializeAI(Unit unit)
@@ -54,47 +70,71 @@ public class AI : MonoBehaviour
 
     private void StartMove()
     {
-        if (_currentUnit.Status != UnitStatus.AIMove) return;
         if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
         {
             Move();
 
-            if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
-            {
-                var successfulFinish = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
-                if (!successfulFinish) return;
-                _currentUnit = null;
+            if (HandleEndTurnButton())
                 return;
-            }
         }
-        
+
+        // if (HandleEndTurnButton()) 
+        //     return;
+
+        if (_isCoroutineRunning || _currentUnit.UnitIsMoving)
+            return;
+
+        StartCoroutine(SelectUnit());
+
+        // if (!_currentUnit.UnitIsMoving)
+        //     return;
+        //
+        // _isCoroutineRunning = false;
+        // _currentUnit.UnitIsMoving = true;
+    }
+
+    private bool HandleEndTurnButton()
+    {
         if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
         {
-            _isCoroutineRunning = true;
-            StartCoroutine(SelectUnit());
+            var successfulFinish = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+
+            if (!successfulFinish)
+            {
+                if (_gameModel._attackIsFinished)
+                {
+                    HandleEndTurnButton();
+                }
+
+                return false;
+            }
+
+            _currentUnit = null;
+            return true;
         }
-        
-        if (!_currentUnit.UnitIsMoving) return;
-        _isCoroutineRunning = false;
-        _currentUnit.UnitIsMoving = true;
+
+        return false;
     }
 
     private IEnumerator SelectUnit()
     {
         if (_gameController.Selector.SelectedUnit == null)
             _gameController.Selector.SelectUnit(_currentUnit);
+
         if (!_currentUnit.UnitIsMoving)
         {
-            // _isCoroutineRunning = true;
+            _isCoroutineRunning = true;
             yield return new WaitForSeconds(1.5f);
         }
 
+        _isCoroutineRunning = false;
         _currentUnit.UnitIsMoving = true;
     }
 
     private void Move()
     {
-        if (_isCoroutineRunning) return;
+        if (_isCoroutineRunning) 
+            return;
 
         var targetEnemy = _currentUnit switch
         {
@@ -104,7 +144,7 @@ public class AI : MonoBehaviour
                 UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
             _ => null
         };
-        
+
         if (targetEnemy != null)
             _gameController.HandleTileClick(targetEnemy.OccupiedTile);
     }

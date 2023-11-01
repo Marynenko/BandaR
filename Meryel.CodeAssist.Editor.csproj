@@ -361,11 +361,20 @@
      <Reference Include="nunit.framework">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ext.nunit@2.0.3\net40\unity-custom\nunit.framework.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.Plastic.Antlr3.Runtime">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+     </Reference>
      <Reference Include="DOTweenEditor">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\Demigiant\DOTween\Editor\DOTweenEditor.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.Plastic.Newtonsoft.Json">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+     </Reference>
      <Reference Include="NetMQ">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\CodeAssist\Editor\ExternalReferences\NetMQ.dll</HintPath>
+     </Reference>
+     <Reference Include="log4netPlastic">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.IonicZip">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll</HintPath>
@@ -393,6 +402,9 @@
      </Reference>
      <Reference Include="Unity.VisualScripting.TextureAssets">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1\Editor\VisualScripting.Core\EditorAssetResources\Unity.VisualScripting.TextureAssets.dll</HintPath>
+     </Reference>
+     <Reference Include="unityplastic">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
      </Reference>
      <Reference Include="Serilog">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\CodeAssist\Editor\ExternalReferences\Serilog.dll</HintPath>

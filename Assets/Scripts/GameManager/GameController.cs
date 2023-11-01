@@ -36,6 +36,10 @@ public class GameController : MonoBehaviour
         if (!_pathIsFound)
         {
             _path = FindPath(selectedUnit, tile);
+            
+            if (_path == null)
+                return;
+            
             SetUnitTarget(selectedUnit, tile);
             _pathIsFound = true;
         }
@@ -47,7 +51,7 @@ public class GameController : MonoBehaviour
     }
 
     private List<Tile> FindPath(Unit unit, Tile tile) =>
-        Selector.PathConstructor.FindPathToTarget(unit, tile, out _);
+        Selector.PathConstructor.FindPathToTarget(unit, tile);
 
     private void SetUnitTarget(Unit selectedUnit, Tile tile)
     {

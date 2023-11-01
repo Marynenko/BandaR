@@ -51,8 +51,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\fsJsonParser.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Graphs\GraphData.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Graphs\IGraphParentElement.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Reflection\fsReflectionUtility.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\MonoBehaviour\UnityOnCollisionExit2DMessageListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Reflection\fsReflectionUtility.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\OverrideStack.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\EventHook.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\CoroutineRunner.cs" />
@@ -70,9 +70,9 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\UIInterfaces\UnityOnEndDragMessageListener.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticPropertyAccessor.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Converters\fsEnumConverter.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\AndHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Variables\ApplicationVariables.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticFunctionInvoker_0.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\AndHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\AssemblyQualifiedNameParser\ParsedAssemblyQualifiedName.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\LogicalNegationHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\IOptimizedInvoker.cs" />
@@ -131,8 +131,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\IAnalyticsIdentifiable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\Extensions\XComparable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\AnimatorMessageListener.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\EnsureThat.Guids.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Variables\VariablesSaver.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\EnsureThat.Guids.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\IInitializable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Internal\fsOption.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\RenamedAssemblyAttribute.cs" />
@@ -220,8 +220,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\EventHooks.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Converters\fsArrayConverter.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\LessThanOrEqualHandler.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\IEventGraph.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\MonoBehaviour\UnityOnCollisionStayMessageListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\IEventGraph.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticActionInvoker_0.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\TypeFilter.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\Action_5.cs" />

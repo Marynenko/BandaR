@@ -5,22 +5,14 @@ using UnityEngine.Serialization;
 
 public class TurnManager : MonoBehaviour
 {
-    [FormerlySerializedAs("_grid")] [SerializeField]
-    private Grid Grid;
-
-    [FormerlySerializedAs("_gameModel")] [SerializeField]
-    private GameModel GameModel;
-
-    [FormerlySerializedAs("_ai")] [SerializeField]
-    private AI AI;
-
-    [FormerlySerializedAs("_players")] [SerializeField]
-    private Queue<Unit> Players;
-
-    [FormerlySerializedAs("_portraitManager")] [SerializeField]
-    private UIPortraitManager PortraitManager;
+    [SerializeField] private Grid Grid;
+    [SerializeField] private GameModel GameModel;
+    [SerializeField] private Queue<Unit> Players;
+    [SerializeField] private UIPortraitManager PortraitManager;
+    public AI AI;
 
     public Queue<Unit> PlayersGet => Players;
+    
     private Unit _previousPlayer;
     private Unit _activePlayer;
     private bool _isFinishMoveActive;
@@ -28,8 +20,12 @@ public class TurnManager : MonoBehaviour
     private void Update()
     {
         // Call 4
-        if (_activePlayer == null) return;
-        if (_activePlayer.Status != UnitStatus.Moved) return;
+        if (_activePlayer == null) 
+            return;
+        
+        if (_activePlayer.Status != UnitStatus.Moved) 
+            return;
+        
         EndTurn();
     }
 

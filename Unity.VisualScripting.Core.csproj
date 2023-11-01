@@ -51,8 +51,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\fsJsonParser.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Graphs\GraphData.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Graphs\IGraphParentElement.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Reflection\fsReflectionUtility.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\MonoBehaviour\UnityOnCollisionExit2DMessageListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Reflection\fsReflectionUtility.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\OverrideStack.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\EventHook.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\CoroutineRunner.cs" />
@@ -70,9 +70,9 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\UIInterfaces\UnityOnEndDragMessageListener.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticPropertyAccessor.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Converters\fsEnumConverter.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\AndHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Variables\ApplicationVariables.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticFunctionInvoker_0.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\AndHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\AssemblyQualifiedNameParser\ParsedAssemblyQualifiedName.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\LogicalNegationHandler.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\IOptimizedInvoker.cs" />
@@ -131,8 +131,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\IAnalyticsIdentifiable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\Extensions\XComparable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\AnimatorMessageListener.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\EnsureThat.Guids.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Variables\VariablesSaver.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Ensure\EnsureThat.Guids.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Utilities\IInitializable.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Internal\fsOption.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\RenamedAssemblyAttribute.cs" />
@@ -220,8 +220,8 @@
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\EventHooks.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Dependencies\FullSerializer\Converters\fsArrayConverter.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Operators\LessThanOrEqualHandler.cs" />
-     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\IEventGraph.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Listeners\MonoBehaviour\UnityOnCollisionStayMessageListener.cs" />
+     <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Events\IEventGraph.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\StaticActionInvoker_0.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\TypeFilter.cs" />
      <Compile Include="Library\PackageCache\com.unity.visualscripting@1.9.1\Runtime\VisualScripting.Core\Reflection\Optimization\Action_5.cs" />
@@ -783,11 +783,20 @@
      <Reference Include="nunit.framework">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ext.nunit@2.0.3\net40\unity-custom\nunit.framework.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.Plastic.Antlr3.Runtime">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+     </Reference>
      <Reference Include="DOTweenEditor">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\Demigiant\DOTween\Editor\DOTweenEditor.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.Plastic.Newtonsoft.Json">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+     </Reference>
      <Reference Include="NetMQ">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\CodeAssist\Editor\ExternalReferences\NetMQ.dll</HintPath>
+     </Reference>
+     <Reference Include="log4netPlastic">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.IonicZip">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll</HintPath>
@@ -815,6 +824,9 @@
      </Reference>
      <Reference Include="Unity.VisualScripting.TextureAssets">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1\Editor\VisualScripting.Core\EditorAssetResources\Unity.VisualScripting.TextureAssets.dll</HintPath>
+     </Reference>
+     <Reference Include="unityplastic">
+     <HintPath>D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
      </Reference>
      <Reference Include="Serilog">
      <HintPath>D:\Files\CSharp\UnityProjects\Banda\Assets\Plugins\CodeAssist\Editor\ExternalReferences\Serilog.dll</HintPath>

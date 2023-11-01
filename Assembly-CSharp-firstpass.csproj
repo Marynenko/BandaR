@@ -706,6 +706,10 @@
       <Project>{8fccde88-c0a4-d852-2f58-4daa8cc0f434}</Project>
       <Name>com.unity.cinemachine.editor</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
+      <Project>{27b9d440-cc6c-ab04-20ba-4187a813266b}</Project>
+      <Name>Unity.PlasticSCM.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
       <Project>{ce34e510-948f-f073-5398-310da501cb99}</Project>
       <Name>Unity.VisualScripting.State.Editor</Name>
