@@ -85,12 +85,6 @@ public class AI : MonoBehaviour
             return;
 
         StartCoroutine(SelectUnit());
-
-        // if (!_currentUnit.UnitIsMoving)
-        //     return;
-        //
-        // _isCoroutineRunning = false;
-        // _currentUnit.UnitIsMoving = true;
     }
 
     private bool HandleEndTurnButton()

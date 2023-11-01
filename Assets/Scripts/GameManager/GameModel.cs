@@ -39,12 +39,12 @@ public class GameModel : MonoBehaviour
     }
 
     #region Finish Move
-    
+
     public bool HandleEndTurnButtonClicked(Unit unit)
     {
         ActivePlayer = unit;
         HandlePlayerNullTarget();
-        
+
         if (MatchPositionsPlayerAndDestination())
         {
             if (ActivePlayer.Stats.Type == UnitType.Player)
@@ -52,13 +52,13 @@ public class GameModel : MonoBehaviour
                 FinishMove();
                 return true;
             }
-        
+
             var isAttackSuccessful = IsAttackSuccessful(ActivePlayer);
-            
+
             if (isAttackSuccessful)
                 return true;
         }
-        
+
         return false;
     }
 
@@ -69,7 +69,7 @@ public class GameModel : MonoBehaviour
             FinishMove();
             return true;
         }
-        
+
         var enemies = GetEnemyFromNeighbours(unit);
         if (enemies.Count == 0)
         {
@@ -81,12 +81,12 @@ public class GameModel : MonoBehaviour
 
         if (_attackIsFinished)
         {
-            FinishMove();   
+            FinishMove();
             _attackIsFinished = false;
             return true;
         }
 
-        if (!_attackIsFinished && unit.Stats.CountAttacks != 0)
+        if (!_attackIsFinished)
         {
             ActivateAttackButton();
             Invoke(nameof(LaunchAttack), 1.5f);
@@ -102,6 +102,8 @@ public class GameModel : MonoBehaviour
 
     private void LaunchAttack()
     {
+        if (ActivePlayer.Stats.CountAttacks == 0) return;
+        
         _attackIsFinished = true;
         UIManager.Instance.AttackManager.LaunchAttack(ActivePlayer, _enemy);
     }
@@ -111,7 +113,7 @@ public class GameModel : MonoBehaviour
         PassTurn();
         ResetInputPlayer();
     }
-    
+
     private void PassTurn()
     {
         UIManager.Instance.MenuAction.HideMenu();
@@ -127,18 +129,19 @@ public class GameModel : MonoBehaviour
             UnitType.Enemy => TileState.OccupiedByEnemy,
             _ => ActivePlayer.OccupiedTile.State
         };
-        
+
         ActivePlayer.Status = UnitStatus.Moved;
-        
+
         // Проверяем, был ли игрок перемещен в этом ходе
         if (ActivePlayer.Status == UnitStatus.Moved)
         {
             // Передаем ход следующему игроку
             UIManager.Instance.GridUI.HighlightTiles(ActivePlayer.OccupiedTile.Neighbors, TileState.Standard);
-            UIManager.Instance.TurnManager.AI.InitializeAI(ActivePlayer);
             UIManager.Instance.TurnManager.SetCurrentPlayer(ref ActivePlayer);
-            
         }
+
+        if (ActivePlayer.Stats.Type != UnitType.Player)
+            UIManager.Instance.TurnManager.AI.InitializeAI(ActivePlayer);
     }
 
     private void ResetInputPlayer()
@@ -147,6 +150,7 @@ public class GameModel : MonoBehaviour
         InputPlayer.IsTileClickable = true;
         InputPlayer.IsUnitClickable = true;
     }
+
     #endregion
 
     private Unit LocateBestEnemyToHit(List<Unit> enemies)
