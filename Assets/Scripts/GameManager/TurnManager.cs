@@ -6,13 +6,12 @@ using UnityEngine.Serialization;
 public class TurnManager : MonoBehaviour
 {
     [SerializeField] private Grid Grid;
-    [SerializeField] private GameModel GameModel;
     [SerializeField] private Queue<Unit> Players;
     [SerializeField] private UIPortraitManager PortraitManager;
     public AI AI;
 
     public Queue<Unit> PlayersGet => Players;
-    
+
     private Unit _previousPlayer;
     private Unit _activePlayer;
     private bool _isFinishMoveActive;
@@ -20,12 +19,15 @@ public class TurnManager : MonoBehaviour
     private void Update()
     {
         // Call 4
-        if (_activePlayer == null) 
+        if (_activePlayer == null)
             return;
+
+        if (_activePlayer.Stats.Type != UnitType.Player) return;
         
-        if (_activePlayer.Status != UnitStatus.Moved) 
+        if (_activePlayer.Status != UnitStatus.Moved)
             return;
-        
+
+        // if (!AI.IsTurnFinished)
         EndTurn();
     }
 
@@ -62,6 +64,7 @@ public class TurnManager : MonoBehaviour
 
 
         // Если следующий игрок - игрок, делаем его доступным и обновляем доступные ходы
+        var instanceAM = UIManager.Instance.AttackManager;
         if (_activePlayer.Stats.Type is UnitType.Player)
         {
             if (_activePlayer.Stats.StateFatigue >= 100 && !_isFinishMoveActive)
@@ -72,16 +75,16 @@ public class TurnManager : MonoBehaviour
             }
 
             _activePlayer.Status = UnitStatus.Available;
-            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+            instanceAM.MovementIndicators.gameObject.transform.GetChild(0).gameObject
                 .SetActive(true);
-            UIManager.Instance.AttackManager.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
-            UIManager.Instance.AttackManager.MovementIndicators
+            instanceAM.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
+            instanceAM.MovementIndicators
                 .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
         }
         else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
         {
             _activePlayer.Status = UnitStatus.AIMove;
-            UIManager.Instance.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+            instanceAM.MovementIndicators.gameObject.transform.GetChild(0).gameObject
                 .SetActive(false);
             AI.InitializeAI(_activePlayer);
         }
@@ -100,19 +103,32 @@ public class TurnManager : MonoBehaviour
     private void SetUnitStats()
     {
         var uiManager = UIManager.Instance.AttackManager;
-        _activePlayer.Stats.MovementPoints = _activePlayer.Stats.MovementRange;
-        if (_activePlayer.Stats.CountAttacks != _activePlayer.Stats.MaxCountAttacks)
-            _activePlayer.Stats.StateFatigue -= Mathf.Round(60f * 0.4f);
-        else _activePlayer.Stats.StateFatigue -= 60f;
-        _activePlayer.Stats.CountAttacks = _activePlayer.Stats.MaxCountAttacks;
-        _activePlayer.Stats.Energy = uiManager.MovementIndicators.EnergyMax;
-        _activePlayer.Stats.EnergyForMove = _activePlayer.Stats.MovementRange * Tile.EnergyCost - Tile.EnergyCost;
-        _activePlayer.Stats.StateFatigue = Mathf.Clamp(_activePlayer.Stats.StateFatigue, 0, 100);
-        // uiManager._attacks._attacksPrefab = _activePlayer.AttacksPrefab;
+        var stats = _activePlayer.Stats;
 
-        if (_activePlayer.Stats.Type is UnitType.Player)
-            uiManager.MovementIndicators.Launch(uiManager.MovementIndicators.EnergyMax,
-                _activePlayer.Stats.StateFatigue);
+        stats.MovementPoints = stats.MovementRange;
+
+        if (stats.CountAttacks != stats.MaxCountAttacks)
+            stats.StateFatigue -= Mathf.Round(60f * 0.4f);
+        else
+            stats.StateFatigue -= 60f;
+
+        stats.CountAttacks = stats.MaxCountAttacks;
+        stats.Energy = uiManager.MovementIndicators.EnergyMax;
+        stats.EnergyForMove = stats.MovementRange * Tile.EnergyCost - Tile.EnergyCost;
+        stats.StateFatigue = Mathf.Clamp(stats.StateFatigue, 0, 100);
+
+        foreach (var unit in Grid.AllUnits)
+        {
+            unit.OccupiedTile.Available = false;
+            unit.OccupiedTile.State = unit.Stats.Type switch
+            {
+                UnitType.Player => TileState.OccupiedByPlayer,
+                UnitType.Enemy => TileState.OccupiedByEnemy,
+                UnitType.Ally => TileState.OccupiedByAlly,
+                _ => unit.OccupiedTile.State
+            };
+            UIManager.Instance.GridUI.HighlightTile(unit.OccupiedTile, TileState.Standard);
+        }
     }
 
     private Unit GetNextPlayer()
@@ -126,6 +142,7 @@ public class TurnManager : MonoBehaviour
         var animator = _previousPlayer.Sign.GetComponent<Animator>();
         var unitImg = PortraitManager.GetPlayerPortrait(_previousPlayer);
         var unitImgScript = PortraitManager.GetPlayerBackground(unitImg);
+
         if (isMoving)
         {
             unitImgScript.TurnOnAlpha();

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AI : MonoBehaviour
 {
@@ -8,8 +9,12 @@ public class AI : MonoBehaviour
     private GameModel _gameModel;
     private Unit _currentUnit;
 
-    private bool _isCoroutineRunning;
-    private bool _isFinishMoveActive;
+    private bool _isCoroutineForUnitSelectedOn;
+    private bool _isTurnStarted;
+    private bool _isUnitReadyToAttack;
+
+    public bool IsTurnFinished;
+
 
     private void OnEnable()
     {
@@ -19,48 +24,20 @@ public class AI : MonoBehaviour
 
     private void Update()
     {
-        // Call 3
-        if (_currentUnit == null)
-            return;
+        if (_currentUnit == null) return;
 
-        if (_currentUnit.Stats.Type == UnitType.Player)
-            return;
+        if (_currentUnit.Status != UnitStatus.AIMove) return;
 
-        if (_currentUnit.Status != UnitStatus.AIMove)
-            return;
-
-        // if (_gameModel._attackIsFinished)
-        // {
-        //     _currentUnit.UnitIsMoving = false;
-        //     _gameModel._attackIsFinished = false;
-        //     UIManager.Instance.TurnManager.EndTurn();
-        //     return;
-        // }
-
-        if (!_isFinishMoveActive && _currentUnit.Stats.StateFatigue >= 80)
+        if (!IsTurnFinished && _currentUnit.Stats.StateFatigue >= 80)
         {
             Debug.Log($"{_currentUnit.Stats.Name} won't move!");
-            StartCoroutine(FinishMove(1.5f));
+            StartCoroutine(FinishMove());
             return;
         }
 
-        if (_isFinishMoveActive)
-            return;
-
+        if (IsTurnFinished) return;
 
         StartMove();
-    }
-
-    private IEnumerator FinishMove(float waitTime)
-    {
-        _isFinishMoveActive = true;
-        yield return new WaitForSeconds(waitTime);
-        _isFinishMoveActive = false;
-
-        _currentUnit.UnitIsMoving = false;
-        _isCoroutineRunning = false;
-        _currentUnit.Status = UnitStatus.Moved;
-        UIManager.Instance.TurnManager.EndTurn();
     }
 
     public void InitializeAI(Unit unit)
@@ -68,46 +45,62 @@ public class AI : MonoBehaviour
         _currentUnit = unit;
     }
 
+    private IEnumerator FinishMove()
+    {
+        IsTurnFinished = true;
+        yield return new WaitForSeconds(1.5f);
+        IsTurnFinished = false;
+
+        _isUnitReadyToAttack = false;
+        _isTurnStarted = false;
+        _gameModel.IsAttackFinished = false;
+        _currentUnit = null;
+
+        UIManager.Instance.TurnManager.EndTurn();
+    }
+
     private void StartMove()
     {
-        if (!_isCoroutineRunning && _currentUnit.UnitIsMoving)
+        if (!_isTurnStarted)
+        {
+            StartCoroutine(SelectUnit());
+            _isTurnStarted = true;
+        }
+
+        if (_isCoroutineForUnitSelectedOn) return;
+
+        if (!_currentUnit.UnitIsMoving && !_isUnitReadyToAttack)
         {
             Move();
 
-            if (HandleEndTurnButton())
-                return;
+            var onPosition = _gameModel.MatchPositionsPlayerAndDestination(_currentUnit);
+            if (onPosition)
+                _isUnitReadyToAttack = true;
+            else
+            {
+                _currentUnit.UnitIsMoving = false;
+            }
         }
 
-        // if (HandleEndTurnButton()) 
-        //     return;
+        if (!_isUnitReadyToAttack) return;
+        if (_gameModel.IsAttackStarted) return;
 
-        if (_isCoroutineRunning || _currentUnit.UnitIsMoving)
-            return;
-
-        StartCoroutine(SelectUnit());
+        HandleEndTurn();
     }
 
-    private bool HandleEndTurnButton()
+    private void HandleEndTurn()
     {
-        if (!_isCoroutineRunning && !_currentUnit.UnitIsMoving)
+        IsTurnFinished = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+
+        if (!IsTurnFinished)
         {
-            var successfulFinish = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
-
-            if (!successfulFinish)
-            {
-                if (_gameModel._attackIsFinished)
-                {
-                    HandleEndTurnButton();
-                }
-
-                return false;
-            }
-
-            _currentUnit = null;
-            return true;
+            if (_gameModel.IsAttackFinished)
+                StartCoroutine(FinishMove());
+            else
+                _gameModel.HandleEndTurnButtonClicked(_currentUnit);
         }
-
-        return false;
+        else
+            StartCoroutine(FinishMove());
     }
 
     private IEnumerator SelectUnit()
@@ -117,18 +110,15 @@ public class AI : MonoBehaviour
 
         if (!_currentUnit.UnitIsMoving)
         {
-            _isCoroutineRunning = true;
+            _isCoroutineForUnitSelectedOn = true;
             yield return new WaitForSeconds(1.5f);
+            _isCoroutineForUnitSelectedOn = false;
         }
-
-        _isCoroutineRunning = false;
-        _currentUnit.UnitIsMoving = true;
     }
 
     private void Move()
     {
-        if (_isCoroutineRunning) 
-            return;
+        _currentUnit.UnitIsMoving = true;
 
         var targetEnemy = _currentUnit switch
         {

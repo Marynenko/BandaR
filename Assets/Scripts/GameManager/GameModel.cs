@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameModel : MonoBehaviour
 {
     [SerializeField] private Grid Grid;
     [SerializeField] private InputPlayer InputPlayer;
     [SerializeField] private Selector Selector;
+
     [HideInInspector] public Unit ActivePlayer;
+    public bool IsAttackFinished;
+    public bool IsAttackStarted;
+
 
     private const float HeightToPutUnitOnTile = 0.68f;
     private bool _isCoroutineOn;
-    public bool _attackIsFinished;
+
 
     private Unit _enemy;
 
@@ -43,16 +48,18 @@ public class GameModel : MonoBehaviour
     public bool HandleEndTurnButtonClicked(Unit unit)
     {
         ActivePlayer = unit;
+
+        if (ActivePlayer.Stats.Type == UnitType.Player)
+        {
+            FinishMove();
+            return true;
+        }
+
         HandlePlayerNullTarget();
 
-        if (MatchPositionsPlayerAndDestination())
-        {
-            if (ActivePlayer.Stats.Type == UnitType.Player)
-            {
-                FinishMove();
-                return true;
-            }
 
+        if (MatchPositionsPlayerAndDestination(ActivePlayer))
+        {
             var isAttackSuccessful = IsAttackSuccessful(ActivePlayer);
 
             if (isAttackSuccessful)
@@ -79,15 +86,16 @@ public class GameModel : MonoBehaviour
 
         _enemy = LocateBestEnemyToHit(enemies);
 
-        if (_attackIsFinished)
+        if (IsAttackFinished)
         {
             FinishMove();
-            _attackIsFinished = false;
+            IsAttackStarted = false;
             return true;
         }
 
-        if (!_attackIsFinished)
+        if (!IsAttackFinished && unit.Stats.CountAttacks != 0)
         {
+            IsAttackStarted = true;
             ActivateAttackButton();
             Invoke(nameof(LaunchAttack), 1.5f);
         }
@@ -102,10 +110,10 @@ public class GameModel : MonoBehaviour
 
     private void LaunchAttack()
     {
-        if (ActivePlayer.Stats.CountAttacks == 0) return;
-        
-        _attackIsFinished = true;
+        if (IsAttackFinished || !IsAttackStarted) return;
+        IsAttackFinished = true;
         UIManager.Instance.AttackManager.LaunchAttack(ActivePlayer, _enemy);
+        IsAttackStarted = false;
     }
 
     private void FinishMove()
@@ -159,7 +167,7 @@ public class GameModel : MonoBehaviour
         return playerWithLeastHp;
     }
 
-    public List<Unit> GetEnemyFromNeighbours(Unit unit)
+    public List<Unit> GetEnemyFromNeighboursOld(Unit unit)
     {
         var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
         var type = unit.Stats.Type;
@@ -173,6 +181,34 @@ public class GameModel : MonoBehaviour
             where neighbour.State is TileState.OccupiedByEnemy
             select GetUnitFromNeighbour(neighbour)).ToList();
     }
+    
+    public List<Unit> GetEnemyFromNeighbours(Unit unit)
+    {
+        var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
+        var type = unit.Stats.Type;
+        List<Unit> enemyUnits = new List<Unit>();
+
+        foreach (var neighbour in neighbours)
+        {
+            if (!neighbour.Available)
+            {
+                if (type == UnitType.Enemy && 
+                    neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
+                {
+                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                }
+                else if (type != UnitType.Enemy && neighbour.State == TileState.OccupiedByEnemy)
+                {
+                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                }
+            }
+        }
+
+        return enemyUnits;
+    }
+
+    
+    
 
     private Unit GetUnitFromNeighbour(Tile neighbour)
     {
@@ -187,7 +223,7 @@ public class GameModel : MonoBehaviour
         //     ActivePlayer.Target = ActivePlayer.OccupiedTile;
     }
 
-    private bool MatchPositionsPlayerAndDestination() =>
-        ActivePlayer.transform.position ==
-        ActivePlayer.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;
+    public bool MatchPositionsPlayerAndDestination(Unit unit) =>
+        unit.transform.position ==
+        unit.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;
 }

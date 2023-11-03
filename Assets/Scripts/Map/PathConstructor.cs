@@ -72,7 +72,8 @@ public class PathConstructor : MonoBehaviour
                 openList.Remove(openList.First().Key);
             closedList.Add(currentTile);
 
-            foreach (var neighborTile in GetAvailableNeighbourTiles(currentTile)
+            var availableNeighbourTiles = GetAvailableNeighbourTiles(currentTile);
+            foreach (var neighborTile in availableNeighbourTiles
                          .Where(neighborTile => !closedList.Contains(neighborTile)))
             {
                 if (currentTile != null)
