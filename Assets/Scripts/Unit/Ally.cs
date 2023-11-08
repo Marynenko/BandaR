@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class Ally : Unit
 {
-    public List<Unit> Enemies;
-    
     public override void TrackAllEnemies()
     {
-        var units = UIManager.Instance.TurnManager.PlayersGet;
+        Enemies = new List<Unit>();
+        // Enemies.Clear();
+        var units = UIManager.Instance.TurnManager.Players;
         foreach (var unit in units.Where(unit => unit.Stats.Type is UnitType.Enemy))
         {
             Enemies.Add(unit);

@@ -32,7 +32,7 @@ public class GameModel : MonoBehaviour
     private void StartGame()
     {
         var ui = UIManager.Instance;
-        _units = ui.TurnManager.PlayersGet;
+        _units = ui.TurnManager.Players;
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
         ActivePlayer.Status = UnitStatus.Available;
         ui.TurnManager.HighlightPortrait(ActivePlayer, true);
@@ -86,18 +86,17 @@ public class GameModel : MonoBehaviour
 
         _enemy = LocateBestEnemyToHit(enemies);
 
-        if (IsAttackFinished)
+        switch (IsAttackFinished)
         {
-            FinishMove();
-            IsAttackStarted = false;
-            return true;
-        }
-
-        if (!IsAttackFinished && unit.Stats.CountAttacks != 0)
-        {
-            IsAttackStarted = true;
-            ActivateAttackButton();
-            Invoke(nameof(LaunchAttack), 1.5f);
+            case true:
+                FinishMove();
+                IsAttackStarted = false;
+                return true;
+            case false when unit.Stats.CountAttacks != 0:
+                IsAttackStarted = true;
+                ActivateAttackButton();
+                Invoke(nameof(LaunchAttack), 1.5f);
+                break;
         }
 
         return false;
@@ -167,21 +166,6 @@ public class GameModel : MonoBehaviour
         return playerWithLeastHp;
     }
 
-    public List<Unit> GetEnemyFromNeighboursOld(Unit unit)
-    {
-        var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
-        var type = unit.Stats.Type;
-        if (type == UnitType.Enemy)
-            return (from neighbour in neighbours
-                where !neighbour.Available
-                where neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly
-                select GetUnitFromNeighbour(neighbour)).ToList();
-        return (from neighbour in neighbours
-            where !neighbour.Available
-            where neighbour.State is TileState.OccupiedByEnemy
-            select GetUnitFromNeighbour(neighbour)).ToList();
-    }
-    
     public List<Unit> GetEnemyFromNeighbours(Unit unit)
     {
         var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
@@ -192,7 +176,7 @@ public class GameModel : MonoBehaviour
         {
             if (!neighbour.Available)
             {
-                if (type == UnitType.Enemy && 
+                if (type == UnitType.Enemy &&
                     neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
                 {
                     enemyUnits.Add(GetUnitFromNeighbour(neighbour));
@@ -207,8 +191,6 @@ public class GameModel : MonoBehaviour
         return enemyUnits;
     }
 
-    
-    
 
     private Unit GetUnitFromNeighbour(Tile neighbour)
     {
@@ -219,11 +201,13 @@ public class GameModel : MonoBehaviour
     {
         if (ActivePlayer.Target == null)
             ActivePlayer.Target = ActivePlayer.OccupiedTile;
-        // if (ActivePlayer.Target == null && ActivePlayer.Stats.Type != UnitType.Enemy)
-        //     ActivePlayer.Target = ActivePlayer.OccupiedTile;
     }
 
-    public bool MatchPositionsPlayerAndDestination(Unit unit) =>
-        unit.transform.position ==
-        unit.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;
+    public bool MatchPositionsPlayerAndDestination(Unit unit)
+    {
+        // ActivePlayer = unit;
+        // HandlePlayerNullTarget();
+        return unit.transform.position ==
+               unit.Target.transform.position + Vector3.up * HeightToPutUnitOnTile;
+    }
 }

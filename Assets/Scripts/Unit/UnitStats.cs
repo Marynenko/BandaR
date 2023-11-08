@@ -5,6 +5,7 @@ public class UnitStats : MonoBehaviour
     public int ID;
     public string Name;
     public UnitType Type;
+    public float MaxHealth;
     public float Health;
     public float Energy;
     public float EnergyForMove;

@@ -2,16 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class TurnManager : MonoBehaviour
 {
     [SerializeField] private Grid Grid;
-    [SerializeField] private Queue<Unit> Players;
-    [SerializeField] private UIPortraitManager PortraitManager;
+    [SerializeField] private Queue<Unit> _players;
+    [SerializeField] private Text _turnNumberText;
+
+    public UIPortraitManager PortraitManager;
     public AI AI;
 
-    public Queue<Unit> PlayersGet => Players;
-
+    public Queue<Unit> Players 
+    {
+        get => _players;
+        set => _players = value;
+    }
+    
+    private int turnNumber = 1;
     private Unit _previousPlayer;
     private Unit _activePlayer;
     private bool _isFinishMoveActive;
@@ -33,7 +41,7 @@ public class TurnManager : MonoBehaviour
 
     public void Launch()
     {
-        Players = new Queue<Unit>(Grid.AllUnits);
+        _players = new Queue<Unit>(Grid.AllUnits);
     }
 
     public void SetCurrentPlayer(ref Unit unit)
@@ -43,19 +51,23 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
+        turnNumber++;
+        _turnNumberText.text = turnNumber.ToString();
         _previousPlayer = _activePlayer;
         HighlightPortrait(_previousPlayer); // off
 
-        if (Players.Contains(_activePlayer))
+        if (_players.Contains(_activePlayer))
         {
-            if (Players.Peek() == _activePlayer)
-                Players.Dequeue();
+            if (_players.Peek() == _activePlayer)
+                _players.Dequeue();
         }
 
         SetUnitStats();
 
         _activePlayer = GetNextPlayer(); // Следующий игрок
-        Players.Enqueue(_previousPlayer);
+        _players.Enqueue(_previousPlayer);
+        _activePlayer.TrackAllEnemies();
+
 
         if (IsGameOver())
             EndGame();
@@ -108,7 +120,7 @@ public class TurnManager : MonoBehaviour
         stats.MovementPoints = stats.MovementRange;
 
         if (stats.CountAttacks != stats.MaxCountAttacks)
-            stats.StateFatigue -= Mathf.Round(60f * 0.4f);
+            stats.StateFatigue -= Mathf.RoundToInt(60f * 0.4f);
         else
             stats.StateFatigue -= 60f;
 
@@ -116,6 +128,8 @@ public class TurnManager : MonoBehaviour
         stats.Energy = uiManager.MovementIndicators.EnergyMax;
         stats.EnergyForMove = stats.MovementRange * Tile.EnergyCost - Tile.EnergyCost;
         stats.StateFatigue = Mathf.Clamp(stats.StateFatigue, 0, 100);
+        
+        
 
         foreach (var unit in Grid.AllUnits)
         {
@@ -133,7 +147,7 @@ public class TurnManager : MonoBehaviour
 
     private Unit GetNextPlayer()
     {
-        return Players.Count > 0 ? Players.Peek() : null;
+        return _players.Count > 0 ? _players.Peek() : null;
     }
 
     public void HighlightPortrait(Unit unit, bool isMoving = false)

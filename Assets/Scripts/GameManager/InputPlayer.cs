@@ -136,7 +136,7 @@ public class InputPlayer : MonoBehaviour
 
     private Unit GetCurrentMovingUnit()
     {
-        var players = UIManager.Instance.TurnManager.PlayersGet;
+        var players = UIManager.Instance.TurnManager.Players;
         return players.FirstOrDefault(player => player.Status == UnitStatus.Available);
     }
 

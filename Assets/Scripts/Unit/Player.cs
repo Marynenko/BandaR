@@ -4,18 +4,12 @@ using UnityEngine;
 
 public class Player : Unit
 {
-    public List<Unit> Enemies;
-    public new UnitStats Stats { get; private set; }
-
-    private void Awake()
-    {
-        Stats = GetComponent<UnitStats>();
-        // здесь можно добавить код инициализации других свойств юнита
-    }
 
     public override void TrackAllEnemies()
     {
-        var units = UIManager.Instance.TurnManager.PlayersGet;
+        Enemies = new List<Unit>();
+        // Enemies.Clear();
+        var units = UIManager.Instance.TurnManager.Players;
         foreach (var unit in units.Where(unit => unit.Stats.Type is UnitType.Enemy))
         {
             Enemies.Add(unit);

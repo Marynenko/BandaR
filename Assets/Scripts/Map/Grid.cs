@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -18,6 +19,20 @@ public class Grid : MonoBehaviour
     private void Awake()
     {
         Tiles = new Tile[GridSizeGet.x, GridSizeGet.y];
+    }
+
+    public void UpdateAllUnits()
+    {
+        Unit unitToRemove = null;
+
+        foreach (var unit in AllUnits.Where(unit => unit.Stats.Health <= 0))
+        {
+            unitToRemove = unit;
+            break;
+        }
+
+        if (unitToRemove != null)
+            AllUnits.Remove(unitToRemove);
     }
 
     public void StartCreating()

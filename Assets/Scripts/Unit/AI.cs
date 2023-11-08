@@ -69,7 +69,7 @@ public class AI : MonoBehaviour
 
         if (_isCoroutineForUnitSelectedOn) return;
 
-        if (!_currentUnit.UnitIsMoving && !_isUnitReadyToAttack)
+        if (!_isUnitReadyToAttack)
         {
             Move();
 
@@ -77,9 +77,7 @@ public class AI : MonoBehaviour
             if (onPosition)
                 _isUnitReadyToAttack = true;
             else
-            {
                 _currentUnit.UnitIsMoving = false;
-            }
         }
 
         if (!_isUnitReadyToAttack) return;
@@ -119,15 +117,30 @@ public class AI : MonoBehaviour
     private void Move()
     {
         _currentUnit.UnitIsMoving = true;
+        var firstEnemy = _currentUnit.Enemies[0];
+        var distance = UIManager.GetDistance(_currentUnit.OccupiedTile, firstEnemy.OccupiedTile);
 
-        var targetEnemy = _currentUnit switch
+        var targetEnemy = firstEnemy;
+
+        foreach (var enemy in _currentUnit.Enemies)
         {
-            Enemy unit => unit.Enemies.OrderBy(e =>
-                UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
-            Ally unit => unit.Enemies.OrderBy(e =>
-                UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
-            _ => null
-        };
+            var localDistance = UIManager.GetDistance(_currentUnit.OccupiedTile, enemy.OccupiedTile);
+            
+            if (distance > localDistance)
+            {
+                distance = localDistance;
+                targetEnemy = enemy;
+            }
+        }
+
+        // var targetEnemy = _currentUnit switch
+        // {
+        //     Enemy unit => unit.Enemies.OrderBy(e =>
+        //         UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
+        //     Ally unit => unit.Enemies.OrderBy(e =>
+        //         UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
+        //     _ => null
+        // };
 
         if (targetEnemy != null)
             _gameController.HandleTileClick(targetEnemy.OccupiedTile);

@@ -9,6 +9,7 @@ public abstract class Unit : SoundsManager
 
     public List<GameObject> Sites;
     public List<GameObject> AttacksPrefab;
+    public List<Unit> Enemies;
 
     // Fields
     [SerializeField] private UnitStats _stats;
@@ -64,6 +65,7 @@ public abstract class Unit : SoundsManager
         var energyConsumption = Convert.ToInt16(Math.Round(_stats.EnergyForMove / Tile.EnergyCost)) + 1;
         _stats.MovementPoints = energyConsumption;
         _stats.MovementRange = energyConsumption;
+        _stats.Health = _stats.MaxHealth;
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles) =>

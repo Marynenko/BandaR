@@ -46,7 +46,7 @@ public class UIPortraitManager : MonoBehaviour
             var prefab = unit.Stats.Type switch
             {
                 UnitType.Player => UIPlayerPrefab,
-                UnitType.Ally => UIPlayerPrefab,
+                UnitType.Ally => UIAllyPrefab,
                 UnitType.Enemy => UIEnemyPrefab,
                 _ => null
             };
@@ -63,11 +63,19 @@ public class UIPortraitManager : MonoBehaviour
             UIPlayerPortraits.Add(unit.Stats.Name + unit.Stats.ID, portraitImage);
 
             // Добавляем фон в словарь
-            UIBackground.Add(portraitImage, GetBackground(portraitImage));
+            UIBackground.Add(portraitImage, GetBackground(unit, portraitImage));
+            
+            
+
         }
     }
 
-    protected virtual UIUnit GetBackground(Image playerPortrait) => playerPortrait.GetComponentInParent<UIUnit>();
+    protected virtual UIUnit GetBackground(Unit unit, Image playerPortrait)
+    {
+        var uiUnit = playerPortrait.GetComponentInParent<UIUnit>();
+        uiUnit.Unit = unit;
+        return uiUnit;
+    } 
 
     public Image GetPlayerPortrait(Unit unit) =>
         UIPlayerPortraits.TryGetValue(unit.Stats.Name + unit.Stats.ID, out var portrait) ? portrait : null;

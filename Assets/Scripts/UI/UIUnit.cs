@@ -6,11 +6,15 @@ public class UIUnit : MonoBehaviour
 {
     [SerializeField] private Image Image;
 
+    public Unit Unit;
+
     private void Start()
     {
         if (Image != null) return;
         Image = GetComponent<Image>();
     }
+    
+    
 
     public void TurnOnAlpha()
     {
