@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -29,10 +30,10 @@ public class GameController : MonoBehaviour
         UIManager.Instance.MenuAction.HideMenu();
     }
 
-    public void HandleTileClick(Tile tile)
+    public void HandleTileClickOld(Tile tile)
     {
         var selectedUnit = Selector.SelectedUnit;
-
+        
         if (!_pathIsFound)
         {
             _path = FindPath(selectedUnit, tile);
@@ -40,6 +41,30 @@ public class GameController : MonoBehaviour
             if (_path == null)
                 return;
             
+            if (_path.Count == 0)
+                return;
+            
+            SetUnitTarget(selectedUnit, tile);
+            _pathIsFound = true;
+        }
+    
+        HandleTileMovement(selectedUnit);
+    
+        if (!selectedUnit.UnitIsMoving)
+            _pathIsFound = false;
+    }
+    
+    public void HandlePlayerTileClick(Tile tile)
+    {
+        var selectedUnit = Selector.SelectedUnit;
+
+        if (!_pathIsFound)
+        {
+            _path = FindPath(selectedUnit, tile);
+        
+            if (_path == null || _path.Count == 0)
+                return;
+        
             SetUnitTarget(selectedUnit, tile);
             _pathIsFound = true;
         }
@@ -50,8 +75,30 @@ public class GameController : MonoBehaviour
             _pathIsFound = false;
     }
 
+    public void HandleAITurn(Unit unit)
+    {
+        // Получить оптимальный путь до ближайшего противника
+
+        if (!_pathIsFound)
+        {
+            var optimalPath = UIManager.Instance.PathConstructor.GetOptimalPath(unit);
+
+            if (optimalPath == null || optimalPath.Count == 0)
+                return;
+    
+            SetUnitTarget(unit, optimalPath.Last());
+            _path = optimalPath;
+            _pathIsFound = true;
+        }
+        
+        HandleTileMovement(unit);
+        
+        if (!unit.UnitIsMoving)
+            _pathIsFound = false;
+    }
+
     private List<Tile> FindPath(Unit unit, Tile tile) =>
-        Selector.PathConstructor.FindPathToTarget(unit, tile);
+        UIManager.Instance.PathConstructor.FindPathToTarget(unit, tile);
 
     private void SetUnitTarget(Unit selectedUnit, Tile tile)
     {
@@ -76,4 +123,6 @@ public class GameController : MonoBehaviour
         if (Selector.CanMoveMore(unit))
             Selector.SelectUnit(unit);
     }
+    
+    
 }

@@ -23,11 +23,7 @@ public abstract class Unit : SoundsManager
     public UnitStats Stats => _stats;
     public UnitStatus Status { get; set; }
     public UnitAttackSite AttackSite { get; set; }
-    public Tile OccupiedTile { get; private set; }
-    public Tile OccupiedTileSet
-    {
-        set => OccupiedTile = value;
-    }
+    public Tile OccupiedTile { get; set; }
 
     // public fields
     public Tile Target;

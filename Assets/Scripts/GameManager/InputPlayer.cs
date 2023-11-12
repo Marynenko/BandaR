@@ -33,7 +33,7 @@ public class InputPlayer : MonoBehaviour
         // Call 2
         if (ClickedUnit == null) return;
         if (_clickedTile != null && ClickedUnit.UnitIsMoving)
-            GameController.HandleTileClick(_clickedTile);
+            GameController.HandlePlayerTileClick(_clickedTile);
     }
 
     public bool EscHandler()

@@ -6,7 +6,6 @@ public class Selector : MonoBehaviour
 {
     private GameController _gameController;
 
-    public PathConstructor PathConstructor;
     public Unit SelectedUnit { get; private set; }
 
     // public delegate void UnitSelectedEventHandler(Unit unit, Selector selector);
@@ -24,7 +23,9 @@ public class Selector : MonoBehaviour
 
     public void SelectUnit(Unit unit)
     {
+        var uiManager = UIManager.Instance;
         SelectedUnit = unit;
+        
         SelectedUnit.OccupiedTile.State = SelectedUnit.Stats.Type switch
         {
             UnitType.Player => TileState.OccupiedByPlayer,
@@ -34,8 +35,8 @@ public class Selector : MonoBehaviour
         };
         SelectedUnit.OccupiedTile.SelectTile();
         SelectedUnit.AvailableMoves =
-            new HashSet<Tile>(PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
-        UIManager.Instance.GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
+            new HashSet<Tile>(uiManager.PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
+        uiManager.GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
 
     public void UnselectUnit(Unit unit)
@@ -51,6 +52,6 @@ public class Selector : MonoBehaviour
 
     public bool CanMoveMore(Unit unit)
     {
-        return unit.Stats.MovementPoints > 1 && unit.Stats.EnergyForMove > 20f;
+        return unit.Stats.MovementPoints > 1 && unit.Stats.EnergyForMove > 15f;
     } 
 }

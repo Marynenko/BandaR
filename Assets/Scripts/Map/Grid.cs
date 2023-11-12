@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Grid : MonoBehaviour
 {
@@ -72,7 +71,7 @@ public class Grid : MonoBehaviour
     private void LocateNeighborsTiles()
     {
         foreach (var tile in Tiles)
-            tile.Neighbors = Selector.PathConstructor.GetAvailableNeighbourTiles(tile); // Добавили левую часть.
+            tile.Neighbors = UIManager.Instance.PathConstructor.GetAvailableNeighbourTiles(tile);
     }
 
     private void GetAllExistedUnits()
@@ -88,6 +87,8 @@ public class Grid : MonoBehaviour
         AllUnits.AddRange(players);
         AllUnits.AddRange(allies);
         AllUnits.AddRange(enemies);
+        
+        AllUnits.Sort((x, y) => y.Stats.Speed.CompareTo(x.Stats.Speed));
     }
 
     private void AddUnitsToTiles()
@@ -95,18 +96,6 @@ public class Grid : MonoBehaviour
         foreach (var unit in AllUnits)
         {
             unit.InitializeUnit(Tiles);
-        }
-    }
-
-    public void RemoveUnit(Unit unit)
-    {
-        var currentTile = unit.OccupiedTile;
-
-        if (currentTile != null)
-        {
-            //currentTile.ClearUnit();
-            AllUnits.Remove(unit);
-            Destroy(unit.gameObject);
         }
     }
 

@@ -64,9 +64,6 @@ public class UIPortraitManager : MonoBehaviour
 
             // Добавляем фон в словарь
             UIBackground.Add(portraitImage, GetBackground(unit, portraitImage));
-            
-            
-
         }
     }
 

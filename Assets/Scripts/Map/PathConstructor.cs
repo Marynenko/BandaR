@@ -39,26 +39,27 @@ public class PathConstructor : MonoBehaviour
         var startTile = unit.OccupiedTile;
         _destinationTile = endTile;
 
-
-        Dictionary<Tile, float> gScore = new()
+        var gScore = new Dictionary<Tile, float>
         {
             [startTile] = 0
         };
 
-        Dictionary<Tile, float> fScore = new()
+        var fScore = new Dictionary<Tile, float>
         {
-            [startTile] = Heuristic(startTile, endTile)
+            [startTile] = UIManager.Heuristic(startTile, endTile)
         };
 
-        HashSet<Tile> closedList = new();
-        var openList = new SortedDictionary<float, List<Tile>>()
-            { { fScore[startTile], new List<Tile> { startTile } } };
-        Dictionary<Tile, Tile> cameFrom = new();
+        var closedList = new HashSet<Tile>();
+        var openList = new SortedDictionary<float, List<Tile>>
+        {
+            { fScore[startTile], new List<Tile> { startTile } }
+        };
+        var cameFrom = new Dictionary<Tile, Tile>();
 
         while (openList.Count > 0)
         {
             var currentTile = openList.First().Value[0];
-            
+
             if (currentTile == endTile)
             {
                 var path = ReconstructPath(cameFrom, endTile);
@@ -76,47 +77,98 @@ public class PathConstructor : MonoBehaviour
             foreach (var neighborTile in availableNeighbourTiles
                          .Where(neighborTile => !closedList.Contains(neighborTile)))
             {
-                if (currentTile != null)
+                var tentativeScore = gScore[currentTile] + UIManager.GetDistance(currentTile, neighborTile);
+
+                if (!gScore.ContainsKey(neighborTile))
                 {
-                    var tentativeScore = gScore[currentTile] + UIManager.GetDistance(currentTile, neighborTile);
-
-                    fScore.TryAdd(neighborTile, float.MaxValue);
-
-                    if (!openList.ContainsKey(fScore[neighborTile]))
-                        openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
-                    else if (tentativeScore >= (gScore.TryGetValue(neighborTile, out var gScoreNeighbor)
-                                 ? gScoreNeighbor
-                                 : float.MaxValue))
-                        continue;
-
-                    cameFrom[neighborTile] = currentTile;
-                    gScore[neighborTile] = tentativeScore;
+                    gScore[neighborTile] = float.MaxValue;
                 }
 
-                fScore[neighborTile] = gScore[neighborTile] + Heuristic(neighborTile, endTile);
-                if (openList.ContainsKey(fScore[neighborTile]))
-                    openList[fScore[neighborTile]].Remove(neighborTile);
+                var isDistanceShorter = tentativeScore < gScore[neighborTile];
+                if (!isDistanceShorter)
+                {
+                    continue;
+                }
+
+                cameFrom[neighborTile] = currentTile;
+                gScore[neighborTile] = tentativeScore;
+                fScore[neighborTile] = gScore[neighborTile] + UIManager.Heuristic(neighborTile, endTile);
+
                 if (!openList.ContainsKey(fScore[neighborTile]))
+                {
                     openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+                }
                 else
+                {
                     openList[fScore[neighborTile]].Add(neighborTile);
+                }
             }
+        }
+        //     foreach (var neighborTile in availableNeighbourTiles
+            //                  .Where(neighborTile => !closedList.Contains(neighborTile)))
+            //     {
+            //         var tentativeScore = gScore[currentTile] + UIManager.GetDistance(currentTile, neighborTile);
+            //
+            //
+            //         if (!gScore.ContainsKey(neighborTile))
+            //         {
+            //             gScore[neighborTile] = float.MaxValue;
+            //         }
+            //
+            //         var isDistanceShorter = tentativeScore < gScore[neighborTile];
+            //         if (!isDistanceShorter) continue;
+            //
+            //         cameFrom[neighborTile] = currentTile;
+            //         gScore[neighborTile] = tentativeScore;
+            //         fScore[neighborTile] = gScore[neighborTile] + UIManager.Heuristic(neighborTile, endTile);
+            //
+            //         if (!openList.ContainsKey(fScore[neighborTile]))
+            //         {
+            //             openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
+            //         }
+            //         else
+            //         {
+            //             openList[fScore[neighborTile]].Add(neighborTile);
+            //         }
+            //     }
+
+        // Если путь до целевого тайла не найден, выбираем ближайший доступный тайл
+        var closestTile = GetClosestAvailableTile(startTile, endTile, closedList);
+        if (closestTile != null)
+        {
+            var path = ReconstructPath(cameFrom, closestTile);
+            _destinationTile = null;
+            return path;
         }
 
         _destinationTile = null;
         return new List<Tile>();
     }
 
-    private float Heuristic(Tile currentTile, Tile endTile)
+    private Tile GetClosestAvailableTile(Tile startTile, Tile endTile, HashSet<Tile> closedList)
     {
-        var dx = Math.Abs(currentTile.Coordinates.x - endTile.Coordinates.x);
-        var dy = Math.Abs(currentTile.Coordinates.y - endTile.Coordinates.y);
+        var openList = new Queue<Tile>();
+        openList.Enqueue(startTile);
 
-        if (dx > dy)
-            return 1.001f * dx + dy;
-        return dx + 1.001f * dy;
+        while (openList.Count > 0)
+        {
+            var currentTile = openList.Dequeue();
+
+            if (currentTile == endTile)
+            {
+                return currentTile;
+            }
+
+            var availableNeighbourTiles = GetAvailableNeighbourTiles(currentTile);
+            foreach (var neighborTile in availableNeighbourTiles
+                         .Where(neighborTile => !closedList.Contains(neighborTile)))
+            {
+                openList.Enqueue(neighborTile);
+            }
+        }
+
+        return null;
     }
-
 
     private List<Tile> ReconstructPath(IReadOnlyDictionary<Tile, Tile> cameFrom, Tile currentTile)
     {
@@ -203,8 +255,8 @@ public class PathConstructor : MonoBehaviour
 
                 if (!tileIsVisited)
                 {
-                    if (Tile.MovementCost <= remainingMoves)
-                        queue.Enqueue((neighbour, remainingMoves - Tile.MovementCost));
+                    if (neighbour.MovementCost <= remainingMoves)
+                        queue.Enqueue((neighbour, remainingMoves - neighbour.MovementCost));
                 }
             }
         }
@@ -223,5 +275,88 @@ public class PathConstructor : MonoBehaviour
 
         tile = null;
         return false;
+    }
+
+    public List<Unit> GetEnemyFromNeighbours(Unit unit)
+    {
+        var neighbours = GetNeighbours(unit.OccupiedTile);
+        var type = unit.Stats.Type;
+        var enemyUnits = new List<Unit>();
+
+        foreach (var neighbour in neighbours)
+        {
+            if (!neighbour.Available)
+            {
+                if (type == UnitType.Enemy &&
+                    neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
+                {
+                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                }
+                else if (type != UnitType.Enemy && neighbour.State == TileState.OccupiedByEnemy)
+                {
+                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                }
+            }
+        }
+
+        return enemyUnits;
+    }
+
+
+    private Unit GetUnitFromNeighbour(Tile neighbour)
+    {
+        return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
+    }
+
+    public void GetEnemies(Unit currentUnit)
+    {
+        // var firstEnemy = currentUnit.Enemies[0];
+        // var distance = UIManager.GetDistance(currentUnit.OccupiedTile, firstEnemy.OccupiedTile);
+        //
+        // _targetEnemy = firstEnemy;
+        //
+        // foreach (var enemy in currentUnit.Enemies)
+        // {
+        //     var localDistance = UIManager.GetDistance(currentUnit.OccupiedTile, enemy.OccupiedTile);
+        //
+        //     if (!(distance > localDistance)) continue;
+        //
+        //     distance = localDistance;
+        //     _targetEnemy = enemy;
+        // }
+    }
+
+    private Dictionary<Unit, List<Tile>> GetPathsToEnemies(Unit unit)
+    {
+        // var enemies = GetEnemyFromNeighbours(unit);
+        var enemies = unit.Enemies;
+        var paths = new Dictionary<Unit, List<Tile>>();
+
+        foreach (var enemy in enemies)
+        {
+            var path = FindPathToTarget(unit, enemy.OccupiedTile);
+            paths[enemy] = path;
+        }
+
+        return paths;
+    }
+
+    public List<Tile> GetOptimalPath(Unit unit)
+    {
+        var paths = GetPathsToEnemies(unit);
+        List<Tile> optimalPath = null;
+        var shortestDistance = float.MaxValue;
+
+        foreach (var path in paths)
+        {
+            var distance = path.Value.Sum(tile => tile.MovementCost);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                optimalPath = path.Value;
+            }
+        }
+
+        return optimalPath;
     }
 }

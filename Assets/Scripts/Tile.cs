@@ -49,12 +49,13 @@ public class Tile : MonoBehaviour
     public Color ColorSelectedTile;
     public Color ColorMovementTile;
     public Color ColorPossibleAttack;
+    
+    public int MovementCost = 1;
 
     // Static fields
     private static Dictionary<TileState, Color> _stateColors;
 
     // Other variables
-    internal const int MovementCost = 1;
     internal const int EnergyCost = 15;
 
     #endregion

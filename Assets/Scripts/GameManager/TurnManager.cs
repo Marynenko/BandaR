@@ -51,7 +51,6 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
-        turnNumber++;
         _turnNumberText.text = turnNumber.ToString();
         _previousPlayer = _activePlayer;
         HighlightPortrait(_previousPlayer); // off
@@ -67,38 +66,38 @@ public class TurnManager : MonoBehaviour
         _activePlayer = GetNextPlayer(); // —ледующий игрок
         _players.Enqueue(_previousPlayer);
         _activePlayer.TrackAllEnemies();
-
+        
+        var portraitManager = UIManager.Instance.TurnManager.PortraitManager;
+        if (portraitManager.transform.GetChild(0).GetComponent<UIUnit>().Unit == _activePlayer)
+            turnNumber++;
 
         if (IsGameOver())
             EndGame();
 
         HighlightPortrait(_activePlayer, true); // on
-
-
-        // ≈сли следующий игрок - игрок, делаем его доступным и обновл€ем доступные ходы
-        var instanceAM = UIManager.Instance.AttackManager;
-        if (_activePlayer.Stats.Type is UnitType.Player)
+        
+        var instanceAm = UIManager.Instance.AttackManager;
+        
+        switch (_activePlayer.Stats.Type)
         {
-            if (_activePlayer.Stats.StateFatigue >= 100 && !_isFinishMoveActive)
-            {
+            case UnitType.Player when _activePlayer.Stats.StateFatigue >= 100 && !_isFinishMoveActive:
                 Debug.Log($"{_activePlayer.Stats.Name} won't move!");
                 StartCoroutine(FinishMove(2f));
                 return;
-            }
-
-            _activePlayer.Status = UnitStatus.Available;
-            instanceAM.MovementIndicators.gameObject.transform.GetChild(0).gameObject
-                .SetActive(true);
-            instanceAM.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
-            instanceAM.MovementIndicators
-                .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
-        }
-        else if (_activePlayer.Stats.Type is UnitType.Enemy or UnitType.Ally)
-        {
-            _activePlayer.Status = UnitStatus.AIMove;
-            instanceAM.MovementIndicators.gameObject.transform.GetChild(0).gameObject
-                .SetActive(false);
-            AI.InitializeAI(_activePlayer);
+            case UnitType.Player:
+                _activePlayer.Status = UnitStatus.Available;
+                instanceAm.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+                    .SetActive(true);
+                instanceAm.Attacks.InitializeAttacks(_activePlayer.AttacksPrefab);
+                instanceAm.MovementIndicators
+                    .Launch(_activePlayer.Stats.Energy, _activePlayer.Stats.StateFatigue);
+                break;
+            case UnitType.Enemy or UnitType.Ally:
+                _activePlayer.Status = UnitStatus.AIMove;
+                instanceAm.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+                    .SetActive(false);
+                AI.InitializeAI(_activePlayer);
+                break;
         }
     }
 

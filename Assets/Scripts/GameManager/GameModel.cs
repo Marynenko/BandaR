@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameModel : MonoBehaviour
 {
@@ -13,7 +11,6 @@ public class GameModel : MonoBehaviour
     [HideInInspector] public Unit ActivePlayer;
     public bool IsAttackFinished;
     public bool IsAttackStarted;
-
 
     private const float HeightToPutUnitOnTile = 0.68f;
     private bool _isCoroutineOn;
@@ -34,7 +31,16 @@ public class GameModel : MonoBehaviour
         var ui = UIManager.Instance;
         _units = ui.TurnManager.Players;
         ActivePlayer = _units.Peek(); // Назначаем первого игрока активным
-        ActivePlayer.Status = UnitStatus.Available;
+        if (ActivePlayer.Stats.Type == UnitType.Player)
+            ActivePlayer.Status = UnitStatus.Available;
+        else
+        {
+            ActivePlayer.Status = UnitStatus.AIMove;
+            ui.AttackManager.MovementIndicators.gameObject.transform.GetChild(0).gameObject
+                .SetActive(false);
+            ui.TurnManager.AI.InitializeAI(ActivePlayer);
+        }
+
         ui.TurnManager.HighlightPortrait(ActivePlayer, true);
         ui.GridUI.ClearColorTiles(Grid.Tiles);
         ui.CameraManager.IsActive = true;
@@ -60,6 +66,7 @@ public class GameModel : MonoBehaviour
 
         if (MatchPositionsPlayerAndDestination(ActivePlayer))
         {
+            // todo переместить IsAttackSuccessful в GameController
             var isAttackSuccessful = IsAttackSuccessful(ActivePlayer);
 
             if (isAttackSuccessful)
@@ -77,7 +84,7 @@ public class GameModel : MonoBehaviour
             return true;
         }
 
-        var enemies = GetEnemyFromNeighbours(unit);
+        var enemies = UIManager.Instance.PathConstructor.GetEnemyFromNeighbours(unit);
         if (enemies.Count == 0)
         {
             FinishMove();
@@ -166,36 +173,47 @@ public class GameModel : MonoBehaviour
         return playerWithLeastHp;
     }
 
-    public List<Unit> GetEnemyFromNeighbours(Unit unit)
-    {
-        var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
-        var type = unit.Stats.Type;
-        List<Unit> enemyUnits = new List<Unit>();
-
-        foreach (var neighbour in neighbours)
-        {
-            if (!neighbour.Available)
-            {
-                if (type == UnitType.Enemy &&
-                    neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
-                {
-                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
-                }
-                else if (type != UnitType.Enemy && neighbour.State == TileState.OccupiedByEnemy)
-                {
-                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
-                }
-            }
-        }
-
-        return enemyUnits;
-    }
-
-
-    private Unit GetUnitFromNeighbour(Tile neighbour)
-    {
-        return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
-    }
+    // public List<Unit> GetEnemyFromNeighbours(Unit unit)
+    // {
+    //     var neighbours = Selector.PathConstructor.GetNeighbours(unit.OccupiedTile);
+    //     var type = unit.Stats.Type;
+    //     var enemyUnits = new List<Unit>();
+    //
+    //     foreach (var neighbour in neighbours)
+    //     {
+    //         if (!neighbour.Available)
+    //         {
+    //             if (type == UnitType.Enemy &&
+    //                 neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
+    //             {
+    //                 enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+    //             }
+    //             else if (type != UnitType.Enemy && neighbour.State == TileState.OccupiedByEnemy)
+    //             {
+    //                 enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+    //             }
+    //         }
+    //     }
+    //
+    //     return enemyUnits;
+    // }
+    //
+    //
+    // private Unit GetUnitFromNeighbour(Tile neighbour)
+    // {
+    //     return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
+    // }
+    //
+    // public Dictionary<Unit, float> GetDistancesToEnemies(List<Unit> enemies, Unit unit)
+    // {
+    //     var distances = new Dictionary<Unit, float>();
+    //     foreach (var enemy in enemies)
+    //     {
+    //         var path = Selector.PathConstructor.FindPathToTarget(unit, enemy.OccupiedTile);
+    //         distances[enemy] = path.Sum(tile => tile.MovementCost);
+    //     }
+    //     return distances;
+    // }
 
     private void HandlePlayerNullTarget()
     {

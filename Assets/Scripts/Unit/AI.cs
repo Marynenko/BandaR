@@ -1,13 +1,12 @@
 using System.Collections;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class AI : MonoBehaviour
 {
     private GameController _gameController;
     private GameModel _gameModel;
     private Unit _currentUnit;
+    private Unit _targetEnemy;
 
     private bool _isCoroutineForUnitSelectedOn;
     private bool _isTurnStarted;
@@ -51,6 +50,7 @@ public class AI : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         IsTurnFinished = false;
 
+        _targetEnemy = null;
         _isUnitReadyToAttack = false;
         _isTurnStarted = false;
         _gameModel.IsAttackFinished = false;
@@ -71,7 +71,7 @@ public class AI : MonoBehaviour
 
         if (!_isUnitReadyToAttack)
         {
-            Move();
+            AIMoveUnit();
 
             var onPosition = _gameModel.MatchPositionsPlayerAndDestination(_currentUnit);
             if (onPosition)
@@ -114,35 +114,24 @@ public class AI : MonoBehaviour
         }
     }
 
-    private void Move()
+    private void MoveOld()
     {
         _currentUnit.UnitIsMoving = true;
-        var firstEnemy = _currentUnit.Enemies[0];
-        var distance = UIManager.GetDistance(_currentUnit.OccupiedTile, firstEnemy.OccupiedTile);
-
-        var targetEnemy = firstEnemy;
-
-        foreach (var enemy in _currentUnit.Enemies)
+    
+        if (_targetEnemy == null)
         {
-            var localDistance = UIManager.GetDistance(_currentUnit.OccupiedTile, enemy.OccupiedTile);
-            
-            if (distance > localDistance)
-            {
-                distance = localDistance;
-                targetEnemy = enemy;
-            }
+            // UIManager.Instance.PathConstructor.GetEnemies();
         }
-
-        // var targetEnemy = _currentUnit switch
-        // {
-        //     Enemy unit => unit.Enemies.OrderBy(e =>
-        //         UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
-        //     Ally unit => unit.Enemies.OrderBy(e =>
-        //         UIManager.GetDistance(_currentUnit.OccupiedTile, e.OccupiedTile)).FirstOrDefault(),
-        //     _ => null
-        // };
-
-        if (targetEnemy != null)
-            _gameController.HandleTileClick(targetEnemy.OccupiedTile);
+   
+        if (_targetEnemy != null)
+            _gameController.HandleAITurn(_currentUnit);
     }
+    
+
+    private void AIMoveUnit()
+    {
+        _currentUnit.UnitIsMoving = true;
+        _gameController.HandleAITurn(_currentUnit);
+    }
+
 }
