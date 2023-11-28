@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class UnitMenu : MonoBehaviour
 {
-    [SerializeField] private InputPlayer InputPlayer;
+    [SerializeField] private InputManager inputManager;
 
     private Unit _currentUnit;
 
@@ -11,6 +11,7 @@ public class UnitMenu : MonoBehaviour
     public GameObject MainContainerEnemy; // Меню врага
 
     public Button MoveButton;
+    public Button RotateButton;
     public Button AttackButton;
     public Button InfoPlayerButton;
     public Button InfoButton;
@@ -18,18 +19,18 @@ public class UnitMenu : MonoBehaviour
 
     private void Start()
     {
-        MoveButton.onClick.AddListener(HandleMove);
-        AttackButton.onClick.AddListener(HandleAttack);
-        InfoPlayerButton.onClick.AddListener(HandleInfo);
-        InfoButton.onClick.AddListener(HandleInfo);
-        EndTurnButton.onClick.AddListener(HandleEndTurn);
+        MoveButton.onClick.AddListener(HandleButtonMove);
+        RotateButton.onClick.AddListener(HandleButtonRotate);
+        AttackButton.onClick.AddListener(HandleButtonAttack);
+        InfoPlayerButton.onClick.AddListener(HandleButtonInfo);
+        InfoButton.onClick.AddListener(HandleButtonInfo);
+        EndTurnButton.onClick.AddListener(HandleButtonEndTurn);
     }
 
     public void ShowMenu(Unit unit, bool isMoving)
     {
         _currentUnit = unit;
-
-        InputPlayer.IsMenuActive = true;
+        inputManager.IsMenuActive = true;
         gameObject.SetActive(true);
         
         CheckUnitType(unit, isMoving);   
@@ -55,34 +56,41 @@ public class UnitMenu : MonoBehaviour
 
     public void HideMenu()
     {
-        InputPlayer.IsMenuActive = false;
+        inputManager.IsMenuActive = false;
         gameObject.SetActive(false);
     }
 
-    public void HandleMove()
+    private void HandleButtonMove()
     {
-        // Можно в будуем сделать что бы просто IsMOving = true;
-        // input.IsMovementClicked = true;
-        InputPlayer.IsTileClickable = true;
-        InputPlayer.GameController.HandleUnitClick(_currentUnit);
+        inputManager.IsTileClickable = true;
+        inputManager.IsUnitClickable = false;
+        inputManager.GameController.HandleUnitClick(_currentUnit);
+    }
+    
+    private void HandleButtonRotate()
+    {
+        inputManager.IsTileClickable = true;
+        inputManager.IsUnitClickable = false;
+        inputManager.HasToRotate = true;
+        HideMenu();
     }
 
-    private void HandleAttack()
+    private void HandleButtonAttack()
     {
         HideMenu();
-        InputPlayer.IsTileClickable = false;
-        InputPlayer.IsAttackActive = true;
-        InputPlayer.IsUnitClickable = true;
+        inputManager.IsTileClickable = false;
+        inputManager.IsAttackActive = true;
+        inputManager.IsUnitClickable = true;
         UIManager.Instance.AttackManager.HandleAttackButtonClicked(_currentUnit);
     }
 
-    private void HandleInfo()
+    private void HandleButtonInfo()
     {
     }
 
-    private void HandleEndTurn()
+    private void HandleButtonEndTurn()
     {
-        InputPlayer.GameModel.HandleEndTurnButtonClicked(_currentUnit);
+        inputManager.GameManager.HandleEndTurnButtonClicked(_currentUnit);
         UpdateUnitUI();
     }
 

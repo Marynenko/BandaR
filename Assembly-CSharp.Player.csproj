@@ -55,6 +55,7 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
      <Compile Include="Assets\Scripts\Map\PathConstructor.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
+     <Compile Include="Assets\Scripts\GameManager\GameManager.cs" />
      <Compile Include="Assets\Scripts\GameManager\Attack\AttackManager.cs" />
      <Compile Include="Assets\Scripts\Map\Grid.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
@@ -85,7 +86,6 @@
      <Compile Include="Assets\Models and Textures\NatureStarterKit2\Standard Assets\Effects\ImageEffects\Scripts\ColorCorrectionCurves.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
-     <Compile Include="Assets\Scripts\GameManager\GameModel.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
      <Compile Include="Assets\Scripts\Unit\Ally.cs" />
      <Compile Include="Assets\Scripts\GameManager\CameraManager.cs" />

@@ -1,33 +1,33 @@
 m_ProjectFiles:
   m_ManifestFileStatus:
-    m_FilePath: D:/Files/CSharp/UnityProjects/Banda/Packages/manifest.json
+    m_FilePath: F:/Files/CSharp/UnityProjects/Banda/Packages/manifest.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638340298373439340
-    m_Hash: 3948912173
+      ticks: 638363560373966760
+    m_Hash: 525753859
   m_LockFileStatus:
-    m_FilePath: D:/Files/CSharp/UnityProjects/Banda/Packages/packages-lock.json
+    m_FilePath: F:/Files/CSharp/UnityProjects/Banda/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638340298606787796
-    m_Hash: 1749550566
+      ticks: 638363560374017042
+    m_Hash: 3788418257
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
   m_LocalFileStatus: []
-m_ProjectPath: D:/Files/CSharp/UnityProjects/Banda/Packages
-m_EditorVersion: 2022.3.9f1 (ea401c316338)
+m_ProjectPath: F:/Files/CSharp/UnityProjects/Banda/Packages
+m_EditorVersion: 2022.3.14f1 (eff2de9070d8)
 m_ResolvedPackages:
 - packageId: com.unity.cinemachine@2.9.7
   testable: 0
   isDirectDependency: 1
   version: 2.9.7
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.cinemachine@2.9.7
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.cinemachine@2.9.7
   assetPath: Packages/com.unity.cinemachine
   name: com.unity.cinemachine
   displayName: Cinemachine
@@ -191,12 +191,151 @@ m_ResolvedPackages:
     deprecationMessage: 
   isDeprecated: 0
   deprecationMessage: 
+- packageId: com.unity.collab-proxy@2.2.0
+  testable: 0
+  isDirectDependency: 1
+  version: 2.2.0
+  source: 1
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.2.0
+  assetPath: Packages/com.unity.collab-proxy
+  name: com.unity.collab-proxy
+  displayName: Version Control
+  author:
+    name: 
+    email: 
+    url: 
+  category: Editor
+  type: assets
+  description: The package gives you the ability to use Unity Version Control in
+    the Unity editor. To use Unity Version Control, a subscription is required. Learn
+    more about how you can get started for free by visiting https://unity.com/solutions/version-control
+  status: 0
+  errors: []
+  versions:
+    all:
+    - 1.2.3-preview
+    - 1.2.4-preview
+    - 1.2.6
+    - 1.2.7
+    - 1.2.9
+    - 1.2.11
+    - 1.2.15
+    - 1.2.16
+    - 1.2.17-preview.3
+    - 1.3.2
+    - 1.3.3
+    - 1.3.4
+    - 1.3.5
+    - 1.3.6
+    - 1.3.7
+    - 1.3.8
+    - 1.3.9
+    - 1.4.9
+    - 1.5.7
+    - 1.6.0
+    - 1.7.1
+    - 1.8.0
+    - 1.9.0
+    - 1.10.2
+    - 1.11.2
+    - 1.12.5
+    - 1.13.5
+    - 1.14.1
+    - 1.14.4
+    - 1.14.7
+    - 1.14.9
+    - 1.14.12
+    - 1.14.13
+    - 1.14.15
+    - 1.14.16
+    - 1.14.17
+    - 1.14.18
+    - 1.15.1
+    - 1.15.4
+    - 1.15.7
+    - 1.15.9
+    - 1.15.12
+    - 1.15.13
+    - 1.15.15
+    - 1.15.16
+    - 1.15.17
+    - 1.15.18
+    - 1.17.0
+    - 1.17.1
+    - 1.17.2
+    - 1.17.6
+    - 1.17.7
+    - 2.0.0-preview.6
+    - 2.0.0-preview.8
+    - 2.0.0-preview.15
+    - 2.0.0-preview.17
+    - 2.0.0-preview.20
+    - 2.0.0-preview.21
+    - 2.0.0-preview.22
+    - 2.0.0
+    - 2.0.1
+    - 2.0.3
+    - 2.0.4
+    - 2.0.5
+    - 2.0.7
+    - 2.1.0-preview.3
+    - 2.1.0-preview.5
+    - 2.1.0-preview.6
+    - 2.1.0
+    - 2.2.0
+    compatible:
+    - 2.2.0
+    recommended: 2.2.0
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords:
+  - backup
+  - cloud
+  - collab
+  - collaborate
+  - collaboration
+  - control
+  - devops
+  - plastic
+  - plasticscm
+  - source
+  - team
+  - teams
+  - version
+  - vcs
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+  hideInEditor: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638326189440000000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.2/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git
+    revision: 33c8fba1793946be3c73f738edf70db0b5546afd
+    path: 
+  unityLifecycle:
+    version: 2.2.0
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
 - packageId: com.unity.ide.rider@3.0.26
   testable: 0
   isDirectDependency: 1
   version: 3.0.26
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ide.rider@3.0.26
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ide.rider@3.0.26
   assetPath: Packages/com.unity.ide.rider
   name: com.unity.ide.rider
   displayName: JetBrains Rider Editor
@@ -254,8 +393,6 @@ m_ResolvedPackages:
     - 3.0.25
     - 3.0.26
     compatible:
-    - 3.0.24
-    - 3.0.25
     - 3.0.26
     recommended: 3.0.26
     deprecated: []
@@ -285,7 +422,7 @@ m_ResolvedPackages:
     revision: 2b29b1152946c13d1ecebf6fc681a59cd8b4d399
     path: 
   unityLifecycle:
-    version: 3.0.24
+    version: 3.0.26
     nextVersion: 
     recommendedVersion: 
     isDeprecated: 0
@@ -297,7 +434,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.3.9
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.test-framework@1.3.9
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.test-framework@1.3.9
   assetPath: Packages/com.unity.test-framework
   name: com.unity.test-framework
   displayName: Test Framework
@@ -355,6 +492,7 @@ m_ResolvedPackages:
     - 1.3.7
     - 1.3.8
     - 1.3.9
+    - 1.4.0
     - 2.0.1-exp.1
     - 2.0.1-exp.2
     - 2.0.1-pre.12
@@ -370,6 +508,7 @@ m_ResolvedPackages:
     - 1.3.7
     - 1.3.8
     - 1.3.9
+    - 1.4.0
     - 2.0.1-exp.1
     - 2.0.1-exp.2
     - 2.0.1-pre.12
@@ -424,7 +563,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 3.0.6
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.textmeshpro@3.0.6
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.textmeshpro@3.0.6
   assetPath: Packages/com.unity.textmeshpro
   name: com.unity.textmeshpro
   displayName: TextMeshPro
@@ -605,7 +744,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.8.5
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.timeline@1.8.5
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.timeline@1.8.5
   assetPath: Packages/com.unity.timeline
   name: com.unity.timeline
   displayName: Timeline
@@ -707,7 +846,6 @@ m_ResolvedPackages:
     - 1.8.5
     - 1.8.6
     compatible:
-    - 1.7.5
     - 1.7.6
     - 1.8.0
     - 1.8.1
@@ -761,7 +899,7 @@ m_ResolvedPackages:
     revision: adf26616812f0b35ad32a28597af1213199265c2
     path: 
   unityLifecycle:
-    version: 1.7.5
+    version: 1.7.6
     nextVersion: 
     recommendedVersion: 
     isDeprecated: 0
@@ -773,7 +911,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ugui@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ugui@1.0.0
   assetPath: Packages/com.unity.ugui
   name: com.unity.ugui
   displayName: Unity UI
@@ -844,7 +982,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.9.1
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.visualscripting@1.9.1
   assetPath: Packages/com.unity.visualscripting
   name: com.unity.visualscripting
   displayName: Visual Scripting
@@ -890,7 +1028,6 @@ m_ResolvedPackages:
     - 1.9.0
     - 1.9.1
     compatible:
-    - 1.9.0
     - 1.9.1
     recommended: 1.9.1
     deprecated:
@@ -929,7 +1066,7 @@ m_ResolvedPackages:
     revision: 5e78e9c354ed1567dbcea08e2bd9992e4a473cfb
     path: 
   unityLifecycle:
-    version: 1.9.0
+    version: 1.9.1
     nextVersion: 
     recommendedVersion: 
     isDeprecated: 0
@@ -941,7 +1078,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.ai@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.ai@1.0.0
   assetPath: Packages/com.unity.modules.ai
   name: com.unity.modules.ai
   displayName: AI
@@ -996,7 +1133,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.androidjni@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.androidjni@1.0.0
   assetPath: Packages/com.unity.modules.androidjni
   name: com.unity.modules.androidjni
   displayName: Android JNI
@@ -1050,7 +1187,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.animation@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.animation@1.0.0
   assetPath: Packages/com.unity.modules.animation
   name: com.unity.modules.animation
   displayName: Animation
@@ -1105,7 +1242,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.assetbundle@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.assetbundle@1.0.0
   assetPath: Packages/com.unity.modules.assetbundle
   name: com.unity.modules.assetbundle
   displayName: Asset Bundle
@@ -1160,7 +1297,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.audio@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.audio@1.0.0
   assetPath: Packages/com.unity.modules.audio
   name: com.unity.modules.audio
   displayName: Audio
@@ -1215,7 +1352,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.cloth@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.cloth@1.0.0
   assetPath: Packages/com.unity.modules.cloth
   name: com.unity.modules.cloth
   displayName: Cloth
@@ -1274,7 +1411,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.director@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.director@1.0.0
   assetPath: Packages/com.unity.modules.director
   name: com.unity.modules.director
   displayName: Director
@@ -1337,7 +1474,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.imageconversion@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.imageconversion@1.0.0
   assetPath: Packages/com.unity.modules.imageconversion
   name: com.unity.modules.imageconversion
   displayName: Image Conversion
@@ -1393,7 +1530,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.imgui@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.imgui@1.0.0
   assetPath: Packages/com.unity.modules.imgui
   name: com.unity.modules.imgui
   displayName: IMGUI
@@ -1448,7 +1585,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0
   assetPath: Packages/com.unity.modules.jsonserialize
   name: com.unity.modules.jsonserialize
   displayName: JSONSerialize
@@ -1503,7 +1640,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.particlesystem@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.particlesystem@1.0.0
   assetPath: Packages/com.unity.modules.particlesystem
   name: com.unity.modules.particlesystem
   displayName: Particle System
@@ -1558,7 +1695,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.physics@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.physics@1.0.0
   assetPath: Packages/com.unity.modules.physics
   name: com.unity.modules.physics
   displayName: Physics
@@ -1613,7 +1750,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.physics2d@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.physics2d@1.0.0
   assetPath: Packages/com.unity.modules.physics2d
   name: com.unity.modules.physics2d
   displayName: Physics 2D
@@ -1668,7 +1805,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.screencapture@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.screencapture@1.0.0
   assetPath: Packages/com.unity.modules.screencapture
   name: com.unity.modules.screencapture
   displayName: Screen Capture
@@ -1727,7 +1864,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.terrain@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.terrain@1.0.0
   assetPath: Packages/com.unity.modules.terrain
   name: com.unity.modules.terrain
   displayName: Terrain
@@ -1782,7 +1919,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.terrainphysics@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.terrainphysics@1.0.0
   assetPath: Packages/com.unity.modules.terrainphysics
   name: com.unity.modules.terrainphysics
   displayName: Terrain Physics
@@ -1845,7 +1982,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.tilemap@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.tilemap@1.0.0
   assetPath: Packages/com.unity.modules.tilemap
   name: com.unity.modules.tilemap
   displayName: Tilemap
@@ -1903,7 +2040,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.ui@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.ui@1.0.0
   assetPath: Packages/com.unity.modules.ui
   name: com.unity.modules.ui
   displayName: UI
@@ -1958,7 +2095,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.uielements@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.uielements@1.0.0
   assetPath: Packages/com.unity.modules.uielements
   name: com.unity.modules.uielements
   displayName: UIElements
@@ -2025,7 +2162,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.umbra@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.umbra@1.0.0
   assetPath: Packages/com.unity.modules.umbra
   name: com.unity.modules.umbra
   displayName: Umbra
@@ -2080,7 +2217,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unityanalytics@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unityanalytics@1.0.0
   assetPath: Packages/com.unity.modules.unityanalytics
   name: com.unity.modules.unityanalytics
   displayName: Unity Analytics
@@ -2143,7 +2280,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequest
   name: com.unity.modules.unitywebrequest
   displayName: Unity Web Request
@@ -2198,7 +2335,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestassetbundle
   name: com.unity.modules.unitywebrequestassetbundle
   displayName: Unity Web Request Asset Bundle
@@ -2261,7 +2398,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestaudio
   name: com.unity.modules.unitywebrequestaudio
   displayName: Unity Web Request Audio
@@ -2324,7 +2461,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequesttexture
   name: com.unity.modules.unitywebrequesttexture
   displayName: Unity Web Request Texture
@@ -2387,7 +2524,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0
   assetPath: Packages/com.unity.modules.unitywebrequestwww
   name: com.unity.modules.unitywebrequestwww
   displayName: Unity Web Request WWW
@@ -2466,7 +2603,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.vehicles@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.vehicles@1.0.0
   assetPath: Packages/com.unity.modules.vehicles
   name: com.unity.modules.vehicles
   displayName: Vehicles
@@ -2525,7 +2662,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.video@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.video@1.0.0
   assetPath: Packages/com.unity.modules.video
   name: com.unity.modules.video
   displayName: Video
@@ -2592,7 +2729,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.vr@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.vr@1.0.0
   assetPath: Packages/com.unity.modules.vr
   name: com.unity.modules.vr
   displayName: VR
@@ -2661,7 +2798,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.wind@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.wind@1.0.0
   assetPath: Packages/com.unity.modules.wind
   name: com.unity.modules.wind
   displayName: Wind
@@ -2716,7 +2853,7 @@ m_ResolvedPackages:
   isDirectDependency: 1
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.xr@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.xr@1.0.0
   assetPath: Packages/com.unity.modules.xr
   name: com.unity.modules.xr
   displayName: XR
@@ -2778,156 +2915,12 @@ m_ResolvedPackages:
     deprecationMessage: 
   isDeprecated: 0
   deprecationMessage: 
-- packageId: com.unity.collab-proxy@2.1.0
-  testable: 0
-  isDirectDependency: 1
-  version: 2.1.0
-  source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.collab-proxy@2.1.0
-  assetPath: Packages/com.unity.collab-proxy
-  name: com.unity.collab-proxy
-  displayName: Version Control
-  author:
-    name: 
-    email: 
-    url: 
-  category: Editor
-  type: assets
-  description: The package gives you the ability to use Unity Version Control in
-    the Unity editor. To use Unity Version Control, a subscription is required. Learn
-    more about how you can get started for free by visiting plasticscm.com.
-  status: 0
-  errors: []
-  versions:
-    all:
-    - 1.2.3-preview
-    - 1.2.4-preview
-    - 1.2.6
-    - 1.2.7
-    - 1.2.9
-    - 1.2.11
-    - 1.2.15
-    - 1.2.16
-    - 1.2.17-preview.3
-    - 1.3.2
-    - 1.3.3
-    - 1.3.4
-    - 1.3.5
-    - 1.3.6
-    - 1.3.7
-    - 1.3.8
-    - 1.3.9
-    - 1.4.9
-    - 1.5.7
-    - 1.6.0
-    - 1.7.1
-    - 1.8.0
-    - 1.9.0
-    - 1.10.2
-    - 1.11.2
-    - 1.12.5
-    - 1.13.5
-    - 1.14.1
-    - 1.14.4
-    - 1.14.7
-    - 1.14.9
-    - 1.14.12
-    - 1.14.13
-    - 1.14.15
-    - 1.14.16
-    - 1.14.17
-    - 1.14.18
-    - 1.15.1
-    - 1.15.4
-    - 1.15.7
-    - 1.15.9
-    - 1.15.12
-    - 1.15.13
-    - 1.15.15
-    - 1.15.16
-    - 1.15.17
-    - 1.15.18
-    - 1.17.0
-    - 1.17.1
-    - 1.17.2
-    - 1.17.6
-    - 1.17.7
-    - 2.0.0-preview.6
-    - 2.0.0-preview.8
-    - 2.0.0-preview.15
-    - 2.0.0-preview.17
-    - 2.0.0-preview.20
-    - 2.0.0-preview.21
-    - 2.0.0-preview.22
-    - 2.0.0
-    - 2.0.1
-    - 2.0.3
-    - 2.0.4
-    - 2.0.5
-    - 2.0.7
-    - 2.1.0-preview.3
-    - 2.1.0-preview.5
-    - 2.1.0-preview.6
-    - 2.1.0
-    - 2.2.0
-    compatible:
-    - 2.0.7
-    - 2.1.0-preview.3
-    - 2.1.0-preview.5
-    - 2.1.0-preview.6
-    - 2.1.0
-    - 2.2.0
-    recommended: 2.0.7
-    deprecated: []
-  dependencies: []
-  resolvedDependencies: []
-  keywords:
-  - backup
-  - cloud
-  - collab
-  - collaborate
-  - collaboration
-  - control
-  - devops
-  - plastic
-  - plasticscm
-  - source
-  - team
-  - teams
-  - version
-  - vcs
-  registry:
-    id: main
-    name: 
-    url: https://packages.unity.com
-    scopes: []
-    isDefault: 1
-    capabilities: 7
-    configSource: 0
-  hideInEditor: 1
-  isAssetStorePackage: 0
-  datePublishedTicks: 638301329890000000
-  documentationUrl: https://docs.unity3d.com/Packages/com.unity.collab-proxy@2.1/manual/index.html
-  hasRepository: 1
-  repository:
-    type: git
-    url: https://github.cds.internal.unity3d.com/unity/com.unity.cloud.collaborate.git
-    revision: 179e96acc2f95fcb9dcc91b5fb2ee5f3e85d48aa
-    path: 
-  unityLifecycle:
-    version: 2.0.7
-    nextVersion: 
-    recommendedVersion: 
-    isDeprecated: 0
-    deprecationMessage: 
-  isDeprecated: 0
-  deprecationMessage: 
 - packageId: com.unity.modules.subsystems@1.0.0
   testable: 0
   isDirectDependency: 0
   version: 1.0.0
   source: 2
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.subsystems@1.0.0
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.modules.subsystems@1.0.0
   assetPath: Packages/com.unity.modules.subsystems
   name: com.unity.modules.subsystems
   displayName: Subsystems
@@ -2986,7 +2979,7 @@ m_ResolvedPackages:
   isDirectDependency: 0
   version: 2.0.3
   source: 1
-  resolvedPath: D:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ext.nunit@2.0.3
+  resolvedPath: F:\Files\CSharp\UnityProjects\Banda\Library\PackageCache\com.unity.ext.nunit@2.0.3
   assetPath: Packages/com.unity.ext.nunit
   name: com.unity.ext.nunit
   displayName: Custom NUnit

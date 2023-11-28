@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PathConstructor : MonoBehaviour
 {
@@ -104,33 +103,6 @@ public class PathConstructor : MonoBehaviour
                 }
             }
         }
-        //     foreach (var neighborTile in availableNeighbourTiles
-            //                  .Where(neighborTile => !closedList.Contains(neighborTile)))
-            //     {
-            //         var tentativeScore = gScore[currentTile] + UIManager.GetDistance(currentTile, neighborTile);
-            //
-            //
-            //         if (!gScore.ContainsKey(neighborTile))
-            //         {
-            //             gScore[neighborTile] = float.MaxValue;
-            //         }
-            //
-            //         var isDistanceShorter = tentativeScore < gScore[neighborTile];
-            //         if (!isDistanceShorter) continue;
-            //
-            //         cameFrom[neighborTile] = currentTile;
-            //         gScore[neighborTile] = tentativeScore;
-            //         fScore[neighborTile] = gScore[neighborTile] + UIManager.Heuristic(neighborTile, endTile);
-            //
-            //         if (!openList.ContainsKey(fScore[neighborTile]))
-            //         {
-            //             openList[fScore[neighborTile]] = new List<Tile> { neighborTile };
-            //         }
-            //         else
-            //         {
-            //             openList[fScore[neighborTile]].Add(neighborTile);
-            //         }
-            //     }
 
         // Если путь до целевого тайла не найден, выбираем ближайший доступный тайл
         var closestTile = GetClosestAvailableTile(startTile, endTile, closedList);
@@ -307,24 +279,7 @@ public class PathConstructor : MonoBehaviour
     {
         return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
     }
-
-    public void GetEnemies(Unit currentUnit)
-    {
-        // var firstEnemy = currentUnit.Enemies[0];
-        // var distance = UIManager.GetDistance(currentUnit.OccupiedTile, firstEnemy.OccupiedTile);
-        //
-        // _targetEnemy = firstEnemy;
-        //
-        // foreach (var enemy in currentUnit.Enemies)
-        // {
-        //     var localDistance = UIManager.GetDistance(currentUnit.OccupiedTile, enemy.OccupiedTile);
-        //
-        //     if (!(distance > localDistance)) continue;
-        //
-        //     distance = localDistance;
-        //     _targetEnemy = enemy;
-        // }
-    }
+    
 
     private Dictionary<Unit, List<Tile>> GetPathsToEnemies(Unit unit)
     {

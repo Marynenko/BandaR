@@ -98,19 +98,4 @@ public class Grid : MonoBehaviour
             unit.InitializeUnit(Tiles);
         }
     }
-
-    public TileState GetStateAndCheckUnitOn(Unit unit, Tile tile)
-    {
-        return tile.State switch
-        {
-            TileState.OccupiedByEnemy when unit.Stats.Type == UnitType.Enemy => tile.State,
-            TileState.OccupiedByPlayer when unit.Stats.Type == UnitType.Player => tile.State,
-            _ => tile.State
-        };
-    }
-
-    public bool CheckTileToUnitStandOn(Unit unit, Tile tile)
-    {
-        return tile.State == TileState.OccupiedByEnemy && unit.Stats.Type == UnitType.Player;
-    }
 }

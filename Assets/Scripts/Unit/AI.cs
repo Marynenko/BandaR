@@ -4,7 +4,7 @@ using UnityEngine;
 public class AI : MonoBehaviour
 {
     private GameController _gameController;
-    private GameModel _gameModel;
+    private GameManager _gameManager;
     private Unit _currentUnit;
     private Unit _targetEnemy;
 
@@ -18,7 +18,7 @@ public class AI : MonoBehaviour
     private void OnEnable()
     {
         _gameController = gameObject.GetComponentInParent<GameController>();
-        _gameModel = gameObject.GetComponentInParent<GameModel>();
+        _gameManager = gameObject.GetComponentInParent<GameManager>();
     }
 
     private void Update()
@@ -53,7 +53,7 @@ public class AI : MonoBehaviour
         _targetEnemy = null;
         _isUnitReadyToAttack = false;
         _isTurnStarted = false;
-        _gameModel.IsAttackFinished = false;
+        _gameManager.IsAttackFinished = false;
         _currentUnit = null;
 
         UIManager.Instance.TurnManager.EndTurn();
@@ -73,7 +73,7 @@ public class AI : MonoBehaviour
         {
             AIMoveUnit();
 
-            var onPosition = _gameModel.MatchPositionsPlayerAndDestination(_currentUnit);
+            var onPosition = _gameManager.MatchPositionsPlayerAndDestination(_currentUnit);
             if (onPosition)
                 _isUnitReadyToAttack = true;
             else
@@ -81,21 +81,21 @@ public class AI : MonoBehaviour
         }
 
         if (!_isUnitReadyToAttack) return;
-        if (_gameModel.IsAttackStarted) return;
+        if (_gameManager.IsAttackStarted) return;
 
         HandleEndTurn();
     }
 
     private void HandleEndTurn()
     {
-        IsTurnFinished = _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+        IsTurnFinished = _gameManager.HandleEndTurnButtonClicked(_currentUnit);
 
         if (!IsTurnFinished)
         {
-            if (_gameModel.IsAttackFinished)
+            if (_gameManager.IsAttackFinished)
                 StartCoroutine(FinishMove());
             else
-                _gameModel.HandleEndTurnButtonClicked(_currentUnit);
+                _gameManager.HandleEndTurnButtonClicked(_currentUnit);
         }
         else
             StartCoroutine(FinishMove());
@@ -113,20 +113,6 @@ public class AI : MonoBehaviour
             _isCoroutineForUnitSelectedOn = false;
         }
     }
-
-    private void MoveOld()
-    {
-        _currentUnit.UnitIsMoving = true;
-    
-        if (_targetEnemy == null)
-        {
-            // UIManager.Instance.PathConstructor.GetEnemies();
-        }
-   
-        if (_targetEnemy != null)
-            _gameController.HandleAITurn(_currentUnit);
-    }
-    
 
     private void AIMoveUnit()
     {
