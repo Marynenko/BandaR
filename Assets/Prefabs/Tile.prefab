@@ -129,6 +129,8 @@ MonoBehaviour:
   ColorSelectedTile: {r: 0.7921569, g: 0.7921569, b: 0.7921569, a: 0}
   ColorMovementTile: {r: 0.11372549, g: 0.8392157, b: 0, a: 0}
   ColorPossibleAttack: {r: 0.41509432, g: 0.06069775, b: 0.06069775, a: 0}
+  ColorRotation: {r: 1, g: 0.8469602, b: 0, a: 0}
+  MovementCost: 1
 --- !u!114 &-2776731113941066579
 MonoBehaviour:
   m_ObjectHideFlags: 0

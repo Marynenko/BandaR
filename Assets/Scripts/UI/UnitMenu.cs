@@ -41,7 +41,7 @@ public class UnitMenu : MonoBehaviour
         if (unit.Stats.Type == UnitType.Player && isMoving)
         {
             // Открыть меню игрока и закрыть меню врага
-            var enemies = UIManager.Instance.PathConstructor.GetEnemyFromNeighbours(unit);
+            var enemies = UIManager.Instance.PathConstructor.GetEnemyFromAdjacentTiles(unit);
             AttackButton.interactable = _currentUnit.Stats.CountAttacks != 0 && enemies.Count > 0;
             MainContainerEnemy.SetActive(false);
             MainContainerPlayer.SetActive(true);
@@ -70,8 +70,15 @@ public class UnitMenu : MonoBehaviour
     private void HandleButtonRotate()
     {
         inputManager.IsTileClickable = true;
-        inputManager.IsUnitClickable = false;
+        inputManager.IsUnitClickable = true;
         inputManager.HasToRotate = true;
+
+        if (_currentUnit != null)
+        {
+            var tilesToHighlight = UIManager.Instance.PathConstructor.GetAdjacentTiles(_currentUnit.OccupiedTile);
+            UIManager.Instance.GridUI.HighlightTiles(tilesToHighlight, TileState.Rotation);    
+        }
+        
         HideMenu();
     }
 

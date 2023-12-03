@@ -72,7 +72,7 @@ public class PathConstructor : MonoBehaviour
                 openList.Remove(openList.First().Key);
             closedList.Add(currentTile);
 
-            var availableNeighbourTiles = GetAvailableNeighbourTiles(currentTile);
+            var availableNeighbourTiles = GetAvailableAdjacentTiles(currentTile);
             foreach (var neighborTile in availableNeighbourTiles
                          .Where(neighborTile => !closedList.Contains(neighborTile)))
             {
@@ -131,7 +131,7 @@ public class PathConstructor : MonoBehaviour
                 return currentTile;
             }
 
-            var availableNeighbourTiles = GetAvailableNeighbourTiles(currentTile);
+            var availableNeighbourTiles = GetAvailableAdjacentTiles(currentTile);
             foreach (var neighborTile in availableNeighbourTiles
                          .Where(neighborTile => !closedList.Contains(neighborTile)))
             {
@@ -154,7 +154,7 @@ public class PathConstructor : MonoBehaviour
         return path;
     }
 
-    public List<Tile> GetAvailableNeighbourTiles(Tile tile)
+    public List<Tile> GetAvailableAdjacentTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
 
@@ -183,7 +183,7 @@ public class PathConstructor : MonoBehaviour
         return nearbyTiles;
     }
 
-    public List<Tile> GetNeighbours(Tile tile)
+    public List<Tile> GetAdjacentTiles(Tile tile)
     {
         List<Tile> nearbyTiles = new();
 
@@ -202,7 +202,7 @@ public class PathConstructor : MonoBehaviour
         return nearbyTiles;
     }
 
-    public IEnumerable<Tile> GetAvailableMoves(Tile tile, int maxMoves)
+    public IEnumerable<Tile> FindAvailableMoves(Tile tile, int maxMoves)
     {
         var visitedTiles = new HashSet<Tile>();
         var availableMoves = new List<Tile>();
@@ -220,7 +220,7 @@ public class PathConstructor : MonoBehaviour
             if (remainingMoves <= 1)
                 continue;
 
-            var neighbourTiles = GetAvailableNeighbourTiles(currentTile);
+            var neighbourTiles = GetAvailableAdjacentTiles(currentTile);
             foreach (var neighbour in neighbourTiles)
             {
                 var tileIsVisited = visitedTiles.Contains(neighbour);
@@ -249,9 +249,9 @@ public class PathConstructor : MonoBehaviour
         return false;
     }
 
-    public List<Unit> GetEnemyFromNeighbours(Unit unit)
+    public List<Unit> GetEnemyFromAdjacentTiles(Unit unit)
     {
-        var neighbours = GetNeighbours(unit.OccupiedTile);
+        var neighbours = GetAdjacentTiles(unit.OccupiedTile);
         var type = unit.Stats.Type;
         var enemyUnits = new List<Unit>();
 
@@ -262,11 +262,11 @@ public class PathConstructor : MonoBehaviour
                 if (type == UnitType.Enemy &&
                     neighbour.State is TileState.OccupiedByPlayer or TileState.OccupiedByAlly)
                 {
-                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                    enemyUnits.Add(GetUnitFromTile(neighbour));
                 }
                 else if (type != UnitType.Enemy && neighbour.State == TileState.OccupiedByEnemy)
                 {
-                    enemyUnits.Add(GetUnitFromNeighbour(neighbour));
+                    enemyUnits.Add(GetUnitFromTile(neighbour));
                 }
             }
         }
@@ -275,10 +275,8 @@ public class PathConstructor : MonoBehaviour
     }
 
 
-    private Unit GetUnitFromNeighbour(Tile neighbour)
-    {
-        return Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
-    }
+    private Unit GetUnitFromTile(Tile neighbour)
+        => Grid.AllUnits.FirstOrDefault(unit => unit.OccupiedTile == neighbour);
     
 
     private Dictionary<Unit, List<Tile>> GetPathsToEnemies(Unit unit)
@@ -296,7 +294,7 @@ public class PathConstructor : MonoBehaviour
         return paths;
     }
 
-    public List<Tile> GetOptimalPath(Unit unit)
+    public List<Tile> GetOptimalPathToEnemy(Unit unit)
     {
         var paths = GetPathsToEnemies(unit);
         List<Tile> optimalPath = null;

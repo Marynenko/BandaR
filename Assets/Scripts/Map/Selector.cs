@@ -35,7 +35,7 @@ public class Selector : MonoBehaviour
         };
         SelectedUnit.OccupiedTile.SelectTile();
         SelectedUnit.AvailableMoves =
-            new HashSet<Tile>(uiManager.PathConstructor.GetAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
+            new HashSet<Tile>(uiManager.PathConstructor.FindAvailableMoves(unit.OccupiedTile, unit.Stats.MovementPoints));
         uiManager.GridUI.HighlightAvailableMoves(SelectedUnit.AvailableMoves, unit.OccupiedTile.State);
     }
 

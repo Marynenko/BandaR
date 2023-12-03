@@ -71,7 +71,7 @@ public class Grid : MonoBehaviour
     private void LocateNeighborsTiles()
     {
         foreach (var tile in Tiles)
-            tile.Neighbors = UIManager.Instance.PathConstructor.GetAvailableNeighbourTiles(tile);
+            tile.Neighbors = UIManager.Instance.PathConstructor.GetAvailableAdjacentTiles(tile);
     }
 
     private void GetAllExistedUnits()

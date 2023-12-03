@@ -49,6 +49,7 @@ public class Tile : MonoBehaviour
     public Color ColorSelectedTile;
     public Color ColorMovementTile;
     public Color ColorPossibleAttack;
+    public Color ColorRotation;
     
     public int MovementCost = 1;
 
@@ -72,7 +73,8 @@ public class Tile : MonoBehaviour
             { TileState.OccupiedByEnemy, ColorEnemyOnTile },
             { TileState.Selected, ColorSelectedTile },
             { TileState.Movement, ColorMovementTile },
-            { TileState.AttackTarget, ColorPossibleAttack}
+            { TileState.AttackTarget, ColorPossibleAttack},
+            { TileState.Rotation, ColorRotation}
         };
     }
     
@@ -117,5 +119,6 @@ public enum TileState
     OccupiedByPlayer,
     OccupiedByAlly,
     OccupiedByEnemy,
-    AttackTarget
+    AttackTarget,
+    Rotation
 }
