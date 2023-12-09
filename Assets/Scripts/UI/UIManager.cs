@@ -4,12 +4,24 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private UnitMenu Menu;
+    
+    public InputManager Input;
+    public Grid Grid;
+    public GridUI GridUI;
+
+    public Selector Selector;
+    public PathConstructor PathConstructor;
+
+    public UIPortraitManager PortraitManager;
+    public GameManager GameManager;
+    public GameController GameController;
     public CameraManager CameraManager;
+    
+    public MovementManager MovementManager;
+    public MovementIndicators MovementIndicators;
+    
     public AttackManager AttackManager;
     public TurnManager TurnManager;
-    public MovementManager MovementManager;
-    public GridUI GridUI;
-    public PathConstructor PathConstructor; // todo переместить это в GameManager или GameController
 
     public UnitMenu MenuAction
     {

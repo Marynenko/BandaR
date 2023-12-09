@@ -61,7 +61,7 @@ public abstract class Unit : SoundsManager
         var energyConsumption = Convert.ToInt16(Math.Round(_stats.EnergyForMove / Tile.EnergyCost)) + 1;
         _stats.MovementPoints = energyConsumption;
         _stats.MovementRange = energyConsumption;
-        _stats.Health = _stats.MaxHealth;
+        _stats.Health = _stats.HealthMax;
     }
 
     private Tile CompareSpawnPosToTile(Tile[,] tiles) =>

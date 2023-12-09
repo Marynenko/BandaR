@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class UnitStats : MonoBehaviour
 {
@@ -11,11 +12,13 @@ public class UnitStats : MonoBehaviour
     public int MovementPoints;
     public int MovementRange;
     [Header("Characteristics")]
-    public float MaxHealth;
     public float Health;
+    public float HealthMax;
     public float Energy;
+    public float EnergyMax;
     public float EnergyForMove;
     public float StateFatigue;
+    public float StateFatigueMax;
     public int Speed;
 
 }

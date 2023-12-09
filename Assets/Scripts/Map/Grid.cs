@@ -5,7 +5,6 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     [SerializeField] private Selector Selector;
-    [SerializeField] private UIPortraitManager UIPortraitManager;
     [SerializeField] private Transform TilesPlace;
     [SerializeField] private Tile TilePrefab;
     [SerializeField] private Vector2Int GridSize;
@@ -39,7 +38,7 @@ public class Grid : MonoBehaviour
         CreateGrid();
         LocateNeighborsTiles();
         GetAllExistedUnits();
-        UIPortraitManager.AddPortraits(AllUnits);
+        UIManager.Instance.PortraitManager.AddPortraits(AllUnits);
         AddUnitsToTiles();
         UIManager.Instance.TurnManager.Launch();
         TrackEnemies();

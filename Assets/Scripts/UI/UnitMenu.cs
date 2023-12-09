@@ -64,7 +64,7 @@ public class UnitMenu : MonoBehaviour
     {
         inputManager.IsTileClickable = true;
         inputManager.IsUnitClickable = false;
-        inputManager.GameController.HandleUnitClick(_currentUnit);
+        UIManager.Instance.GameController.HandleUnitClick(_currentUnit);
     }
     
     private void HandleButtonRotate()
@@ -86,9 +86,10 @@ public class UnitMenu : MonoBehaviour
     {
         HideMenu();
         inputManager.IsTileClickable = false;
-        inputManager.IsAttackActive = true;
+        inputManager.IsAttackMenuActive = true;
         inputManager.IsUnitClickable = true;
-        UIManager.Instance.AttackManager.HandleAttackButtonClicked(_currentUnit);
+        UIManager.Instance.AttackManager.uiAttackMenu.gameObject.SetActive(true); // For Attack Menu open instantly
+        // UIManager.Instance.AttackManager.HandleAttackButtonClicked(_currentUnit); // For attack menu open after chose enemy
     }
 
     private void HandleButtonInfo()
@@ -97,13 +98,13 @@ public class UnitMenu : MonoBehaviour
 
     private void HandleButtonEndTurn()
     {
-        inputManager.GameManager.HandleEndTurnButtonClicked(_currentUnit);
+        UIManager.Instance.GameManager.HandleEndTurnButtonClicked(_currentUnit);
         UpdateUnitUI();
     }
 
     private void UpdateUnitUI()
     {
-        var updateIndicators = UIManager.Instance.AttackManager.MovementIndicators;
+        var updateIndicators = UIManager.Instance.MovementIndicators;
         updateIndicators.Launch(updateIndicators.EnergyMax, _currentUnit.Stats.StateFatigue);
     }
 }
