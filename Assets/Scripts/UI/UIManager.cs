@@ -18,7 +18,6 @@ public class UIManager : MonoBehaviour
     public CameraManager CameraManager;
     
     public MovementManager MovementManager;
-    public MovementIndicators MovementIndicators;
     
     public AttackManager AttackManager;
     public TurnManager TurnManager;
