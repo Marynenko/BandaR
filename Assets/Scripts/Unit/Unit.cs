@@ -1,88 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public enum UnitType
+public abstract class Unit : SoundsManager
 {
-    Player,
-    Enemy
-}
+    #region Variables
 
-public enum UnitStatus
-{
-    Selected,
-    Unselected
-}
+    public List<GameObject> Sites;
+    public List<GameObject> AttacksPrefab;
+    public List<Unit> Enemies;
 
-public class Unit : MonoBehaviour
-{
-    private const float _positionY = .8f;
-    private const float _maxDistance = 3f;
-    [SerializeField] private int _countMovementCell;
-    [SerializeField] private List<Vector2> _possibleMovements;
-    
-    public UnitType Type;
-    public UnitStatus Status;
+    // Fields
+    [SerializeField] private UnitStats _stats;
 
-    public Cell CurrentCell;
-    [HideInInspector] public Vector2 Position;
+    // Constants
+    private const float HEIGHT_TO_PUT_UNIT_ON_TILE = 0.68f;
 
-    public bool CheckUnitOnCell(Cell cellToCheck)
+    // Private fields
+
+    // Public properties
+    public UnitStats Stats => _stats;
+    public UnitStatus Status { get; set; }
+    public UnitAttackSite AttackSite { get; set; }
+    public Tile OccupiedTile { get; set; }
+
+    // public fields
+    public Tile Target;
+    public UISign Sign;
+
+    public Vector2Int SpawnCellVector2Int;
+    public HashSet<Tile> AvailableMoves;
+    public bool UnitIsMoving;
+
+    #endregion
+
+    #region Initialization
+
+    public abstract void TrackAllEnemies();
+
+    public void InitializeUnit(Tile[,] tiles)
     {
-        var ray = ReturnCurrentPosition();
-        RaycastHit unitPositionHitCell;
+        var startTile = CompareSpawnPosToTile(tiles);
+        transform.position = startTile.transform.position + Vector3.up * HEIGHT_TO_PUT_UNIT_ON_TILE;
+        OccupiedTile = startTile;
 
-        if (Physics.Raycast(ray, out unitPositionHitCell, _maxDistance))
+        UIManager.Instance.TurnManager.HighlightPortrait(this); // off
+
+        OccupiedTile.State = Stats.Type switch
         {
-            if (unitPositionHitCell.collider.GetComponent<Cell>().Position.Equals(cellToCheck.Position))
-            {
-                CurrentCell = unitPositionHitCell.collider.GetComponent<Cell>();
-                CurrentCell.EUnitOn = UnitOn.Yes;
-                Status = UnitStatus.Selected;
+            UnitType.Player => TileState.OccupiedByPlayer,
+            UnitType.Ally => TileState.OccupiedByAlly,
+            _ => TileState.OccupiedByEnemy
+        };
 
-                return true;
-            }
-        }
-        else
-        {
-            //Status = UnitStatus.Unselected;
-            CurrentCell.EUnitOn = UnitOn.No;
-        }
+        OccupiedTile.Available = false;
+        Status = UnitStatus.Unavailable;
+        AttackSite = UnitAttackSite.None;
 
-        return false;
+        var energyConsumption = Convert.ToInt16(Math.Round(_stats.EnergyForMove / Tile.EnergyCost)) + 1;
+        _stats.MovementPoints = energyConsumption;
+        _stats.MovementRange = energyConsumption;
+        _stats.Health = _stats.HealthMax;
     }
 
-    private Ray ReturnCurrentPosition() => new Ray(transform.position, Vector3.down);
+    private Tile CompareSpawnPosToTile(Tile[,] tiles) =>
+        tiles.Cast<Tile>().FirstOrDefault(tile => tile.Coordinates.x == SpawnCellVector2Int.x
+                                                  && tile.Coordinates.y == SpawnCellVector2Int.y);
 
-    private void ShowPossibleMovement()
-    {
-        CalculatePossibleMovements(CurrentCell, _countMovementCell);
-    }
-
-    private void CalculatePossibleMovements(Cell currentCell, int countMovementCell)
-    {
-        //Vector2 possibleMovement = currentCell.Position + .05f;
-    }
-
-    
-    [ContextMenu("Initialize Unit")]
-    public void InitializeUnit()
-    {
-        var ray = new Ray(transform.position, Vector3.down);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, _maxDistance))
-        {
-            if (hit.collider.GetComponent<Cell>())
-            {
-                transform.position = new Vector3(hit.transform.position.x, _positionY, hit.transform.position.z);
-
-                CurrentCell = hit.collider.GetComponent<Cell>();
-                CurrentCell.EUnitOn = UnitOn.Yes;
-                Status = UnitStatus.Unselected;
-            }
-
-        }
-    }
-
+    #endregion
 }
